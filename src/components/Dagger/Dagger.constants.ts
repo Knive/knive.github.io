@@ -1,0 +1,70 @@
+/**
+ * Animation timings (seconds) and amplitudes (radians)
+ */
+export const FALL_HEIGHT = 14;
+export const FALL_DURATION_SECONDS = 1.5;
+
+export const IMPACT_SHAKE = {
+    durationSeconds: 0.5,
+    frequency: 55,
+    amplitude: 0.022
+} as const;
+
+export const IDLE_SWAY = {
+    frequency: 0.85,
+    amplitude: 0.005
+} as const;
+
+export const HOVER_GLOW = {
+    intensity: 0.4,
+    /** Higher values reach the target intensity faster */
+    smoothing: 5
+} as const;
+
+/**
+ * Geometry in local space, y-axis along the blade.
+ * The guard sits at y = 0 so it rests on the ground once landed.
+ */
+export const BLADE = {
+    length: 2.2,
+    baseRadius: 0.032,
+    tipRadius: 0.004,
+    radialSegments: 6,
+    metalness: 0.92,
+    roughness: 0.15
+} as const;
+
+export const CROSS_GUARD = {
+    width: 0.5,
+    height: 0.065,
+    depth: 0.09,
+    metalness: 0.75,
+    roughness: 0.45
+} as const;
+
+export const HANDLE = {
+    length: 0.92,
+    topRadius: 0.058,
+    bottomRadius: 0.05,
+    radialSegments: 8,
+    metalness: 0.2,
+    roughness: 0.88
+} as const;
+
+export const POMMEL = {
+    positionY: 0.96,
+    radius: 0.095,
+    widthSegments: 8,
+    heightSegments: 6,
+    metalness: 0.82,
+    roughness: 0.28
+} as const;
+
+export const LABEL_POSITION_Y = 1.35;
+
+/**
+ * How much of the blade stays above ground once landed, like a short sword
+ * planted in the earth. The rest of the blade is buried.
+ */
+const EXPOSED_BLADE_RATIO = 0.6;
+export const EXPOSED_BLADE_LENGTH = BLADE.length * EXPOSED_BLADE_RATIO;
