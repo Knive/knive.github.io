@@ -7,7 +7,11 @@ type Burst = {
     intensity: number;
     /** performance.now() time in seconds */
     startedAt: number;
+    /** False under prefers-reduced-motion: the glow plays, the ring and sparks do not */
+    hasMotion: boolean;
 };
+
+const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
  * Glow state shared by the daggers, the moving light and the effects.
@@ -22,7 +26,11 @@ export const nowSeconds = () => performance.now() / 1000;
 
 /** Single entry point for the landing and hover effects; a new call replaces the running burst */
 export const playGlow = (daggerId: string, intensity: number) => {
-    bursts.set(daggerId, { intensity: MathUtils.clamp(intensity, 0, 1), startedAt: nowSeconds() });
+    bursts.set(daggerId, {
+        intensity: MathUtils.clamp(intensity, 0, 1),
+        startedAt: nowSeconds(),
+        hasMotion: !prefersReducedMotion()
+    });
     lastPlayedDaggerId = daggerId;
 };
 

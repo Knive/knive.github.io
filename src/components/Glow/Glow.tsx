@@ -4,7 +4,12 @@ import { Color, MathUtils, type PointLight } from 'three';
 
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import type { CrackPath } from '@/components/Floor/Floor.helpers';
-import { CrackGlow, type GlowEffectProps } from '@/components/Glow/Glow.components';
+import {
+    CrackGlow,
+    ShockwaveRing,
+    Sparks,
+    type GlowEffectProps
+} from '@/components/Glow/Glow.components';
 import { GLOW_LIGHT } from '@/components/Glow/Glow.constants';
 import {
     getActiveDaggerId,
@@ -70,12 +75,24 @@ export const GlowLight = ({ daggers }: GlowLightProps) => {
     );
 };
 
-/** Ground-level burst effects of one dagger; render inside the dagger's ground group */
+/**
+ * Ground-level burst effects of one dagger: glowing cracks, shockwave ring and sparks.
+ * Render inside the dagger's ground group.
+ */
 export const DaggerGlowEffects = ({
     daggerId,
     glowColor,
     positionX,
     cracks
 }: DaggerGlowEffectsProps) => (
-    <CrackGlow daggerId={daggerId} glowColor={glowColor} positionX={positionX} cracks={cracks} />
+    <>
+        <CrackGlow
+            daggerId={daggerId}
+            glowColor={glowColor}
+            positionX={positionX}
+            cracks={cracks}
+        />
+        <ShockwaveRing daggerId={daggerId} glowColor={glowColor} />
+        <Sparks daggerId={daggerId} glowColor={glowColor} />
+    </>
 );

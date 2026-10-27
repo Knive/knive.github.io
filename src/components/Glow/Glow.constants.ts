@@ -88,3 +88,33 @@ export const CRACK_GLOW = {
     /** Colour multiplier at a full burst; above 1 so the cracks bloom */
     peak: 4
 } as const;
+
+/** Flat ring racing outwards over the floor; radii in world units */
+export const SHOCKWAVE_RING = {
+    durationSeconds: 0.6,
+    /** Radius reached by a full-intensity burst */
+    maxRadius: 2.4,
+    /** Ring band as a fraction of its radius */
+    innerRadiusRatio: 0.9,
+    segments: 48,
+    /** Just above the crack glow */
+    height: 0.006,
+    /** Colour multiplier at the start of a full burst; above 1 so it blooms */
+    peak: 3
+} as const;
+
+/** Sparks thrown up from the blade's entry point; world units and seconds */
+export const SPARKS = {
+    /** Thrown by a full-intensity burst; fewer for weaker ones */
+    maxCount: 32,
+    lifeSeconds: 0.9,
+    minSpeed: 1.2,
+    maxSpeed: 3,
+    /** Max angle from vertical, in radians */
+    coneAngle: 0.6,
+    gravity: 6,
+    originHeight: 0.05,
+    size: 0.05,
+    /** Colour multiplier at birth; above 1 so they bloom */
+    peak: 4
+} as const;

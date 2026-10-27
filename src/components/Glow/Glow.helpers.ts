@@ -2,7 +2,13 @@ import { CanvasTexture } from 'three';
 
 import { FLOOR } from '@/components/Floor/Floor.constants';
 import { drawCrack, worldToCanvas, type CrackPath } from '@/components/Floor/Floor.helpers';
-import { BURST_ENVELOPE, CRACK_GLOW, PULSE, type SineWave } from '@/components/Glow/Glow.constants';
+import {
+    BURST_ENVELOPE,
+    CRACK_GLOW,
+    PULSE,
+    SPARKS,
+    type SineWave
+} from '@/components/Glow/Glow.constants';
 
 /** Sustained glow shape over time (seconds), within [0, 1] */
 export type GlowPulse = (timeSeconds: number) => number;
@@ -104,4 +110,46 @@ export const createCrackGlowTexture = (cracks: CrackPath[], positionX: number) =
     }
 
     return new CanvasTexture(canvas);
+};
+
+/** Fast start, gentle stop; progress in [0, 1] */
+export const easeOutCubic = (progress: number) => 1 - (1 - progress) ** 3;
+
+/** Puts every spark back at the origin with a random upward velocity inside the cone */
+export const launchSparks = (
+    positions: Float32Array,
+    velocities: Float32Array,
+    random = Math.random
+) => {
+    for (let index = 0; index < positions.length; index += 3) {
+        const azimuth = random() * Math.PI * 2;
+        const tilt = random() * SPARKS.coneAngle;
+        const speed = SPARKS.minSpeed + random() * (SPARKS.maxSpeed - SPARKS.minSpeed);
+
+        positions[index] = 0;
+        positions[index + 1] = SPARKS.originHeight;
+        positions[index + 2] = 0;
+        velocities[index] = Math.sin(tilt) * Math.cos(azimuth) * speed;
+        velocities[index + 1] = Math.cos(tilt) * speed;
+        velocities[index + 2] = Math.sin(tilt) * Math.sin(azimuth) * speed;
+    }
+};
+
+/** One physics step: gravity, then motion; sparks that hit the floor stop there */
+export const stepSparks = (
+    positions: Float32Array,
+    velocities: Float32Array,
+    deltaSeconds: number
+) => {
+    for (let index = 0; index < positions.length; index += 3) {
+        velocities[index + 1] -= SPARKS.gravity * deltaSeconds;
+        positions[index] += velocities[index] * deltaSeconds;
+        positions[index + 1] += velocities[index + 1] * deltaSeconds;
+        positions[index + 2] += velocities[index + 2] * deltaSeconds;
+
+        if (positions[index + 1] < 0) {
+            positions[index + 1] = 0;
+            velocities[index] = velocities[index + 1] = velocities[index + 2] = 0;
+        }
+    }
 };
