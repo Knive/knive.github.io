@@ -63,3 +63,17 @@ export const PULSE = {
         ] as SineWave[]
     }
 } as const;
+
+/** The one shared light that follows the active dagger and takes its glow colour */
+export const GLOW_LIGHT = {
+    /** Relative to the active dagger's base: at hilt height, slightly towards the camera */
+    height: 0.8,
+    offsetZ: 0.6,
+    /** Sustained intensity while the dagger is hovered */
+    hoverIntensity: 3,
+    /** Extra intensity at the peak of a full-intensity burst */
+    burstPeak: 15,
+    decay: 2,
+    /** Higher values follow the active dagger faster (position, colour and intensity) */
+    smoothing: 6
+} as const;

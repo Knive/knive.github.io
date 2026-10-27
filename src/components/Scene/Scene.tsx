@@ -5,6 +5,7 @@ import { Bloom, EffectComposer } from '@react-three/postprocessing';
 
 import { Dagger } from '@/components/Dagger/Dagger';
 import { Floor } from '@/components/Floor/Floor';
+import { GlowLight } from '@/components/Glow/Glow';
 import { Atmosphere, Lights } from '@/components/Scene/Scene.components';
 import {
     BLOOM,
@@ -37,6 +38,7 @@ export const Scene = () => {
             />
             <Atmosphere />
             <Lights />
+            <GlowLight daggers={DAGGERS} />
 
             {DAGGERS.map((config) => (
                 <Dagger key={config.sectionId} config={config} />
