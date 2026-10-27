@@ -1,6 +1,7 @@
 import { MathUtils } from 'three';
 
 import { burstEnvelope } from '@/components/Glow/Glow.helpers';
+import { prefersReducedMotion } from '@/utils/prefersReducedMotion';
 
 type Burst = {
     /** 0..1: hover is low, landing is 1 */
@@ -10,8 +11,6 @@ type Burst = {
     /** False under prefers-reduced-motion: the glow plays, the ring and sparks do not */
     hasMotion: boolean;
 };
-
-const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /**
  * Glow state shared by the daggers, the moving light and the effects.
