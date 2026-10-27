@@ -1,3 +1,5 @@
+import { FOG } from '@/components/Scene/Scene.constants';
+
 /**
  * Warm torchlight from left, cooler fill from right
  */
@@ -11,3 +13,11 @@ export const Lights = () => {
         </>
     );
 };
+
+/** Background in the fog colour, so distant things dissolve into the night */
+export const Atmosphere = () => (
+    <>
+        <color attach="background" args={[FOG.color]} />
+        <fog attach="fog" args={[FOG.color, FOG.near, FOG.far]} />
+    </>
+);

@@ -1,119 +1,57 @@
+import { PerformanceMonitor } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import type { RootState } from '@react-three/fiber';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
+
 import { Dagger } from '@/components/Dagger/Dagger';
-import type { DaggerConfig } from '@/components/Dagger/Dagger';
-import { ContactDaggerParts } from '@/components/ContactDagger/ContactDagger';
-import { CONTACT_BLADE } from '@/components/ContactDagger/ContactDagger.constants';
-import { EducationDaggerParts } from '@/components/EducationDagger/EducationDagger';
-import { EDUCATION_BLADE } from '@/components/EducationDagger/EducationDagger.constants';
-import { ExperienceDaggerParts } from '@/components/ExperienceDagger/ExperienceDagger';
-import { EXPERIENCE_BLADE } from '@/components/ExperienceDagger/ExperienceDagger.constants';
-import { ProjectsDaggerParts } from '@/components/ProjectsDagger/ProjectsDagger';
-import { PROJECTS_BLADE } from '@/components/ProjectsDagger/ProjectsDagger.constants';
-import { SkillsDaggerParts } from '@/components/SkillsDagger/SkillsDagger';
-import { SKILLS_BLADE } from '@/components/SkillsDagger/SkillsDagger.constants';
-import { Lights } from '@/components/Scene/Scene.components';
-
-/** Only HDR emissive (the runes) exceeds 1, so nothing else blooms */
-const BLOOM = {
-    luminanceThreshold: 1,
-    intensity: 1.2
-} as const;
-
-const DAGGERS: DaggerConfig[] = [
-    {
-        sectionId: 'experience',
-        label: 'Experience',
-        positionX: -2.6,
-        bladeColor: '#B0B8A4',
-        guardColor: '#B08D57',
-        handleColor: '#4A3020',
-        pommelColor: '#B08D57',
-        glowColor: '#C9A24A',
-        bladeLength: EXPERIENCE_BLADE.length,
-        Parts: ExperienceDaggerParts
-    },
-    {
-        sectionId: 'skills',
-        label: 'Skills',
-        positionX: -1.3,
-        bladeColor: '#9AAAB8',
-        guardColor: '#252E3C',
-        handleColor: '#161E2A',
-        pommelColor: '#303848',
-        glowColor: '#2FB8B0',
-        bladeLength: SKILLS_BLADE.length,
-        Parts: SkillsDaggerParts
-    },
-    {
-        sectionId: 'projects',
-        label: 'Projects',
-        positionX: 0,
-        bladeColor: '#C4CED6',
-        guardColor: '#4A4438',
-        handleColor: '#2A2420',
-        pommelColor: '#5A5048',
-        glowColor: '#B04AC9',
-        bladeLength: PROJECTS_BLADE.length,
-        Parts: ProjectsDaggerParts
-    },
-    {
-        sectionId: 'education',
-        label: 'Education',
-        positionX: 1.3,
-        bladeColor: '#A8A898',
-        guardColor: '#3A3828',
-        handleColor: '#5C4830',
-        pommelColor: '#C4B870',
-        glowColor: '#4FAF5A',
-        bladeLength: EDUCATION_BLADE.length,
-        Parts: EducationDaggerParts
-    },
-    {
-        sectionId: 'contact',
-        label: 'Contact',
-        positionX: 2.6,
-        bladeColor: '#8090A0',
-        guardColor: '#28283A',
-        handleColor: '#1A1828',
-        pommelColor: '#383858',
-        glowColor: '#D9502E',
-        bladeLength: CONTACT_BLADE.length,
-        Parts: ContactDaggerParts
-    }
-];
+import { Floor } from '@/components/Floor/Floor';
+import { Atmosphere, Lights } from '@/components/Scene/Scene.components';
+import {
+    BLOOM,
+    CAMERA,
+    CRACK_ORIGINS_X,
+    DAGGERS,
+    PERFORMANCE_MONITOR_FLIPFLOPS
+} from '@/components/Scene/Scene.constants';
+import { useQualityTier } from '@/components/Scene/useQualityTier';
 
 const handleCreated = ({ camera }: RootState) => {
-    camera.lookAt(0, 0.4, 0);
+    camera.lookAt(...CAMERA.lookAt);
 };
 
 export const Scene = () => {
+    const { settings, handleIncline, handleDecline, handleFallback } = useQualityTier();
+
     return (
         <Canvas
-            camera={{ position: [0, 1.5, 7.5], fov: 50 }}
+            camera={{ position: CAMERA.position, fov: CAMERA.fov }}
             onCreated={handleCreated}
-            dpr={[1, 2]}
+            dpr={settings.dpr}
         >
+            <PerformanceMonitor
+                flipflops={PERFORMANCE_MONITOR_FLIPFLOPS}
+                onIncline={handleIncline}
+                onDecline={handleDecline}
+                onFallback={handleFallback}
+            />
+            <Atmosphere />
             <Lights />
 
             {DAGGERS.map((config) => (
                 <Dagger key={config.sectionId} config={config} />
             ))}
 
-            {/* Dark stone floor */}
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-                <planeGeometry args={[40, 40]} />
-                <meshStandardMaterial color="#080B10" roughness={0.96} metalness={0.04} />
-            </mesh>
+            <Floor isReflective={settings.isFloorReflective} crackOriginsX={CRACK_ORIGINS_X} />
 
-            <EffectComposer>
-                <Bloom
-                    mipmapBlur
-                    luminanceThreshold={BLOOM.luminanceThreshold}
-                    intensity={BLOOM.intensity}
-                />
-            </EffectComposer>
+            {settings.hasBloom && (
+                <EffectComposer>
+                    <Bloom
+                        mipmapBlur
+                        luminanceThreshold={BLOOM.luminanceThreshold}
+                        intensity={BLOOM.intensity}
+                    />
+                </EffectComposer>
+            )}
         </Canvas>
     );
 };
