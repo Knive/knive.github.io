@@ -21,7 +21,11 @@ const handleCreated = ({ camera }: RootState) => {
     camera.lookAt(...CAMERA.lookAt);
 };
 
-export const Scene = () => {
+type SceneProps = {
+    isIntroPlaying: boolean;
+};
+
+export const Scene = ({ isIntroPlaying }: SceneProps) => {
     const { settings, handleIncline, handleDecline, handleFallback } = useQualityTier();
 
     return (
@@ -40,11 +44,13 @@ export const Scene = () => {
             <Lights />
             <GlowLight daggers={DAGGERS} />
 
-            {DAGGERS.map((config) => (
+            {DAGGERS.map((config, index) => (
                 <Dagger
                     key={config.sectionId}
                     config={config}
                     cracks={CRACK_LAYOUT.byDagger[config.sectionId]}
+                    landingOrder={index}
+                    isIntroPlaying={isIntroPlaying}
                 />
             ))}
 

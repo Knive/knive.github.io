@@ -13,6 +13,7 @@ import { DaggerGlowEffects } from '@/components/Glow/Glow';
 import { GLOW_INTENSITY } from '@/components/Glow/Glow.constants';
 import type { GlowPulse } from '@/components/Glow/Glow.helpers';
 import { clearHoveredDagger, playGlow, setHoveredDagger } from '@/components/Glow/glowStore';
+import { useDaggerFlight } from '@/components/Intro/useDaggerFlight';
 
 export interface DaggerConfig {
     /** Id of the CV section this dagger scrolls to */
@@ -36,16 +37,20 @@ type DaggerProps = {
     config: DaggerConfig;
     /** This dagger's floor cracks, lit by its bursts */
     cracks: CrackPath[];
+    /** Position in the intro landing sequence; 0 is the lead dagger */
+    landingOrder: number;
+    isIntroPlaying: boolean;
 };
 
 const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
 };
 
-export const Dagger = ({ config, cracks }: DaggerProps) => {
+export const Dagger = ({ config, cracks, landingOrder, isIntroPlaying }: DaggerProps) => {
     const { sectionId, bladeLength, pulse } = config;
     const [isHovered, setIsHovered] = useState(false);
     const glowMaterialRef = useDaggerGlow({ daggerId: sectionId, isHovered, pulse });
+    const flightRef = useDaggerFlight({ daggerId: sectionId, landingOrder, isIntroPlaying });
     const exposedBladeLength = bladeLength * EXPOSED_BLADE_RATIO;
 
     const handlePointerOver = () => {
@@ -83,10 +88,16 @@ export const Dagger = ({ config, cracks }: DaggerProps) => {
                 onPointerOut={handlePointerOut}
             />
 
-            {/* Outer group sits at ground level; this offset keeps part of the blade above it */}
-            <group position={[0, exposedBladeLength, 0]}>
-                <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
-                <DaggerLabel text={config.label} isHighlighted={isHovered} />
+            {/* Only the meshes fly in; shadow, effects and hit shape wait at the landing spot */}
+            <group ref={flightRef}>
+                {/* Outer group sits at ground level; this offset keeps part of the blade above it */}
+                <group position={[0, exposedBladeLength, 0]}>
+                    <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
+                    {/* Html ignores the group's visibility, so hide the label until landed */}
+                    {!isIntroPlaying && (
+                        <DaggerLabel text={config.label} isHighlighted={isHovered} />
+                    )}
+                </group>
             </group>
         </group>
     );

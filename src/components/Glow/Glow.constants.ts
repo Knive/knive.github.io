@@ -1,4 +1,4 @@
-/** playGlow intensities: hover is a small flash, landing (and click/tap until the intro exists) the full effect */
+/** playGlow intensities: hover is a small flash, landing and click/tap the full effect */
 export const GLOW_INTENSITY = {
     hover: 0.35,
     landing: 1
