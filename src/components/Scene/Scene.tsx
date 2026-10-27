@@ -4,10 +4,10 @@ import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { Dagger } from '@/components/Dagger/Dagger';
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import { PlaceholderDaggerParts } from '@/components/Dagger/Dagger.components';
+import { BLADE } from '@/components/Dagger/Dagger.constants';
 import { ExperienceDaggerParts } from '@/components/ExperienceDagger/ExperienceDagger';
+import { EXPERIENCE_BLADE } from '@/components/ExperienceDagger/ExperienceDagger.constants';
 import { Lights } from '@/components/Scene/Scene.components';
-
-const DAGGER_DROP_INTERVAL_SECONDS = 0.5;
 
 /** Only HDR emissive (the runes) exceeds 1, so nothing else blooms */
 const BLOOM = {
@@ -25,6 +25,7 @@ const DAGGERS: DaggerConfig[] = [
         handleColor: '#4A3020',
         pommelColor: '#B08D57',
         glowColor: '#C9A24A',
+        bladeLength: EXPERIENCE_BLADE.length,
         Parts: ExperienceDaggerParts
     },
     {
@@ -35,7 +36,8 @@ const DAGGERS: DaggerConfig[] = [
         guardColor: '#252E3C',
         handleColor: '#161E2A',
         pommelColor: '#303848',
-        glowColor: '#3A6FAA',
+        glowColor: '#2FB8B0',
+        bladeLength: BLADE.length,
         Parts: PlaceholderDaggerParts
     },
     {
@@ -46,18 +48,20 @@ const DAGGERS: DaggerConfig[] = [
         guardColor: '#4A4438',
         handleColor: '#2A2420',
         pommelColor: '#5A5048',
-        glowColor: '#C9813A',
+        glowColor: '#B04AC9',
+        bladeLength: BLADE.length,
         Parts: PlaceholderDaggerParts
     },
     {
-        sectionId: 'about',
-        label: 'About',
+        sectionId: 'education',
+        label: 'Education',
         positionX: 1.3,
         bladeColor: '#A8A898',
         guardColor: '#3A3828',
         handleColor: '#5C4830',
         pommelColor: '#C4B870',
-        glowColor: '#98A83A',
+        glowColor: '#4FAF5A',
+        bladeLength: BLADE.length,
         Parts: PlaceholderDaggerParts
     },
     {
@@ -68,7 +72,8 @@ const DAGGERS: DaggerConfig[] = [
         guardColor: '#28283A',
         handleColor: '#1A1828',
         pommelColor: '#383858',
-        glowColor: '#6855B0',
+        glowColor: '#D9502E',
+        bladeLength: BLADE.length,
         Parts: PlaceholderDaggerParts
     }
 ];
@@ -86,12 +91,8 @@ export const Scene = () => {
         >
             <Lights />
 
-            {DAGGERS.map((config, index) => (
-                <Dagger
-                    key={config.sectionId}
-                    config={config}
-                    fallDelaySeconds={index * DAGGER_DROP_INTERVAL_SECONDS}
-                />
+            {DAGGERS.map((config) => (
+                <Dagger key={config.sectionId} config={config} />
             ))}
 
             {/* Dark stone floor */}

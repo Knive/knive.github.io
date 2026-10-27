@@ -1,20 +1,3 @@
-/**
- * Animation timings (seconds) and amplitudes (radians)
- */
-export const FALL_HEIGHT = 14;
-export const FALL_DURATION_SECONDS = 1.5;
-
-export const IMPACT_SHAKE = {
-    durationSeconds: 0.5,
-    frequency: 55,
-    amplitude: 0.022
-} as const;
-
-export const IDLE_SWAY = {
-    frequency: 0.85,
-    amplitude: 0.005
-} as const;
-
 export const HOVER_GLOW = {
     /** Above 1 so the emissive runes pass the bloom luminance threshold */
     intensity: 3,
@@ -71,8 +54,29 @@ export const POMMEL = {
 export const LABEL_POSITION_Y = 1.35;
 
 /**
- * How much of the blade stays above ground once landed, like a short sword
+ * How much of each blade stays above ground, like a short sword
  * planted in the earth. The rest of the blade is buried.
  */
-const EXPOSED_BLADE_RATIO = 0.6;
-export const EXPOSED_BLADE_LENGTH = BLADE.length * EXPOSED_BLADE_RATIO;
+export const EXPOSED_BLADE_RATIO = 0.6;
+
+export const DEFAULT_BEVEL_SEGMENTS = 2;
+
+export const OUTLINE = {
+    thickness: 0.008,
+    color: '#07090D'
+} as const;
+
+/** Emissive mask canvas: tall and narrow like a blade; top is the guard, bottom the tip */
+export const EMISSIVE_MASK = {
+    width: 64,
+    height: 1024
+} as const;
+
+/** Fake contact shadow on the floor where the blade enters it */
+export const CONTACT_SHADOW = {
+    size: 0.9,
+    /** Just above the floor to avoid z-fighting */
+    height: 0.002,
+    textureSize: 128,
+    opacity: 0.85
+} as const;

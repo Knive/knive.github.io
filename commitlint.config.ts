@@ -8,7 +8,8 @@ const Configuration: UserConfig = {
             RuleConfigSeverity.Error,
             'always',
             [
-                'tech', // technical tasks in general (tests, documentation, build changes, deployments, refactoring, etc.)
+                'tech', // technical tasks in general (tests, documentation, build changes, deployments, etc.)
+                'refactor', // refacatoring
                 'feat', // new feature
                 'fix', //  to fix a bug
                 'hotfix', // to fix a bug in production

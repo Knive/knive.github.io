@@ -1,5 +1,5 @@
 import type { Ref } from 'react';
-import { Html } from '@react-three/drei';
+import { Html, Outlines } from '@react-three/drei';
 import {
     Color,
     DataTexture,
@@ -15,12 +15,15 @@ import {
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import {
     BLADE,
+    CONTACT_SHADOW,
     CROSS_GUARD,
     HANDLE,
     LABEL_POSITION_Y,
+    OUTLINE,
     POMMEL,
     TOON_RIM
 } from '@/components/Dagger/Dagger.constants';
+import { createContactShadowTexture } from '@/components/Dagger/Dagger.helpers';
 import { cn } from '@/utils/cn';
 
 import styles from '@/components/Dagger/Dagger.module.css';
@@ -64,6 +67,8 @@ const TOON_GRADIENT_MAP = (() => {
     return texture;
 })();
 
+const CONTACT_SHADOW_TEXTURE = createContactShadowTexture();
+
 /** Adds a hard-edged fresnel rim to the toon shader, after the emissive map is applied */
 const injectRimLight =
     (rimColor: ColorRepresentation) => (shader: WebGLProgramParametersWithUniforms) => {
@@ -96,6 +101,22 @@ export const ToonMaterial = ({
         emissiveIntensity={0}
         onBeforeCompile={injectRimLight(rimColor)}
     />
+);
+
+/** Light dark outline shared by every dagger part; place it inside the mesh */
+export const DaggerOutline = () => <Outlines thickness={OUTLINE.thickness} color={OUTLINE.color} />;
+
+/** Fake contact shadow on the floor around the blade; render it at ground level */
+export const ContactShadow = () => (
+    <mesh position={[0, CONTACT_SHADOW.height, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+        <planeGeometry args={[CONTACT_SHADOW.size, CONTACT_SHADOW.size]} />
+        <meshBasicMaterial
+            map={CONTACT_SHADOW_TEXTURE}
+            transparent
+            opacity={CONTACT_SHADOW.opacity}
+            depthWrite={false}
+        />
+    </mesh>
 );
 
 /**

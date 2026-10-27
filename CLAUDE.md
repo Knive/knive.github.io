@@ -44,6 +44,8 @@ Each dagger has its own glow colour AND its own pulse/flicker behaviour, so colo
 
 ## Performance budget
 
+One scene, three quality tiers (high, medium, low), adapted with PerformanceMonitor. Real reflections only on the floor, high tier.
+
 - Low-poly daggers (a few thousand triangles each), textures 1024 px, compressed (KTX2), GLB files Draco-compressed and under 1 MB when used.
 - Few lights; one shared moving light for the active glow. No real-time shadows: use a fake contact shadow.
 - Cap pixel ratio at about 1.5 to 2, pause rendering when the hero is off screen, let physics sleep once daggers rest.
@@ -70,6 +72,7 @@ Each dagger has its own glow colour AND its own pulse/flicker behaviour, so colo
 - `.styles.ts(x)` suffix is for css styling
 - `.constants.ts(x)` suffix is for constants
 - `.components.ts(x)` suffix is for small blocks composing the named [Component]
+- `.helpers.ts` suffix is for functions that only serve the named [Component] (geometry, texture builders); project-agnostic functions go in `src/utils/`
 - Each hook has its own named file
 
 ## Reference docs

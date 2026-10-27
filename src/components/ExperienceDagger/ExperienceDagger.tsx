@@ -1,32 +1,32 @@
 import type { Ref } from 'react';
-import { Outlines } from '@react-three/drei';
 import type { MeshToonMaterial } from 'three';
 
-import { ToonMaterial, type DaggerPartsProps } from '@/components/Dagger/Dagger.components';
 import {
+    DaggerOutline,
+    ToonMaterial,
+    type DaggerPartsProps
+} from '@/components/Dagger/Dagger.components';
+import { createBarGeometry, createWrappedHandleGeometry } from '@/components/Dagger/Dagger.helpers';
+import {
+    EXPERIENCE_HANDLE,
     GUARD_BAR,
     GUARD_GEAR,
-    OUTLINE,
     POMMEL_GEAR
 } from '@/components/ExperienceDagger/ExperienceDagger.constants';
 import {
     createBladeGeometry,
     createGearGeometry,
-    createGuardBarGeometry,
-    createHandleGeometry,
     createRuneTexture
-} from '@/components/ExperienceDagger/ExperienceDagger.utils';
+} from '@/components/ExperienceDagger/ExperienceDagger.helpers';
 
 // Built once: there is a single Experience dagger
 const BLADE_GEOMETRY = createBladeGeometry();
-const GUARD_BAR_GEOMETRY = createGuardBarGeometry();
+const GUARD_BAR_GEOMETRY = createBarGeometry(GUARD_BAR);
 const GUARD_GEAR_GEOMETRY = createGearGeometry(GUARD_GEAR);
-const HANDLE_GEOMETRY = createHandleGeometry();
+const HANDLE_GEOMETRY = createWrappedHandleGeometry(EXPERIENCE_HANDLE);
 const POMMEL_GEOMETRY = createGearGeometry(POMMEL_GEAR);
 const RUNE_TEXTURE_MAP = createRuneTexture();
 const GUARD_GEAR_POSITION_X = GUARD_BAR.halfWidth + GUARD_GEAR.innerRadius / 2;
-
-const DaggerOutline = () => <Outlines thickness={OUTLINE.thickness} color={OUTLINE.color} />;
 
 export const ExperienceDaggerParts = ({ config, bladeMaterialRef }: DaggerPartsProps) => (
     <>

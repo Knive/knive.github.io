@@ -1,12 +1,13 @@
 /**
  * Experience dagger: long straight blade, brass guard with gear motifs.
- * Local space follows docs/dagger-geometry.md (guard at y = 0, tip at y = -BLADE.length).
+ * Local space follows docs/dagger-geometry.md (guard at y = 0, tip at y = -EXPERIENCE_BLADE.length).
  */
+
 /** Points per gear tooth: rise, outer flat, fall, inner flat */
 export const TOOTH_STEPS = 4;
-export const DEFAULT_BEVEL_SEGMENTS = 2;
 
 export const EXPERIENCE_BLADE = {
+    length: 2.2,
     halfWidth: 0.07,
     /** Where the straight edges start tapering to the tip */
     taperStartY: -1.9,
@@ -16,12 +17,12 @@ export const EXPERIENCE_BLADE = {
 } as const;
 
 export const RUNE_TEXTURE = {
-    width: 64,
-    height: 1024,
     glyphCount: 6,
     /** Canvas fraction (from the guard) where glyphs stop, inside the exposed part of the blade */
     glyphAreaEnd: 0.55,
-    lineWidth: 4
+    lineWidth: 4,
+    /** Glyph radius as a fraction of the canvas width */
+    glyphRadiusRatio: 0.3
 } as const;
 
 export const GUARD_BAR = {
@@ -56,9 +57,4 @@ export const EXPERIENCE_HANDLE = {
     wrapRadius: 0.058,
     wrapCount: 4,
     radialSegments: 8
-} as const;
-
-export const OUTLINE = {
-    thickness: 0.008,
-    color: '#07090D'
 } as const;

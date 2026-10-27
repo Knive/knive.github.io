@@ -15,8 +15,8 @@ const SECTIONS = [
         body: null
     },
     {
-        id: 'about',
-        title: 'About',
+        id: 'education',
+        title: 'Education',
         body: null
     },
     {
