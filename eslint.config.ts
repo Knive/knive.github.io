@@ -2,10 +2,11 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import pluginReact from 'eslint-plugin-react';
-import { defineConfig } from 'eslint/config';
+import { defineConfig, globalIgnores } from 'eslint/config';
 import eslintConfigPrettier from 'eslint-config-prettier';
 
 export default defineConfig([
+    globalIgnores(['dist', 'tmp']),
     {
         files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
         plugins: { js },
@@ -15,6 +16,8 @@ export default defineConfig([
     tseslint.configs.recommended,
     pluginReact.configs.flat.recommended,
     {
+        // 'detect' crashes on ESLint 10 (eslint-plugin-react 7.37 calls the removed context.getFilename)
+        settings: { react: { version: '19.2' } },
         rules: {
             'react/react-in-jsx-scope': 'off',
             'react/no-unknown-property': 'off'
