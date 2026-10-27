@@ -1,10 +1,3 @@
-export const HOVER_GLOW = {
-    /** Above 1 so the emissive runes pass the bloom luminance threshold */
-    intensity: 3,
-    /** Higher values reach the target intensity faster */
-    smoothing: 5
-} as const;
-
 /** Fresnel rim: kept below 1 so it never blooms */
 export const TOON_RIM = {
     /** 0 lights every face, 1 only grazing edges */
@@ -31,6 +24,17 @@ export const OUTLINE = {
 export const EMISSIVE_MASK = {
     width: 64,
     height: 1024
+} as const;
+
+/**
+ * Invisible box that catches the pointer, wider than the thin blades so they are easy to hover.
+ * It stands on the ground and reaches above the pommel.
+ */
+export const HIT_SHAPE = {
+    width: 0.55,
+    depth: 0.4,
+    /** From the guard to just above the tallest pommel */
+    hiltHeight: 1.1
 } as const;
 
 /** Fake contact shadow on the floor where the blade enters it */

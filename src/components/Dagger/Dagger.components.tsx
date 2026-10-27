@@ -1,5 +1,6 @@
 import type { Ref } from 'react';
 import { Html, Outlines } from '@react-three/drei';
+import type { ThreeElements } from '@react-three/fiber';
 import {
     Color,
     DataTexture,
@@ -16,6 +17,7 @@ import {
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import {
     CONTACT_SHADOW,
+    HIT_SHAPE,
     LABEL_POSITION_Y,
     OUTLINE,
     TOON_RIM
@@ -42,6 +44,14 @@ type ToonMaterialProps = {
     rimColor: ColorRepresentation;
     emissive?: ColorRepresentation;
     emissiveMap?: Texture;
+};
+
+type DaggerHitShapeProps = Pick<
+    ThreeElements['mesh'],
+    'onClick' | 'onPointerOver' | 'onPointerOut'
+> & {
+    /** From the ground to the top of the hilt */
+    height: number;
 };
 
 type DaggerPartProps = ToonMaterialProps & {
@@ -102,6 +112,14 @@ export const DaggerPart = ({ geometry, position, ...materialProps }: DaggerPartP
     <mesh geometry={geometry} position={position}>
         <ToonMaterial {...materialProps} />
         <DaggerOutline />
+    </mesh>
+);
+
+/** Invisible pointer target; render it at ground level. Only this mesh has handlers, so only it is raycast */
+export const DaggerHitShape = ({ height, ...handlers }: DaggerHitShapeProps) => (
+    <mesh position={[0, height / 2, 0]} {...handlers}>
+        <boxGeometry args={[HIT_SHAPE.width, height, HIT_SHAPE.depth]} />
+        <meshBasicMaterial visible={false} />
     </mesh>
 );
 

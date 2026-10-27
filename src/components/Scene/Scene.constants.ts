@@ -1,6 +1,7 @@
 import type { Vector3Tuple } from 'three';
 
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
+import { GLOW_PULSES } from '@/components/Glow/Glow.helpers';
 import { ContactDaggerParts } from '@/components/ContactDagger/ContactDagger';
 import { CONTACT_BLADE } from '@/components/ContactDagger/ContactDagger.constants';
 import { EducationDaggerParts } from '@/components/EducationDagger/EducationDagger';
@@ -64,6 +65,7 @@ export const DAGGERS: DaggerConfig[] = [
         pommelColor: '#B08D57',
         glowColor: '#C9A24A',
         bladeLength: EXPERIENCE_BLADE.length,
+        pulse: GLOW_PULSES.clockwork,
         Parts: ExperienceDaggerParts
     },
     {
@@ -76,6 +78,7 @@ export const DAGGERS: DaggerConfig[] = [
         pommelColor: '#303848',
         glowColor: '#2FB8B0',
         bladeLength: SKILLS_BLADE.length,
+        pulse: GLOW_PULSES.runeShimmer,
         Parts: SkillsDaggerParts
     },
     {
@@ -88,6 +91,7 @@ export const DAGGERS: DaggerConfig[] = [
         pommelColor: '#5A5048',
         glowColor: '#B04AC9',
         bladeLength: PROJECTS_BLADE.length,
+        pulse: GLOW_PULSES.heartbeat,
         Parts: ProjectsDaggerParts
     },
     {
@@ -100,6 +104,7 @@ export const DAGGERS: DaggerConfig[] = [
         pommelColor: '#C4B870',
         glowColor: '#4FAF5A',
         bladeLength: EDUCATION_BLADE.length,
+        pulse: GLOW_PULSES.breathing,
         Parts: EducationDaggerParts
     },
     {
@@ -112,6 +117,7 @@ export const DAGGERS: DaggerConfig[] = [
         pommelColor: '#383858',
         glowColor: '#D9502E',
         bladeLength: CONTACT_BLADE.length,
+        pulse: GLOW_PULSES.emberFlicker,
         Parts: ContactDaggerParts
     }
 ];
