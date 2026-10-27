@@ -14,6 +14,7 @@ import {
     PERFORMANCE_MONITOR_FLIPFLOPS
 } from '@/components/Scene/Scene.constants';
 import { useQualityTier } from '@/components/Scene/useQualityTier';
+import { TreeLine } from '@/components/TreeLine/TreeLine';
 
 const handleCreated = ({ camera }: RootState) => {
     camera.lookAt(...CAMERA.lookAt);
@@ -41,6 +42,7 @@ export const Scene = () => {
                 <Dagger key={config.sectionId} config={config} />
             ))}
 
+            <TreeLine />
             <Floor isReflective={settings.isFloorReflective} crackOriginsX={CRACK_ORIGINS_X} />
 
             {settings.hasBloom && (
