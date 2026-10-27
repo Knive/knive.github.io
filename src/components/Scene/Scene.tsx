@@ -6,6 +6,7 @@ import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { Dagger } from '@/components/Dagger/Dagger';
 import { Floor } from '@/components/Floor/Floor';
 import { GlowLight } from '@/components/Glow/Glow';
+import { IntroCamera } from '@/components/Intro/IntroCamera';
 import { Atmosphere, Lights } from '@/components/Scene/Scene.components';
 import {
     BLOOM,
@@ -23,9 +24,10 @@ const handleCreated = ({ camera }: RootState) => {
 
 type SceneProps = {
     isIntroPlaying: boolean;
+    onIntroEnd: () => void;
 };
 
-export const Scene = ({ isIntroPlaying }: SceneProps) => {
+export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
     const { settings, handleIncline, handleDecline, handleFallback } = useQualityTier();
 
     return (
@@ -43,6 +45,13 @@ export const Scene = ({ isIntroPlaying }: SceneProps) => {
             <Atmosphere />
             <Lights />
             <GlowLight daggers={DAGGERS} />
+            {isIntroPlaying && (
+                <IntroCamera
+                    leadDagger={DAGGERS[0]}
+                    daggerCount={DAGGERS.length}
+                    onIntroEnd={onIntroEnd}
+                />
+            )}
 
             {DAGGERS.map((config, index) => (
                 <Dagger

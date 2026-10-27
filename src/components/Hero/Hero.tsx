@@ -16,7 +16,7 @@ export const Hero: React.FC = () => {
                 <h1 className={styles['hero-name']}>Kevin Nguyen</h1>
             </div>
             <div className={styles['hero-scene']}>
-                <Scene isIntroPlaying={isIntroPlaying} />
+                <Scene isIntroPlaying={isIntroPlaying} onIntroEnd={endIntro} />
             </div>
             {isIntroPlaying && (
                 <button type="button" className={styles['hero-skip']} onClick={endIntro}>
