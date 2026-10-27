@@ -8,6 +8,8 @@ import {
 } from '@/components/Dagger/Dagger.components';
 import { EXPOSED_BLADE_RATIO, HIT_SHAPE } from '@/components/Dagger/Dagger.constants';
 import { useDaggerGlow } from '@/components/Dagger/useDaggerGlow';
+import type { CrackPath } from '@/components/Floor/Floor.helpers';
+import { DaggerGlowEffects } from '@/components/Glow/Glow';
 import { GLOW_INTENSITY } from '@/components/Glow/Glow.constants';
 import type { GlowPulse } from '@/components/Glow/Glow.helpers';
 import { clearHoveredDagger, playGlow, setHoveredDagger } from '@/components/Glow/glowStore';
@@ -32,13 +34,15 @@ export interface DaggerConfig {
 
 type DaggerProps = {
     config: DaggerConfig;
+    /** This dagger's floor cracks, lit by its bursts */
+    cracks: CrackPath[];
 };
 
 const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
 };
 
-export const Dagger = ({ config }: DaggerProps) => {
+export const Dagger = ({ config, cracks }: DaggerProps) => {
     const { sectionId, bladeLength, pulse } = config;
     const [isHovered, setIsHovered] = useState(false);
     const glowMaterialRef = useDaggerGlow({ daggerId: sectionId, isHovered, pulse });
@@ -66,6 +70,12 @@ export const Dagger = ({ config }: DaggerProps) => {
     return (
         <group position={[config.positionX, 0, 0]}>
             <ContactShadow />
+            <DaggerGlowEffects
+                daggerId={sectionId}
+                glowColor={config.glowColor}
+                positionX={config.positionX}
+                cracks={cracks}
+            />
             <DaggerHitShape
                 height={exposedBladeLength + HIT_SHAPE.hiltHeight}
                 onClick={handleClick}

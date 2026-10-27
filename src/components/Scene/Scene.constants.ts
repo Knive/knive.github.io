@@ -1,6 +1,7 @@
 import type { Vector3Tuple } from 'three';
 
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
+import { createCrackLayout } from '@/components/Floor/Floor.helpers';
 import { GLOW_PULSES } from '@/components/Glow/Glow.helpers';
 import { ContactDaggerParts } from '@/components/ContactDagger/ContactDagger';
 import { CONTACT_BLADE } from '@/components/ContactDagger/ContactDagger.constants';
@@ -122,5 +123,7 @@ export const DAGGERS: DaggerConfig[] = [
     }
 ];
 
-/** Cracks in the floor radiate from where each dagger is embedded */
-export const CRACK_ORIGINS_X = DAGGERS.map((dagger) => dagger.positionX);
+/** Cracks in the floor radiate from where each dagger is embedded; built once, shared by floor and glow */
+export const CRACK_LAYOUT = createCrackLayout(
+    DAGGERS.map(({ sectionId, positionX }) => ({ daggerId: sectionId, positionX }))
+);

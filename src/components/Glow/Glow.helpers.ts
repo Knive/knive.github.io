@@ -1,4 +1,8 @@
-import { BURST_ENVELOPE, PULSE, type SineWave } from '@/components/Glow/Glow.constants';
+import { CanvasTexture } from 'three';
+
+import { FLOOR } from '@/components/Floor/Floor.constants';
+import { drawCrack, worldToCanvas, type CrackPath } from '@/components/Floor/Floor.helpers';
+import { BURST_ENVELOPE, CRACK_GLOW, PULSE, type SineWave } from '@/components/Glow/Glow.constants';
 
 /** Sustained glow shape over time (seconds), within [0, 1] */
 export type GlowPulse = (timeSeconds: number) => number;
@@ -63,3 +67,41 @@ export const GLOW_PULSES = {
     emberFlicker: (timeSeconds) =>
         PULSE.emberFlicker.base + sumSines(timeSeconds, PULSE.emberFlicker.waves)
 } satisfies Record<string, GlowPulse>;
+
+/**
+ * Mask for one dagger's crack glow: its floor cracks in white, fading out from the dagger,
+ * on a transparent canvas centred on the dagger (same orientation as the floor texture).
+ */
+export const createCrackGlowTexture = (cracks: CrackPath[], positionX: number) => {
+    const { size, textureSize } = CRACK_GLOW;
+    const canvas = document.createElement('canvas');
+    canvas.width = textureSize;
+    canvas.height = textureSize;
+    const context = canvas.getContext('2d');
+
+    if (context) {
+        const center = textureSize / 2;
+        // Floor-canvas pixels to decal pixels: same world point, different resolution and origin
+        const floorPixelsToDecal = textureSize / size / (FLOOR.textureSize / FLOOR.size);
+        const origin = worldToCanvas(positionX, 0);
+
+        context.save();
+        context.translate(center, center);
+        context.scale(floorPixelsToDecal, floorPixelsToDecal);
+        context.translate(-origin.x, -origin.y);
+        context.strokeStyle = '#fff';
+        context.lineCap = 'round';
+        cracks.forEach((crack) => drawCrack(context, crack));
+        context.restore();
+
+        // Keep the cracks only where this gradient is opaque: bright near the dagger, gone at the edge
+        const falloff = context.createRadialGradient(center, center, 0, center, center, center);
+        falloff.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        falloff.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        context.globalCompositeOperation = 'destination-in';
+        context.fillStyle = falloff;
+        context.fillRect(0, 0, textureSize, textureSize);
+    }
+
+    return new CanvasTexture(canvas);
+};

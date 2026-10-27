@@ -77,3 +77,14 @@ export const GLOW_LIGHT = {
     /** Higher values follow the active dagger faster (position, colour and intensity) */
     smoothing: 6
 } as const;
+
+/** Glowing cracks: an additive decal on the floor around each dagger, lit by its bursts */
+export const CRACK_GLOW = {
+    /** World units; cracks beyond it stay dark */
+    size: 4,
+    textureSize: 512,
+    /** Just above the floor and the contact shadow */
+    height: 0.003,
+    /** Colour multiplier at a full burst; above 1 so the cracks bloom */
+    peak: 4
+} as const;

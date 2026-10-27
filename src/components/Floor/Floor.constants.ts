@@ -2,7 +2,9 @@
 export const FLOOR = {
     size: 24,
     textureSize: 1024,
-    seed: 7,
+    /** Crack layout seed; the stone and puddles use their own, so cracks stay put if those change */
+    crackSeed: 7,
+    surfaceSeed: 8,
     metalness: 0.05
 } as const;
 

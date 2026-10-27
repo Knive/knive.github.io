@@ -3,12 +3,19 @@ import { useFrame } from '@react-three/fiber';
 import { Color, MathUtils, type PointLight } from 'three';
 
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
+import type { CrackPath } from '@/components/Floor/Floor.helpers';
+import { CrackGlow, type GlowEffectProps } from '@/components/Glow/Glow.components';
 import { GLOW_LIGHT } from '@/components/Glow/Glow.constants';
 import {
     getActiveDaggerId,
     getBurstStrength,
     getHoveredDaggerId
 } from '@/components/Glow/glowStore';
+
+type DaggerGlowEffectsProps = GlowEffectProps & {
+    positionX: number;
+    cracks: CrackPath[];
+};
 
 type GlowLightProps = {
     daggers: Pick<DaggerConfig, 'sectionId' | 'positionX' | 'glowColor'>[];
@@ -62,3 +69,13 @@ export const GlowLight = ({ daggers }: GlowLightProps) => {
         />
     );
 };
+
+/** Ground-level burst effects of one dagger; render inside the dagger's ground group */
+export const DaggerGlowEffects = ({
+    daggerId,
+    glowColor,
+    positionX,
+    cracks
+}: DaggerGlowEffectsProps) => (
+    <CrackGlow daggerId={daggerId} glowColor={glowColor} positionX={positionX} cracks={cracks} />
+);

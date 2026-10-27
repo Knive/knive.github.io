@@ -5,8 +5,14 @@ import { createSeededRandom, randomBetween } from '@/utils/seededRandom';
 
 type Random = () => number;
 type CanvasPoint = { x: number; y: number };
-/** One crack: a polyline in canvas pixels, drawn thinner towards its end */
-type CrackPath = { points: CanvasPoint[]; startWidth: number };
+/** One crack: a polyline in floor-canvas pixels, drawn thinner towards its end */
+export type CrackPath = { points: CanvasPoint[]; startWidth: number };
+export type CrackOrigin = { daggerId: string; positionX: number };
+export type CrackLayout = {
+    /** Cracks radiating from each dagger, keyed by dagger id */
+    byDagger: Record<string, CrackPath[]>;
+    scattered: CrackPath[];
+};
 
 const createCanvas = () => {
     const canvas = document.createElement('canvas');
@@ -19,7 +25,7 @@ const createCanvas = () => {
  * Floor plane is rotated flat (-90° on x): world x maps to canvas x,
  * world z maps to canvas y (canvas top is the far side, z = -size / 2).
  */
-const worldToCanvas = (worldX: number, worldZ: number): CanvasPoint => ({
+export const worldToCanvas = (worldX: number, worldZ: number): CanvasPoint => ({
     x: ((worldX + FLOOR.size / 2) / FLOOR.size) * FLOOR.textureSize,
     y: ((worldZ + FLOOR.size / 2) / FLOOR.size) * FLOOR.textureSize
 });
@@ -58,18 +64,25 @@ const walkCrack = (
     cracks.push({ points, startWidth });
 };
 
-/** Cracks radiating from each dagger, plus scattered ones across the floor */
-const generateCracks = (random: Random, crackOriginsX: readonly number[]) => {
-    const cracks: CrackPath[] = [];
+/**
+ * Cracks radiating from each dagger, plus scattered ones across the floor.
+ * Pure and seeded: the floor and the crack glow get the exact same paths.
+ */
+export const createCrackLayout = (origins: readonly CrackOrigin[]): CrackLayout => {
+    const random = createSeededRandom(FLOOR.crackSeed);
+    const byDagger: Record<string, CrackPath[]> = {};
 
-    for (const originX of crackOriginsX) {
-        const origin = worldToCanvas(originX, 0);
+    for (const { daggerId, positionX } of origins) {
+        const origin = worldToCanvas(positionX, 0);
+        const daggerCracks: CrackPath[] = [];
         for (let crack = 0; crack < CRACKS.perDagger; crack++) {
             const angle = (crack / CRACKS.perDagger) * Math.PI * 2 + random();
-            walkCrack(random, origin, angle, CRACKS.startWidth, 0, cracks);
+            walkCrack(random, origin, angle, CRACKS.startWidth, 0, daggerCracks);
         }
+        byDagger[daggerId] = daggerCracks;
     }
 
+    const scattered: CrackPath[] = [];
     for (let crack = 0; crack < CRACKS.randomCount; crack++) {
         const start = { x: random() * FLOOR.textureSize, y: random() * FLOOR.textureSize };
         walkCrack(
@@ -78,14 +91,15 @@ const generateCracks = (random: Random, crackOriginsX: readonly number[]) => {
             random() * Math.PI * 2,
             CRACKS.startWidth * CRACKS.scatteredWidthRatio,
             1,
-            cracks
+            scattered
         );
     }
 
-    return cracks;
+    return { byDagger, scattered };
 };
 
-const drawCrack = (context: CanvasRenderingContext2D, { points, startWidth }: CrackPath) => {
+/** Strokes one crack segment by segment, tapering its width */
+export const drawCrack = (context: CanvasRenderingContext2D, { points, startWidth }: CrackPath) => {
     for (let index = 1; index < points.length; index++) {
         const remaining = 1 - index / points.length;
         context.lineWidth = Math.max(CRACKS.minWidth, startWidth * remaining);
@@ -161,9 +175,9 @@ const createRoughnessMap = (random: Random) => {
 };
 
 /** Colour (stone + cracks) and roughness (wet patches) maps, identical on every load */
-export const createFloorTextures = (crackOriginsX: readonly number[]) => {
-    const random = createSeededRandom(FLOOR.seed);
-    const cracks = generateCracks(random, crackOriginsX);
+export const createFloorTextures = ({ byDagger, scattered }: CrackLayout) => {
+    const random = createSeededRandom(FLOOR.surfaceSeed);
+    const cracks = [...Object.values(byDagger).flat(), ...scattered];
 
     return {
         colorMap: createColorMap(random, cracks),

@@ -10,7 +10,7 @@ import { Atmosphere, Lights } from '@/components/Scene/Scene.components';
 import {
     BLOOM,
     CAMERA,
-    CRACK_ORIGINS_X,
+    CRACK_LAYOUT,
     DAGGERS,
     PERFORMANCE_MONITOR_FLIPFLOPS
 } from '@/components/Scene/Scene.constants';
@@ -41,11 +41,15 @@ export const Scene = () => {
             <GlowLight daggers={DAGGERS} />
 
             {DAGGERS.map((config) => (
-                <Dagger key={config.sectionId} config={config} />
+                <Dagger
+                    key={config.sectionId}
+                    config={config}
+                    cracks={CRACK_LAYOUT.byDagger[config.sectionId]}
+                />
             ))}
 
             <TreeLine />
-            <Floor isReflective={settings.isFloorReflective} crackOriginsX={CRACK_ORIGINS_X} />
+            <Floor isReflective={settings.isFloorReflective} crackLayout={CRACK_LAYOUT} />
 
             {settings.hasBloom && (
                 <EffectComposer>

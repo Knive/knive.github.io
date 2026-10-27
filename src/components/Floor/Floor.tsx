@@ -2,20 +2,20 @@ import { useMemo } from 'react';
 import { MeshReflectorMaterial } from '@react-three/drei';
 
 import { FLOOR, REFLECTOR } from '@/components/Floor/Floor.constants';
-import { createFloorTextures } from '@/components/Floor/Floor.helpers';
+import { createFloorTextures, type CrackLayout } from '@/components/Floor/Floor.helpers';
 
 type FloorProps = {
     /** Real reflections (high tier) instead of the fake wet sheen */
     isReflective: boolean;
-    /** World x of each embedded dagger, where cracks start */
-    crackOriginsX: readonly number[];
+    /** Shared with the crack glow so both draw the same cracks */
+    crackLayout: CrackLayout;
 };
 
 /** Dark cracked wet stone floor at y = 0 */
-export const Floor = ({ isReflective, crackOriginsX }: FloorProps) => {
+export const Floor = ({ isReflective, crackLayout }: FloorProps) => {
     const { colorMap, roughnessMap } = useMemo(
-        () => createFloorTextures(crackOriginsX),
-        [crackOriginsX]
+        () => createFloorTextures(crackLayout),
+        [crackLayout]
     );
 
     return (
