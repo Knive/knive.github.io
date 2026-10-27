@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { MathUtils, type Group, type MeshStandardMaterial } from 'three';
+import { MathUtils, type Group } from 'three';
 
 import {
     FALL_DURATION_SECONDS,
@@ -9,6 +9,7 @@ import {
     IDLE_SWAY,
     IMPACT_SHAKE
 } from '@/components/Dagger/Dagger.constants';
+import type { BladeMaterial } from '@/components/Dagger/Dagger.components';
 
 type DaggerAnimationOptions = {
     fallDelaySeconds: number;
@@ -52,7 +53,7 @@ export const useDaggerAnimation = ({
     onLand
 }: DaggerAnimationOptions) => {
     const groupRef = useRef<Group>(null);
-    const bladeMaterialRef = useRef<MeshStandardMaterial>(null);
+    const bladeMaterialRef = useRef<BladeMaterial>(null);
     const elapsedTimeRef = useRef(0);
     const hasLandedRef = useRef(false);
 

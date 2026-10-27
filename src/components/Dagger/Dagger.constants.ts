@@ -16,9 +16,17 @@ export const IDLE_SWAY = {
 } as const;
 
 export const HOVER_GLOW = {
-    intensity: 0.4,
+    /** Above 1 so the emissive runes pass the bloom luminance threshold */
+    intensity: 3,
     /** Higher values reach the target intensity faster */
     smoothing: 5
+} as const;
+
+/** Fresnel rim: kept below 1 so it never blooms */
+export const TOON_RIM = {
+    /** 0 lights every face, 1 only grazing edges */
+    threshold: 0.6,
+    intensity: 0.45
 } as const;
 
 /**

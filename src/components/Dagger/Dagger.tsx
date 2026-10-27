@@ -1,12 +1,6 @@
-import { useState } from 'react';
+import { useState, type ComponentType } from 'react';
 
-import {
-    Blade,
-    CrossGuard,
-    DaggerLabel,
-    Handle,
-    Pommel
-} from '@/components/Dagger/Dagger.components';
+import { DaggerLabel, type DaggerPartsProps } from '@/components/Dagger/Dagger.components';
 import { EXPOSED_BLADE_LENGTH, FALL_HEIGHT } from '@/components/Dagger/Dagger.constants';
 import { useDaggerAnimation } from '@/components/Dagger/useDaggerAnimation';
 
@@ -20,6 +14,8 @@ export interface DaggerConfig {
     handleColor: string;
     pommelColor: string;
     glowColor: string;
+    /** Blade, guard, handle and pommel meshes, in the local space of docs/dagger-geometry.md */
+    Parts: ComponentType<DaggerPartsProps>;
 }
 
 type DaggerProps = {
@@ -62,14 +58,7 @@ export const Dagger = ({ config, fallDelaySeconds }: DaggerProps) => {
         >
             {/* Outer group pivots at ground level; this offset keeps part of the blade above it */}
             <group position={[0, EXPOSED_BLADE_LENGTH, 0]}>
-                <Blade
-                    color={config.bladeColor}
-                    glowColor={config.glowColor}
-                    materialRef={bladeMaterialRef}
-                />
-                <CrossGuard color={config.guardColor} />
-                <Handle color={config.handleColor} />
-                <Pommel color={config.pommelColor} />
+                <config.Parts config={config} bladeMaterialRef={bladeMaterialRef} />
 
                 {hasLanded && <DaggerLabel text={config.label} isHighlighted={isHovered} />}
             </group>

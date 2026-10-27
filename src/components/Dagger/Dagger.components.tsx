@@ -1,17 +1,36 @@
 import type { Ref } from 'react';
 import { Html } from '@react-three/drei';
-import type { MeshStandardMaterial } from 'three';
+import {
+    Color,
+    DataTexture,
+    NearestFilter,
+    RedFormat,
+    type ColorRepresentation,
+    type MeshStandardMaterial,
+    type MeshToonMaterial,
+    type Texture,
+    type WebGLProgramParametersWithUniforms
+} from 'three';
 
+import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import {
     BLADE,
     CROSS_GUARD,
     HANDLE,
     LABEL_POSITION_Y,
-    POMMEL
+    POMMEL,
+    TOON_RIM
 } from '@/components/Dagger/Dagger.constants';
 import { cn } from '@/utils/cn';
 
 import styles from '@/components/Dagger/Dagger.module.css';
+
+export type BladeMaterial = MeshStandardMaterial | MeshToonMaterial;
+
+export type DaggerPartsProps = {
+    config: DaggerConfig;
+    bladeMaterialRef: Ref<BladeMaterial>;
+};
 
 type BladeProps = {
     color: string;
@@ -27,6 +46,57 @@ type DaggerLabelProps = {
     text: string;
     isHighlighted: boolean;
 };
+
+type ToonMaterialProps = {
+    ref?: Ref<MeshToonMaterial>;
+    color: ColorRepresentation;
+    rimColor: ColorRepresentation;
+    emissive?: ColorRepresentation;
+    emissiveMap?: Texture;
+};
+
+/** Three flat shading bands: shadow, mid-tone, lit */
+const TOON_GRADIENT_MAP = (() => {
+    const texture = new DataTexture(new Uint8Array([60, 150, 255]), 3, 1, RedFormat);
+    texture.minFilter = NearestFilter;
+    texture.magFilter = NearestFilter;
+    texture.needsUpdate = true;
+    return texture;
+})();
+
+/** Adds a hard-edged fresnel rim to the toon shader, after the emissive map is applied */
+const injectRimLight =
+    (rimColor: ColorRepresentation) => (shader: WebGLProgramParametersWithUniforms) => {
+        shader.uniforms.rimColor = { value: new Color(rimColor) };
+        shader.fragmentShader = shader.fragmentShader
+            .replace('void main() {', 'uniform vec3 rimColor;\nvoid main() {')
+            .replace(
+                '#include <emissivemap_fragment>',
+                `#include <emissivemap_fragment>
+                float facing = dot(normalize(vViewPosition), normal);
+                float rim = step(${TOON_RIM.threshold.toFixed(2)}, 1.0 - facing);
+                totalEmissiveRadiance += rimColor * rim * ${TOON_RIM.intensity.toFixed(2)};`
+            );
+    };
+
+/** Stepped toon shading with a coloured rim light; the rim stays below the bloom threshold */
+export const ToonMaterial = ({
+    ref,
+    color,
+    rimColor,
+    emissive,
+    emissiveMap
+}: ToonMaterialProps) => (
+    <meshToonMaterial
+        ref={ref}
+        color={color}
+        gradientMap={TOON_GRADIENT_MAP}
+        emissive={emissive}
+        emissiveMap={emissiveMap}
+        emissiveIntensity={0}
+        onBeforeCompile={injectRimLight(rimColor)}
+    />
+);
 
 /**
  * Tip at y = -BLADE.length, base at the guard (y = 0)
@@ -46,7 +116,6 @@ export const Blade = ({ color, glowColor, materialRef }: BladeProps) => (
         />
     </mesh>
 );
-
 export const CrossGuard = ({ color }: DaggerPartProps) => (
     <mesh>
         <boxGeometry args={[CROSS_GUARD.width, CROSS_GUARD.height, CROSS_GUARD.depth]} />
@@ -91,4 +160,18 @@ export const DaggerLabel = ({ text, isHighlighted }: DaggerLabelProps) => (
     >
         {text}
     </Html>
+);
+
+/** Shared stand-in for daggers that do not have their own geometry yet */
+export const PlaceholderDaggerParts = ({ config, bladeMaterialRef }: DaggerPartsProps) => (
+    <>
+        <Blade
+            color={config.bladeColor}
+            glowColor={config.glowColor}
+            materialRef={bladeMaterialRef as Ref<MeshStandardMaterial>}
+        />
+        <CrossGuard color={config.guardColor} />
+        <Handle color={config.handleColor} />
+        <Pommel color={config.pommelColor} />
+    </>
 );
