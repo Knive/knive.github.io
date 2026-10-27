@@ -12,7 +12,7 @@ Art direction: painted, stylized, inspired by Arcane (Riot/Fortiche): high-contr
 
 - Vite 8 + React 19 + TypeScript 6
 - React Three Fiber v9 + Drei v10 (Three.js v0.186)
-- @react-three/rapier (physics), @react-three/postprocessing (bloom, grain, vignette)
+- @react-three/postprocessing (bloom, grain, vignette)
 - TailwindCSS/cva/clsx with cn utility function — CSS custom properties in `src/styles/global.css` or in [Named] component folder.
 - GSAP + ScrollTrigger for scroll-driven animation
 - Deployed to GitHub Pages by a GitHub Actions workflow (Settings → Pages → Source: "GitHub Actions"). The repo is `knive.github.io`, so the site is served from the root and Vite's `base` stays `/`.
