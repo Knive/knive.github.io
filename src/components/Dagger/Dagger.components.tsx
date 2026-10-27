@@ -5,22 +5,19 @@ import {
     DataTexture,
     NearestFilter,
     RedFormat,
+    type BufferGeometry,
     type ColorRepresentation,
-    type MeshStandardMaterial,
     type MeshToonMaterial,
     type Texture,
+    type Vector3Tuple,
     type WebGLProgramParametersWithUniforms
 } from 'three';
 
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import {
-    BLADE,
     CONTACT_SHADOW,
-    CROSS_GUARD,
-    HANDLE,
     LABEL_POSITION_Y,
     OUTLINE,
-    POMMEL,
     TOON_RIM
 } from '@/components/Dagger/Dagger.constants';
 import { createContactShadowTexture } from '@/components/Dagger/Dagger.helpers';
@@ -28,21 +25,10 @@ import { cn } from '@/utils/cn';
 
 import styles from '@/components/Dagger/Dagger.module.css';
 
-export type BladeMaterial = MeshStandardMaterial | MeshToonMaterial;
-
 export type DaggerPartsProps = {
     config: DaggerConfig;
-    bladeMaterialRef: Ref<BladeMaterial>;
-};
-
-type BladeProps = {
-    color: string;
-    glowColor: string;
-    materialRef: Ref<MeshStandardMaterial>;
-};
-
-type DaggerPartProps = {
-    color: string;
+    /** Material of the part that glows on hover (runes, crystal...) */
+    glowMaterialRef: Ref<MeshToonMaterial>;
 };
 
 type DaggerLabelProps = {
@@ -56,6 +42,11 @@ type ToonMaterialProps = {
     rimColor: ColorRepresentation;
     emissive?: ColorRepresentation;
     emissiveMap?: Texture;
+};
+
+type DaggerPartProps = ToonMaterialProps & {
+    geometry: BufferGeometry;
+    position?: Vector3Tuple;
 };
 
 /** Three flat shading bands: shadow, mid-tone, lit */
@@ -106,6 +97,14 @@ export const ToonMaterial = ({
 /** Light dark outline shared by every dagger part; place it inside the mesh */
 export const DaggerOutline = () => <Outlines thickness={OUTLINE.thickness} color={OUTLINE.color} />;
 
+/** One outlined toon mesh of a dagger (blade, guard, handle, pommel...) */
+export const DaggerPart = ({ geometry, position, ...materialProps }: DaggerPartProps) => (
+    <mesh geometry={geometry} position={position}>
+        <ToonMaterial {...materialProps} />
+        <DaggerOutline />
+    </mesh>
+);
+
 /** Fake contact shadow on the floor around the blade; render it at ground level */
 export const ContactShadow = () => (
     <mesh position={[0, CONTACT_SHADOW.height, 0]} rotation={[-Math.PI / 2, 0, 0]}>
@@ -119,59 +118,6 @@ export const ContactShadow = () => (
     </mesh>
 );
 
-/**
- * Tip at y = -BLADE.length, base at the guard (y = 0)
- */
-export const Blade = ({ color, glowColor, materialRef }: BladeProps) => (
-    <mesh position={[0, -BLADE.length / 2, 0]}>
-        <cylinderGeometry
-            args={[BLADE.baseRadius, BLADE.tipRadius, BLADE.length, BLADE.radialSegments]}
-        />
-        <meshStandardMaterial
-            ref={materialRef}
-            color={color}
-            metalness={BLADE.metalness}
-            roughness={BLADE.roughness}
-            emissive={glowColor}
-            emissiveIntensity={0}
-        />
-    </mesh>
-);
-export const CrossGuard = ({ color }: DaggerPartProps) => (
-    <mesh>
-        <boxGeometry args={[CROSS_GUARD.width, CROSS_GUARD.height, CROSS_GUARD.depth]} />
-        <meshStandardMaterial
-            color={color}
-            metalness={CROSS_GUARD.metalness}
-            roughness={CROSS_GUARD.roughness}
-        />
-    </mesh>
-);
-
-export const Handle = ({ color }: DaggerPartProps) => (
-    <mesh position={[0, HANDLE.length / 2, 0]}>
-        <cylinderGeometry
-            args={[HANDLE.topRadius, HANDLE.bottomRadius, HANDLE.length, HANDLE.radialSegments]}
-        />
-        <meshStandardMaterial
-            color={color}
-            metalness={HANDLE.metalness}
-            roughness={HANDLE.roughness}
-        />
-    </mesh>
-);
-
-export const Pommel = ({ color }: DaggerPartProps) => (
-    <mesh position={[0, POMMEL.positionY, 0]}>
-        <sphereGeometry args={[POMMEL.radius, POMMEL.widthSegments, POMMEL.heightSegments]} />
-        <meshStandardMaterial
-            color={color}
-            metalness={POMMEL.metalness}
-            roughness={POMMEL.roughness}
-        />
-    </mesh>
-);
-
 export const DaggerLabel = ({ text, isHighlighted }: DaggerLabelProps) => (
     <Html
         position={[0, LABEL_POSITION_Y, 0]}
@@ -181,18 +127,4 @@ export const DaggerLabel = ({ text, isHighlighted }: DaggerLabelProps) => (
     >
         {text}
     </Html>
-);
-
-/** Shared stand-in for daggers that do not have their own geometry yet */
-export const PlaceholderDaggerParts = ({ config, bladeMaterialRef }: DaggerPartsProps) => (
-    <>
-        <Blade
-            color={config.bladeColor}
-            glowColor={config.glowColor}
-            materialRef={bladeMaterialRef as Ref<MeshStandardMaterial>}
-        />
-        <CrossGuard color={config.guardColor} />
-        <Handle color={config.handleColor} />
-        <Pommel color={config.pommelColor} />
-    </>
 );

@@ -14,11 +14,18 @@ export type WrappedHandleSpec = {
     radialSegments: number;
 };
 
-export type BarSpec = {
+export type BevelSpec = {
+    depth: number;
+    /** How far the bevel cuts in from the outline */
+    bevelSize: number;
+    /** How far the bevel extends front and back; defaults to bevelSize */
+    bevelThickness?: number;
+    bevelSegments?: number;
+};
+
+export type BarSpec = BevelSpec & {
     halfWidth: number;
     halfHeight: number;
-    depth: number;
-    bevelSize: number;
 };
 
 type EmissiveMaskOptions = {
@@ -39,20 +46,23 @@ const createCanvas = (width: number, height: number) => {
 /** Extrudes along z with a bevel that stays inside the outline, centred on z = 0 */
 export const extrudeBevelled = (
     shape: Shape,
-    depth: number,
-    bevelSize: number,
-    bevelSegments: number = DEFAULT_BEVEL_SEGMENTS
+    {
+        depth,
+        bevelSize,
+        bevelThickness = bevelSize,
+        bevelSegments = DEFAULT_BEVEL_SEGMENTS
+    }: BevelSpec
 ) =>
     new ExtrudeGeometry(shape, {
         depth,
         bevelSize,
-        bevelThickness: bevelSize,
+        bevelThickness,
         bevelOffset: -bevelSize,
         bevelSegments
     }).translate(0, 0, -depth / 2);
 
 /** Bevelled rectangular bar centred on the origin, e.g. a cross guard */
-export const createBarGeometry = ({ halfWidth, halfHeight, depth, bevelSize }: BarSpec) => {
+export const createBarGeometry = ({ halfWidth, halfHeight, ...bevel }: BarSpec) => {
     const shape = new Shape()
         .moveTo(-halfWidth, -halfHeight)
         .lineTo(halfWidth, -halfHeight)
@@ -60,7 +70,7 @@ export const createBarGeometry = ({ halfWidth, halfHeight, depth, bevelSize }: B
         .lineTo(-halfWidth, halfHeight)
         .closePath();
 
-    return extrudeBevelled(shape, depth, bevelSize);
+    return extrudeBevelled(shape, bevel);
 };
 
 /** Grip profile (radius, height) from y = 0 up, alternating bare and raised wrap bands */

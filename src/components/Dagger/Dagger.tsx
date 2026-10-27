@@ -34,7 +34,7 @@ const scrollToSection = (sectionId: string) => {
 
 export const Dagger = ({ config }: DaggerProps) => {
     const [isHovered, setIsHovered] = useState(false);
-    const bladeMaterialRef = useDaggerHoverGlow(isHovered);
+    const glowMaterialRef = useDaggerHoverGlow(isHovered);
 
     const handlePointerOver = () => {
         setIsHovered(true);
@@ -57,7 +57,7 @@ export const Dagger = ({ config }: DaggerProps) => {
 
             {/* Outer group sits at ground level; this offset keeps part of the blade above it */}
             <group position={[0, config.bladeLength * EXPOSED_BLADE_RATIO, 0]}>
-                <config.Parts config={config} bladeMaterialRef={bladeMaterialRef} />
+                <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
                 <DaggerLabel text={config.label} isHighlighted={isHovered} />
             </group>
         </group>

@@ -1,19 +1,21 @@
 import { Path, Shape } from 'three';
 
-import { createEmissiveMaskTexture, extrudeBevelled } from '@/components/Dagger/Dagger.helpers';
+import {
+    createEmissiveMaskTexture,
+    extrudeBevelled,
+    type BevelSpec
+} from '@/components/Dagger/Dagger.helpers';
 import {
     EXPERIENCE_BLADE,
     RUNE_TEXTURE,
     TOOTH_STEPS
 } from '@/components/ExperienceDagger/ExperienceDagger.constants';
 
-export type GearSpec = {
+export type GearSpec = BevelSpec & {
     teeth: number;
     innerRadius: number;
     outerRadius: number;
     holeRadius: number;
-    depth: number;
-    bevelSize: number;
 };
 
 export const createGearGeometry = ({
@@ -21,8 +23,7 @@ export const createGearGeometry = ({
     innerRadius,
     outerRadius,
     holeRadius,
-    depth,
-    bevelSize
+    ...bevel
 }: GearSpec) => {
     const shape = new Shape();
     const stepAngle = (Math.PI * 2) / (teeth * TOOTH_STEPS);
@@ -42,21 +43,21 @@ export const createGearGeometry = ({
     hole.absarc(0, 0, holeRadius, 0, Math.PI * 2, true);
     shape.holes.push(hole);
 
-    return extrudeBevelled(shape, depth, bevelSize);
+    return extrudeBevelled(shape, bevel);
 };
 
 /** Flat blade: parallel edges from the guard, then a short taper to the tip */
 export const createBladeGeometry = () => {
-    const { halfWidth, taperStartY, depth, bevelSize, bevelSegments } = EXPERIENCE_BLADE;
+    const { length, halfWidth, taperStartY } = EXPERIENCE_BLADE;
     const shape = new Shape()
         .moveTo(-halfWidth, 0)
         .lineTo(halfWidth, 0)
         .lineTo(halfWidth, taperStartY)
-        .lineTo(0, -EXPERIENCE_BLADE.length)
+        .lineTo(0, -length)
         .lineTo(-halfWidth, taperStartY)
         .closePath();
 
-    return extrudeBevelled(shape, depth, bevelSize, bevelSegments);
+    return extrudeBevelled(shape, EXPERIENCE_BLADE);
 };
 
 const drawGear = (

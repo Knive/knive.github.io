@@ -3,10 +3,16 @@ import type { RootState } from '@react-three/fiber';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 import { Dagger } from '@/components/Dagger/Dagger';
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
-import { PlaceholderDaggerParts } from '@/components/Dagger/Dagger.components';
-import { BLADE } from '@/components/Dagger/Dagger.constants';
+import { ContactDaggerParts } from '@/components/ContactDagger/ContactDagger';
+import { CONTACT_BLADE } from '@/components/ContactDagger/ContactDagger.constants';
+import { EducationDaggerParts } from '@/components/EducationDagger/EducationDagger';
+import { EDUCATION_BLADE } from '@/components/EducationDagger/EducationDagger.constants';
 import { ExperienceDaggerParts } from '@/components/ExperienceDagger/ExperienceDagger';
 import { EXPERIENCE_BLADE } from '@/components/ExperienceDagger/ExperienceDagger.constants';
+import { ProjectsDaggerParts } from '@/components/ProjectsDagger/ProjectsDagger';
+import { PROJECTS_BLADE } from '@/components/ProjectsDagger/ProjectsDagger.constants';
+import { SkillsDaggerParts } from '@/components/SkillsDagger/SkillsDagger';
+import { SKILLS_BLADE } from '@/components/SkillsDagger/SkillsDagger.constants';
 import { Lights } from '@/components/Scene/Scene.components';
 
 /** Only HDR emissive (the runes) exceeds 1, so nothing else blooms */
@@ -37,8 +43,8 @@ const DAGGERS: DaggerConfig[] = [
         handleColor: '#161E2A',
         pommelColor: '#303848',
         glowColor: '#2FB8B0',
-        bladeLength: BLADE.length,
-        Parts: PlaceholderDaggerParts
+        bladeLength: SKILLS_BLADE.length,
+        Parts: SkillsDaggerParts
     },
     {
         sectionId: 'projects',
@@ -49,8 +55,8 @@ const DAGGERS: DaggerConfig[] = [
         handleColor: '#2A2420',
         pommelColor: '#5A5048',
         glowColor: '#B04AC9',
-        bladeLength: BLADE.length,
-        Parts: PlaceholderDaggerParts
+        bladeLength: PROJECTS_BLADE.length,
+        Parts: ProjectsDaggerParts
     },
     {
         sectionId: 'education',
@@ -61,8 +67,8 @@ const DAGGERS: DaggerConfig[] = [
         handleColor: '#5C4830',
         pommelColor: '#C4B870',
         glowColor: '#4FAF5A',
-        bladeLength: BLADE.length,
-        Parts: PlaceholderDaggerParts
+        bladeLength: EDUCATION_BLADE.length,
+        Parts: EducationDaggerParts
     },
     {
         sectionId: 'contact',
@@ -73,8 +79,8 @@ const DAGGERS: DaggerConfig[] = [
         handleColor: '#1A1828',
         pommelColor: '#383858',
         glowColor: '#D9502E',
-        bladeLength: BLADE.length,
-        Parts: PlaceholderDaggerParts
+        bladeLength: CONTACT_BLADE.length,
+        Parts: ContactDaggerParts
     }
 ];
 
