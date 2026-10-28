@@ -10,38 +10,38 @@ export const FLOOR = {
 
 /** Flagstone-like patches of slightly different darks on the base stone */
 export const STONE = {
-    baseColor: '#0B0E13',
-    patchColors: ['#0E1218', '#090C10', '#12161C', '#0C0F14'],
-    patchCount: 260,
+    baseColor: '#0f141d',
+    patchColors: ['#161c27', '#0a0d13', '#1c2430', '#10141a'],
+    patchCount: 200,
     /** In canvas pixels */
-    patchMinRadius: 12,
-    patchMaxRadius: 56,
+    patchMinRadius: 20,
+    patchMaxRadius: 80,
     /** Corners per patch; few corners give angular stones */
-    patchCorners: 6,
+    patchCorners: 5,
     /** Corner distance range, relative to the patch radius */
-    cornerMinScale: 0.7,
-    cornerMaxScale: 1.2
+    cornerMinScale: 0.8,
+    cornerMaxScale: 1.1
 } as const;
 
 /** Random-walk cracks; lengths and widths in canvas pixels, angles in radians */
 export const CRACKS = {
-    color: '#020304',
-    perDagger: 5,
-    randomCount: 14,
-    minSegments: 10,
-    maxSegments: 28,
-    segmentLength: 9,
+    color: '#05070a',
+    perDagger: 8,
+    randomCount: 20,
+    minSegments: 15,
+    maxSegments: 35,
+    segmentLength: 12,
     /** Max change of direction per segment */
-    angleJitter: 0.55,
-    startWidth: 3,
-    minWidth: 0.6,
+    angleJitter: 0.4,
+    startWidth: 4,
+    minWidth: 1,
     /** Chance per segment to fork a thinner, shorter branch */
-    branchChance: 0.12,
-    branchMinAngle: 0.4,
-    branchMaxAngle: 1.1,
+    branchChance: 0.15,
+    branchMinAngle: 0.3,
+    branchMaxAngle: 0.9,
     /** Scattered cracks start thinner than the ones under the daggers */
-    scatteredWidthRatio: 0.7,
-    maxBranchDepth: 2
+    scatteredWidthRatio: 0.6,
+    maxBranchDepth: 3
 } as const;
 
 /** Wet patches in the roughness map: dark is smooth (wet), light is rough (dry stone) */

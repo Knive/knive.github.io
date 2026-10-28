@@ -37,16 +37,16 @@ export const QUALITY_TIERS: Record<QualityTier, QualitySettings> = {
 export const PERFORMANCE_MONITOR_FLIPFLOPS = 3;
 
 export const CAMERA: { position: Vector3Tuple; fov: number; lookAt: Vector3Tuple } = {
-    position: [0, 1.5, 7.5],
+    position: [0, 0.8, 5],
     fov: 50,
-    lookAt: [0, 0.4, 0]
+    lookAt: [0, 0.2, 0]
 };
 
 /** Linear fog in world units from the camera: daggers stay clear, the floor edge and far trees fade out */
 export const FOG = {
-    color: '#0B1017',
-    near: 8,
-    far: 22
+    color: '#0a0d16',
+    near: 5,
+    far: 15
 } as const;
 
 /** Only HDR emissive (the runes) exceeds 1, so nothing else blooms */
