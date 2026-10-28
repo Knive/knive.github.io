@@ -62,51 +62,6 @@ h3 {
     letter-spacing: 0.06em;
 }
 
-/* Sections */
-
-main {
-    position: relative;
-}
-
-.section {
-    padding: var(--space-section) 0;
-    border-top: 1px solid #151c24;
-}
-
-.section:first-child {
-    border-top: none;
-}
-
-.section-inner {
-    max-width: var(--measure);
-    margin: 0 auto;
-    padding: 0 2.5rem;
-}
-
-.section-title {
-    font-size: clamp(1.6rem, 3vw, 2.2rem);
-    margin-bottom: 2rem;
-}
-
-.section-title::after {
-    content: '';
-    display: block;
-    width: 2rem;
-    height: 1px;
-    background: var(--copper);
-    margin-top: 1rem;
-}
-
-.section-body {
-    color: var(--steel);
-    max-width: 55ch;
-}
-
-.section-placeholder {
-    color: #3a4550;
-    font-style: italic;
-}
-
 /* Reduced motion */
 
 @media (prefers-reduced-motion: reduce) {

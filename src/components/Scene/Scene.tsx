@@ -35,6 +35,9 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             camera={{ position: CAMERA.position, fov: CAMERA.fov }}
             onCreated={handleCreated}
             dpr={settings.dpr}
+            // The page's DOM sits over the fixed canvas: listen on the root so daggers still get pointer events
+            eventSource={document.getElementById('root') ?? undefined}
+            eventPrefix="client"
         >
             <PerformanceMonitor
                 flipflops={PERFORMANCE_MONITOR_FLIPFLOPS}

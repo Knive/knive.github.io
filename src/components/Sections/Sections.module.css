@@ -1,0 +1,87 @@
+/* Above the fixed canvas, and transparent so the scene shows through */
+.sections {
+    position: relative;
+    z-index: 1;
+}
+
+.section {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 2.5rem;
+    max-width: 72rem;
+    min-height: 100vh;
+    margin: 0 auto;
+    padding: var(--space-section) 2.5rem;
+}
+
+.text {
+    max-width: 55ch;
+}
+
+.section[data-side='right'] .text {
+    order: 2;
+    justify-self: end;
+}
+
+/* Sticky box centred in the viewport, so the dagger stays in view while the section scrolls */
+.anchor {
+    position: sticky;
+    top: 30vh;
+    align-self: start;
+    height: 40vh;
+}
+
+.title {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    margin-bottom: 2rem;
+}
+
+.title::after {
+    content: '';
+    display: block;
+    width: 2rem;
+    height: 1px;
+    background: var(--copper);
+    margin-top: 1rem;
+}
+
+.list {
+    display: grid;
+    gap: 1.75rem;
+    list-style: none;
+}
+
+.entry-title {
+    font-family: var(--font-display);
+    font-size: 1.05rem;
+    color: var(--moonlight);
+}
+
+.entry-meta {
+    color: var(--copper);
+    font-style: italic;
+}
+
+.link {
+    color: var(--steel);
+    text-decoration-color: var(--copper);
+    text-underline-offset: 0.2em;
+    transition: color 0.2s;
+}
+
+.link:hover,
+.link:focus-visible {
+    color: var(--ember);
+}
+
+/* Single column: no room for the dagger, it stays in the floor */
+@media (max-width: 767px) {
+    .section {
+        grid-template-columns: minmax(0, 1fr);
+        padding-inline: 1.5rem;
+    }
+
+    .anchor {
+        display: none;
+    }
+}
