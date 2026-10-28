@@ -15,7 +15,9 @@ import {
     DAGGERS,
     PERFORMANCE_MONITOR_FLIPFLOPS
 } from '@/components/Scene/Scene.constants';
+import { Rocks } from '@/components/Rocks/Rocks';
 import { useQualityTier } from '@/components/Scene/useQualityTier';
+import { Sky } from '@/components/Sky/Sky';
 import { TreeLine } from '@/components/TreeLine/TreeLine';
 
 const handleCreated = ({ camera }: RootState) => {
@@ -46,6 +48,7 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
                 onFallback={handleFallback}
             />
             <Atmosphere />
+            <Sky />
             <Lights />
             <GlowLight daggers={DAGGERS} />
             {isIntroPlaying && (
@@ -67,6 +70,7 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             ))}
 
             <TreeLine />
+            <Rocks />
             <Floor isReflective={settings.isFloorReflective} crackLayout={CRACK_LAYOUT} />
 
             {settings.hasBloom && (

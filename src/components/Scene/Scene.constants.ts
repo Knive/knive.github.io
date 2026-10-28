@@ -44,7 +44,7 @@ export const CAMERA: { position: Vector3Tuple; fov: number; lookAt: Vector3Tuple
 
 /** Linear fog in world units from the camera: daggers stay clear, the floor edge and far trees fade out */
 export const FOG = {
-    color: '#0a0d16',
+    color: '#3a2a3e',
     near: 5,
     far: 15
 } as const;
