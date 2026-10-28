@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { DAGGER_LIFT_SECONDS, SECTION_REVEAL } from '@/components/Sections/Sections.constants';
-import { getSectionLift, heroScroll } from '@/components/Sections/scrollStore';
+import { getSectionLift } from '@/components/Sections/scrollStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,11 +12,10 @@ const MOTION_CONDITIONS = {
     isReducedMotion: '(prefers-reduced-motion: reduce)',
     hasMotion: '(prefers-reduced-motion: no-preference)'
 };
-const HALFWAY = 0.5;
 
 /**
- * Scroll-driven behaviour of the page: hero scroll-out progress for the scene,
- * each section's dagger lift, and its text sliding in from its side.
+ * Scroll-driven behaviour of the sections: each section's dagger lift,
+ * and its text sliding in from its side.
  */
 export const useSectionScroll = (containerRef: RefObject<HTMLElement | null>) => {
     useLayoutEffect(() => {
@@ -24,16 +23,6 @@ export const useSectionScroll = (containerRef: RefObject<HTMLElement | null>) =>
 
         media.add(MOTION_CONDITIONS, (context) => {
             const isReducedMotion = Boolean(context.conditions?.isReducedMotion);
-
-            ScrollTrigger.create({
-                trigger: '#hero',
-                start: 'top top',
-                end: 'bottom top',
-                onUpdate: ({ progress }) => {
-                    // Reduced motion: the camera jumps once halfway instead of following the scroll
-                    heroScroll.progress = isReducedMotion ? Number(progress >= HALFWAY) : progress;
-                }
-            });
 
             if (!containerRef.current) return;
             const sections = gsap.utils.toArray<HTMLElement>('[data-side]', containerRef.current);

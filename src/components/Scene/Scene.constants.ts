@@ -42,11 +42,6 @@ export const CAMERA: { position: Vector3Tuple; fov: number; lookAt: Vector3Tuple
     lookAt: [0, 0.4, 0]
 };
 
-/** Once the hero has scrolled out, the camera looks up at the night sky so the floor leaves the frame */
-export const SCROLL_CAMERA: { skyLookAt: Vector3Tuple } = {
-    skyLookAt: [0, 6, 0]
-};
-
 /** Linear fog in world units from the camera: daggers stay clear, the floor edge and far trees fade out */
 export const FOG = {
     color: '#0B1017',
