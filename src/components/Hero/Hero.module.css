@@ -2,9 +2,13 @@
     position: relative;
 }
 
-/* Large name and job title centred at the top, over the canvas */
+/*
+ * Large name and job title centred at the top, over the canvas.
+ * Sticky just below the header while the hero scrolls, so its scroll fade and rise stay visible.
+ */
 .hero-title {
-    position: relative;
+    position: sticky;
+    top: 6rem;
     z-index: 10;
     padding: 2vh 1.5rem 0;
     text-align: center;

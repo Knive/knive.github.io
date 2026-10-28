@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useRef } from 'react';
 
+import { useHeroScroll } from '@/components/Hero/useHeroScroll';
 import { useIntro } from '@/components/Intro/useIntro';
 import { Scene } from '@/components/Scene/Scene';
 import { PROFILE } from '@/components/Sections/Sections.constants';
@@ -10,10 +11,12 @@ import { heroVariants } from '@/components/Hero/Hero.styles';
 
 export const Hero: React.FC = () => {
     const { isIntroPlaying, endIntro } = useIntro();
+    const titleRef = useRef<HTMLDivElement>(null);
+    useHeroScroll(titleRef);
 
     return (
         <section id="hero" className={cn(styles.hero, heroVariants({ intent: 'primary' }))}>
-            <div className={styles['hero-title']}>
+            <div ref={titleRef} className={styles['hero-title']}>
                 <h1 className={styles['hero-name']}>{PROFILE.name}</h1>
                 <p className={styles['hero-job']}>{PROFILE.jobTitle}</p>
             </div>
