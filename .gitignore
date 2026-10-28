@@ -27,3 +27,4 @@ TODOs.md
 playground/glob-import/root/follow-symlinks/linked/my-lib
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+docs/references/

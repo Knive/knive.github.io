@@ -84,10 +84,8 @@ One scene, three quality tiers (high, medium, low), adapted with PerformanceMoni
 
 The CV website should be inspired from <https://illoca.unseen.co> featuring a 3D Hero which stays in the view when scrolling and with each section with texts coming left and right after some animation in the 3D canvas. The same thing should happen with the daggers representing a section each.
 
-## Development
+## Additional infos
 
-```
-pnpm install
-pnpm run dev      # http://localhost:5173
-pnpm run build    # output to /dist
-```
+Layout: sticky header, hero about 80 vh, fixed canvas behind, camera never tilts on scroll.
+Glow is a 2D FX (sprites and particles); bloom only supplements it.
+Landing positions come from a hand-placed config, not runtime randomness.
