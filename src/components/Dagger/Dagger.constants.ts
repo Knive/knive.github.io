@@ -45,3 +45,16 @@ export const CONTACT_SHADOW = {
     textureSize: 128,
     opacity: 0.85
 } as const;
+
+/** Dagger lifted out of the floor into its section's margin, centred on the section's anchor box */
+export const DAGGER_LIFT = {
+    /** World units from the camera along the ray through the anchor's centre */
+    distance: 5,
+    /** Smaller than on the floor, so the whole dagger fits the anchor box */
+    scale: 0.55,
+    /** Top of the tallest pommel above the guard, to centre the whole dagger, buried tip included */
+    hiltTopY: 1,
+    /** Slow idle turn around the blade axis while lifted */
+    swayAngle: 0.35,
+    swaySpeed: 0.6
+} as const;

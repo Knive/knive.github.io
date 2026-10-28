@@ -8,6 +8,7 @@ import {
 } from '@/components/Dagger/Dagger.components';
 import { EXPOSED_BLADE_RATIO, HIT_SHAPE } from '@/components/Dagger/Dagger.constants';
 import { useDaggerGlow } from '@/components/Dagger/useDaggerGlow';
+import { useDaggerLift } from '@/components/Dagger/useDaggerLift';
 import type { CrackPath } from '@/components/Floor/Floor.helpers';
 import { DaggerGlowEffects } from '@/components/Glow/Glow';
 import { GLOW_INTENSITY } from '@/components/Glow/Glow.constants';
@@ -51,6 +52,12 @@ export const Dagger = ({ config, cracks, landingOrder, isIntroPlaying }: DaggerP
     const [isHovered, setIsHovered] = useState(false);
     const glowMaterialRef = useDaggerGlow({ daggerId: sectionId, isHovered, pulse });
     const flightRef = useDaggerFlight({ daggerId: sectionId, landingOrder, isIntroPlaying });
+    const liftRef = useDaggerLift({
+        sectionId,
+        positionX: config.positionX,
+        bladeLength,
+        isIntroPlaying
+    });
     const exposedBladeLength = bladeLength * EXPOSED_BLADE_RATIO;
 
     const handlePointerOver = () => {
@@ -88,15 +95,17 @@ export const Dagger = ({ config, cracks, landingOrder, isIntroPlaying }: DaggerP
                 onPointerOut={handlePointerOut}
             />
 
-            {/* Only the meshes fly in; shadow, effects and hit shape wait at the landing spot */}
-            <group ref={flightRef}>
-                {/* Outer group sits at ground level; this offset keeps part of the blade above it */}
-                <group position={[0, exposedBladeLength, 0]}>
-                    <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
-                    {/* Html ignores the group's visibility, so hide the label until landed */}
-                    {!isIntroPlaying && (
-                        <DaggerLabel text={config.label} isHighlighted={isHovered} />
-                    )}
+            {/* Only the meshes fly in and lift out; shadow, effects and hit shape stay on the floor */}
+            <group ref={liftRef}>
+                <group ref={flightRef}>
+                    {/* Outer group sits at ground level; this offset keeps part of the blade above it */}
+                    <group position={[0, exposedBladeLength, 0]}>
+                        <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
+                        {/* Html ignores the group's visibility, so hide the label until landed */}
+                        {!isIntroPlaying && (
+                            <DaggerLabel text={config.label} isHighlighted={isHovered} />
+                        )}
+                    </group>
                 </group>
             </group>
         </group>

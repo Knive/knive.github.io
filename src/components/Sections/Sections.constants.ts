@@ -7,6 +7,9 @@ export const SECTION_REVEAL = {
     start: 'top 70%'
 } as const;
 
+/** Time for a dagger to rise from the floor to its section's margin, and back */
+export const DAGGER_LIFT_SECONDS = 1.1;
+
 // Placeholder CV content: replace with the real entries
 
 export interface TimelineEntry {
