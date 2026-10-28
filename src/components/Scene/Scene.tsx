@@ -15,6 +15,7 @@ import {
     DAGGERS,
     PERFORMANCE_MONITOR_FLIPFLOPS
 } from '@/components/Scene/Scene.constants';
+import { ScrollCamera } from '@/components/Scene/ScrollCamera';
 import { useQualityTier } from '@/components/Scene/useQualityTier';
 import { TreeLine } from '@/components/TreeLine/TreeLine';
 
@@ -55,6 +56,7 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
                     onIntroEnd={onIntroEnd}
                 />
             )}
+            {!isIntroPlaying && <ScrollCamera />}
 
             {DAGGERS.map((config, index) => (
                 <Dagger

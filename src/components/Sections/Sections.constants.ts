@@ -1,3 +1,12 @@
+/** Text blocks slide in from their side, one after another, as the section scrolls in */
+export const SECTION_REVEAL = {
+    offsetPx: 80,
+    durationSeconds: 0.9,
+    staggerSeconds: 0.08,
+    /** ScrollTrigger start: section top reaches 70% of the viewport height */
+    start: 'top 70%'
+} as const;
+
 // Placeholder CV content: replace with the real entries
 
 export interface TimelineEntry {
