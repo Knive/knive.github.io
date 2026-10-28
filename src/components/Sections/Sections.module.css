@@ -14,6 +14,31 @@
     min-height: 100vh;
     margin: 0 auto;
     padding: var(--space-section) 2.5rem;
+    position: relative;
+    isolation: isolate;
+}
+
+/*
+ * Scrim behind the text side only, so the text reads over the floor while the dagger side stays clear.
+ * It spans the viewport width and fades out at the top and bottom: no edge between hero and sections.
+ */
+.section::before {
+    content: '';
+    position: absolute;
+    inset: 0 calc(50% - 50vw);
+    z-index: -1;
+    background: linear-gradient(
+        var(--scrim-direction, to right),
+        rgb(7 9 13 / 0.88) 0%,
+        rgb(7 9 13 / 0.7) 40%,
+        rgb(7 9 13 / 0) 65%
+    );
+    mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+    pointer-events: none;
+}
+
+.section[data-side='right'] {
+    --scrim-direction: to left;
 }
 
 .text {
@@ -25,12 +50,24 @@
     justify-self: end;
 }
 
-/* Sticky box centred in the viewport, so the dagger stays in view while the section scrolls */
+/*
+ * Sticky box centred in the viewport, so the dagger stays in view while the section scrolls.
+ * Pushed to the outer edge, clear of the daggers standing in the floor. The negative margin
+ * starts it high enough to be centred when the section activates (top at mid-viewport),
+ * otherwise the box sits low and the dagger sinks into the floor.
+ */
 .anchor {
     position: sticky;
     top: 30vh;
     align-self: start;
+    margin-top: calc(-1 * var(--space-section) - 20vh);
+    justify-self: end;
+    width: min(100%, 16rem);
     height: 40vh;
+}
+
+.section[data-side='right'] .anchor {
+    justify-self: start;
 }
 
 .title {
@@ -85,6 +122,11 @@
 
     .section[data-side='right'] .text {
         justify-self: start;
+    }
+
+    /* Text spans the width: dim evenly instead of from one side */
+    .section::before {
+        background: rgb(7 9 13 / 0.75);
     }
 
     .anchor {

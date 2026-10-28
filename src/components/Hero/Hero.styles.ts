@@ -1,6 +1,6 @@
 import { cva } from 'class-variance-authority';
 
-export const heroVariants = cva('h-screen w-screen min-h-150 overflow-hidden', {
+export const heroVariants = cva('h-[80vh] w-screen min-h-150 overflow-hidden', {
     variants: {
         intent: {
             primary: 'bg-primary text-primary-foreground',

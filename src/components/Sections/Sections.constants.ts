@@ -12,6 +12,11 @@ export const DAGGER_LIFT_SECONDS = 1.1;
 
 // Placeholder CV content: replace with the real entries
 
+export const PROFILE = {
+    name: 'Kevin Nguyen',
+    jobTitle: 'Freelance frontend developer'
+} as const;
+
 export interface TimelineEntry {
     title: string;
     place: string;
