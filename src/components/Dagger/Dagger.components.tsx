@@ -1,6 +1,6 @@
-import type { Ref } from 'react';
+import { useMemo, type Ref } from 'react';
 import { Html, Outlines } from '@react-three/drei';
-import type { ThreeElements } from '@react-three/fiber';
+import { useThree, type ThreeElements } from '@react-three/fiber';
 import {
     Color,
     DataTexture,
@@ -136,13 +136,23 @@ export const ContactShadow = () => (
     </mesh>
 );
 
-export const DaggerLabel = ({ text, isHighlighted }: DaggerLabelProps) => (
-    <Html
-        position={[0, LABEL_POSITION_Y, 0]}
-        center
-        zIndexRange={[1, 1]}
-        className={cn(styles['dagger-label'], isHighlighted && styles['dagger-label-highlighted'])}
-    >
-        {text}
-    </Html>
-);
+export const DaggerLabel = ({ text, isHighlighted }: DaggerLabelProps) => {
+    // Html mounts into the event source (#root, which scrolls) unless told otherwise: keep it on the fixed canvas
+    const canvasContainer = useThree((state) => state.gl.domElement.parentElement);
+    const portal = useMemo(() => ({ current: canvasContainer! }), [canvasContainer]);
+
+    return (
+        <Html
+            position={[0, LABEL_POSITION_Y, 0]}
+            center
+            zIndexRange={[1, 1]}
+            portal={portal}
+            className={cn(
+                styles['dagger-label'],
+                isHighlighted && styles['dagger-label-highlighted']
+            )}
+        >
+            {text}
+        </Html>
+    );
+};

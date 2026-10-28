@@ -7,7 +7,11 @@ import { getSectionLift, heroScroll } from '@/components/Sections/scrollStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
-const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+// matchMedia only runs its setup while at least one condition matches, so both cases are listed
+const MOTION_CONDITIONS = {
+    isReducedMotion: '(prefers-reduced-motion: reduce)',
+    hasMotion: '(prefers-reduced-motion: no-preference)'
+};
 const HALFWAY = 0.5;
 
 /**
@@ -18,7 +22,7 @@ export const useSectionScroll = (containerRef: RefObject<HTMLElement | null>) =>
     useLayoutEffect(() => {
         const media = gsap.matchMedia();
 
-        media.add({ isReducedMotion: REDUCED_MOTION_QUERY }, (context) => {
+        media.add(MOTION_CONDITIONS, (context) => {
             const isReducedMotion = Boolean(context.conditions?.isReducedMotion);
 
             ScrollTrigger.create({

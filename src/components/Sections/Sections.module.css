@@ -2,6 +2,8 @@
 .sections {
     position: relative;
     z-index: 1;
+    /* Text waiting to slide in sits off to the side; clip (not hidden) keeps the sticky anchors working */
+    overflow-x: clip;
 }
 
 .section {
@@ -79,6 +81,10 @@
     .section {
         grid-template-columns: minmax(0, 1fr);
         padding-inline: 1.5rem;
+    }
+
+    .section[data-side='right'] .text {
+        justify-self: start;
     }
 
     .anchor {
