@@ -8,6 +8,7 @@ import { Dagger } from '@/components/Dagger/Dagger';
 import { Floor } from '@/components/Floor/Floor';
 import { GlowLight } from '@/components/Glow/Glow';
 import { IntroCamera } from '@/components/Intro/IntroCamera';
+import { ScreenFlash } from '@/components/Intro/ScreenFlash';
 import { Atmosphere, Lights } from '@/components/Scene/Scene.components';
 import {
     BLOOM,
@@ -53,7 +54,12 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             <Sky />
             <Lights />
             <GlowLight daggers={DAGGERS} />
-            {isIntroPlaying && <IntroCamera daggers={DAGGERS} onIntroEnd={onIntroEnd} />}
+            {isIntroPlaying && (
+                <>
+                    <IntroCamera daggers={DAGGERS} onIntroEnd={onIntroEnd} />
+                    <ScreenFlash daggers={DAGGERS} />
+                </>
+            )}
 
             {DAGGERS.map((config, index) => (
                 <Dagger

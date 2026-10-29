@@ -89,3 +89,16 @@ export const TRAIL = {
     length: 4,
     brightness: 3
 } as const;
+
+/** Additive full-screen light: a tint of the showcased dagger during the braid, flashes on impact */
+export const SCREEN_FLASH = {
+    tintStrength: 0.08,
+    impactPeak: 0.35,
+    impactDecaySeconds: 0.15,
+    /** The last impact whites out the screen, like the reference's reveal */
+    finalColor: '#ffffff',
+    finalPeak: 0.9,
+    finalDecaySeconds: 0.45,
+    /** Drawn after everything else */
+    renderOrder: 1000
+} as const;

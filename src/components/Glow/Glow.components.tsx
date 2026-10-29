@@ -3,21 +3,30 @@ import { useFrame } from '@react-three/fiber';
 import {
     AdditiveBlending,
     Color,
+    NormalBlending,
     type BufferGeometry,
     type Mesh,
     type MeshBasicMaterial,
     type Points,
-    type PointsMaterial
+    type PointsMaterial,
+    type Texture
 } from 'three';
 
 import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import type { CrackPath } from '@/components/Floor/Floor.helpers';
-import { CRACK_GLOW, SHOCKWAVE_RING, SPARKS } from '@/components/Glow/Glow.constants';
+import {
+    CRACK_GLOW,
+    DUST,
+    SHOCKWAVE_RING,
+    SPARKS,
+    type BurstParticleSpec
+} from '@/components/Glow/Glow.constants';
 import {
     createCrackGlowTexture,
+    createSoftDotTexture,
     easeOutCubic,
-    launchSparks,
-    stepSparks
+    launchParticles,
+    stepParticles
 } from '@/components/Glow/Glow.helpers';
 import {
     getBurst,
@@ -139,41 +148,48 @@ export const ShockwaveRing = ({ daggerId, glowColor }: GlowEffectProps) => {
     );
 };
 
-/** Sparks thrown up from the blade's entry point, falling back under gravity; render at ground level */
-export const Sparks = ({ daggerId, glowColor }: GlowEffectProps) => {
+type BurstParticlesProps = {
+    daggerId: string;
+    color: string;
+    spec: BurstParticleSpec;
+    map?: Texture;
+};
+
+/** Particles thrown from the blade's entry point by each motion burst; render at ground level */
+const BurstParticles = ({ daggerId, color, spec, map }: BurstParticlesProps) => {
     const pointsRef = useRef<Points<BufferGeometry, PointsMaterial>>(null);
     const lastLaunchRef = useRef<number | null>(null);
-    const baseColor = useMemo(() => new Color(glowColor), [glowColor]);
+    const baseColor = useMemo(() => new Color(color), [color]);
     // Reused buffers: every burst relaunches the same particles
     const { positions, velocities } = useMemo(
         () => ({
-            positions: new Float32Array(SPARKS.maxCount * 3),
-            velocities: new Float32Array(SPARKS.maxCount * 3)
+            positions: new Float32Array(spec.maxCount * 3),
+            velocities: new Float32Array(spec.maxCount * 3)
         }),
-        []
+        [spec]
     );
 
     useFrame((_, deltaSeconds) => {
         const points = pointsRef.current;
         if (!points) return;
 
-        const running = getMotionBurstAge(daggerId, SPARKS.lifeSeconds);
+        const running = getMotionBurstAge(daggerId, spec.lifeSeconds);
         points.visible = running !== null;
         if (!running) return;
 
         const { burst, ageSeconds } = running;
         if (lastLaunchRef.current !== burst.startedAt) {
             lastLaunchRef.current = burst.startedAt;
-            launchSparks(positions, velocities);
-            points.geometry.setDrawRange(0, Math.round(burst.intensity * SPARKS.maxCount));
+            launchParticles(positions, velocities, spec);
+            points.geometry.setDrawRange(0, Math.round(burst.intensity * spec.maxCount));
         } else {
-            stepSparks(positions, velocities, deltaSeconds);
+            stepParticles(positions, velocities, spec, deltaSeconds);
         }
 
         points.geometry.attributes.position.needsUpdate = true;
-        points.material.color
-            .copy(baseColor)
-            .multiplyScalar((1 - ageSeconds / SPARKS.lifeSeconds) * SPARKS.peak);
+        const fade = (1 - ageSeconds / spec.lifeSeconds) * spec.peak;
+        if (spec.isAdditive) points.material.color.copy(baseColor).multiplyScalar(fade);
+        else points.material.opacity = fade;
     });
 
     return (
@@ -182,12 +198,26 @@ export const Sparks = ({ daggerId, glowColor }: GlowEffectProps) => {
                 <bufferAttribute attach="attributes-position" args={[positions, 3]} />
             </bufferGeometry>
             <pointsMaterial
-                size={SPARKS.size}
+                size={spec.size}
+                map={map}
+                color={spec.isAdditive ? undefined : baseColor}
                 transparent
-                blending={AdditiveBlending}
+                blending={spec.isAdditive ? AdditiveBlending : NormalBlending}
                 depthWrite={false}
-                toneMapped={false}
+                toneMapped={!spec.isAdditive}
             />
         </points>
     );
 };
+
+/** Sparks thrown up from the blade's entry point, falling back under gravity */
+export const Sparks = ({ daggerId, glowColor }: GlowEffectProps) => (
+    <BurstParticles daggerId={daggerId} color={glowColor} spec={SPARKS} />
+);
+
+const DUST_TEXTURE = createSoftDotTexture(DUST.textureSize);
+
+/** Earth kicked up low around the blade, drifting out and settling */
+export const ImpactDust = ({ daggerId }: Pick<GlowEffectProps, 'daggerId'>) => (
+    <BurstParticles daggerId={daggerId} color={DUST.color} spec={DUST} map={DUST_TEXTURE} />
+);

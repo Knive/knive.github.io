@@ -7,6 +7,7 @@ import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import type { CrackPath } from '@/components/Floor/Floor.helpers';
 import {
     CrackGlow,
+    ImpactDust,
     ShockwaveRing,
     Sparks,
     type GlowEffectProps
@@ -79,7 +80,7 @@ export const GlowLight = ({ daggers }: GlowLightProps) => {
 };
 
 /**
- * Ground-level burst effects of one dagger: glowing cracks, shockwave ring and sparks.
+ * Ground-level burst effects of one dagger: glowing cracks, shockwave ring, sparks and dust.
  * Render inside the dagger's ground group.
  */
 export const DaggerGlowEffects = ({
@@ -99,5 +100,6 @@ export const DaggerGlowEffects = ({
         />
         <ShockwaveRing daggerId={daggerId} glowColor={glowColor} />
         <Sparks daggerId={daggerId} glowColor={glowColor} />
+        <ImpactDust daggerId={daggerId} />
     </>
 );

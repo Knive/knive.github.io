@@ -7,7 +7,7 @@ import {
     BURST_ENVELOPE,
     CRACK_GLOW,
     PULSE,
-    SPARKS,
+    type BurstParticleSpec,
     type SineWave
 } from '@/components/Glow/Glow.constants';
 
@@ -115,19 +115,20 @@ export const createCrackGlowTexture = (
 /** Fast start, gentle stop; progress in [0, 1] */
 export const easeOutCubic = (progress: number) => 1 - (1 - progress) ** 3;
 
-/** Puts every spark back at the origin with a random upward velocity inside the cone */
-export const launchSparks = (
+/** Puts every particle back at the origin with a random velocity inside the spec's cone */
+export const launchParticles = (
     positions: Float32Array,
     velocities: Float32Array,
+    spec: BurstParticleSpec,
     random = Math.random
 ) => {
     for (let index = 0; index < positions.length; index += 3) {
         const azimuth = random() * Math.PI * 2;
-        const tilt = random() * SPARKS.coneAngle;
-        const speed = SPARKS.minSpeed + random() * (SPARKS.maxSpeed - SPARKS.minSpeed);
+        const tilt = random() * spec.coneAngle;
+        const speed = spec.minSpeed + random() * (spec.maxSpeed - spec.minSpeed);
 
         positions[index] = 0;
-        positions[index + 1] = SPARKS.originHeight;
+        positions[index + 1] = spec.originHeight;
         positions[index + 2] = 0;
         velocities[index] = Math.sin(tilt) * Math.cos(azimuth) * speed;
         velocities[index + 1] = Math.cos(tilt) * speed;
@@ -135,14 +136,18 @@ export const launchSparks = (
     }
 };
 
-/** One physics step: gravity, then motion; sparks that hit the floor stop there */
-export const stepSparks = (
+/** One physics step: drag, gravity, then motion; particles that hit the floor stop there */
+export const stepParticles = (
     positions: Float32Array,
     velocities: Float32Array,
+    spec: BurstParticleSpec,
     deltaSeconds: number
 ) => {
+    const dragFactor = Math.exp(-spec.drag * deltaSeconds);
     for (let index = 0; index < positions.length; index += 3) {
-        velocities[index + 1] -= SPARKS.gravity * deltaSeconds;
+        velocities[index] *= dragFactor;
+        velocities[index + 1] = velocities[index + 1] * dragFactor - spec.gravity * deltaSeconds;
+        velocities[index + 2] *= dragFactor;
         positions[index] += velocities[index] * deltaSeconds;
         positions[index + 1] += velocities[index + 1] * deltaSeconds;
         positions[index + 2] += velocities[index + 2] * deltaSeconds;
@@ -152,4 +157,23 @@ export const stepSparks = (
             velocities[index] = velocities[index + 1] = velocities[index + 2] = 0;
         }
     }
+};
+
+/** Soft white dot fading to transparent, for round particles */
+export const createSoftDotTexture = (size: number) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = size;
+    canvas.height = size;
+    const context = canvas.getContext('2d');
+
+    if (context) {
+        const center = size / 2;
+        const gradient = context.createRadialGradient(center, center, 0, center, center, center);
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        context.fillStyle = gradient;
+        context.fillRect(0, 0, size, size);
+    }
+
+    return new CanvasTexture(canvas);
 };

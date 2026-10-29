@@ -113,17 +113,53 @@ export const SHOCKWAVE_RING = {
 } as const;
 
 /** Sparks thrown up from the blade's entry point; world units and seconds */
-export const SPARKS = {
+/** Particles thrown from the blade's entry point by a burst (sparks, dust) */
+export type BurstParticleSpec = {
     /** Thrown by a full-intensity burst; fewer for weaker ones */
+    maxCount: number;
+    lifeSeconds: number;
+    minSpeed: number;
+    maxSpeed: number;
+    /** Max angle from vertical, in radians: small throws up, near PI / 2 skims the ground */
+    coneAngle: number;
+    gravity: number;
+    /** Velocity lost per second (exponential); 0 for none */
+    drag: number;
+    originHeight: number;
+    size: number;
+    /** Additive glow (colour fades) or normal blending (opacity fades) */
+    isAdditive: boolean;
+    /** Additive: colour multiplier at birth, above 1 blooms. Normal: opacity at birth */
+    peak: number;
+};
+
+export const SPARKS: BurstParticleSpec = {
     maxCount: 32,
     lifeSeconds: 0.9,
     minSpeed: 1.2,
     maxSpeed: 3,
-    /** Max angle from vertical, in radians */
     coneAngle: 0.6,
     gravity: 6,
+    drag: 0,
     originHeight: 0.05,
     size: 0.05,
-    /** Colour multiplier at birth; above 1 so they bloom */
+    isAdditive: true,
     peak: 4
-} as const;
+};
+
+/** Earth kicked up low and outwards by the impact, slowing down and settling */
+export const DUST: BurstParticleSpec & { color: string; textureSize: number } = {
+    maxCount: 28,
+    lifeSeconds: 1.6,
+    minSpeed: 0.6,
+    maxSpeed: 2,
+    coneAngle: 1.35,
+    gravity: 0.4,
+    drag: 2.2,
+    originHeight: 0.08,
+    size: 0.35,
+    isAdditive: false,
+    peak: 0.55,
+    color: '#8a6a50',
+    textureSize: 64
+};
