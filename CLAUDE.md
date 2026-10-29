@@ -93,4 +93,5 @@ Layout: sticky header, hero about 80 vh, fixed canvas behind, camera never tilts
 Camera: low and tilted up, so the sky fills most of the frame and the daggers tower.
 Environment: sunset gradient sky with stars and moon, dirt mounds (flat along the dagger row, short impact cracks only), rocks, grass and bush cards, tree line.
 Glow is a 2D FX (sprites and particles); bloom only supplements it.
-Landing positions come from a hand-placed config, not runtime randomness.
+Landing positions, tilts and embed depths of the daggers and the decorative swords come from a hand-placed config (`src/components/BladeField/BladeField.constants.ts`), not runtime randomness. Keep decorative swords clear of the dagger labels and the hero title.
+Each landed dagger keeps a softly glowing crack decal in its colour; hover and bursts brighten it.

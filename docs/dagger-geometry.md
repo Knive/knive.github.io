@@ -1,7 +1,8 @@
 # Dagger geometry (local space, y-axis along blade length)
 
-- Blade tip at y = -bladeLength (each dagger sets its own blade constant, used by `DaggerConfig.bladeLength`). The lower part is embedded below ground, so silhouette details belong in the upper ~60% of the blade
-- Guard at y = 0; an inner group lifts the dagger by `bladeLength * EXPOSED_BLADE_RATIO` so ~60% of the blade shows above ground (outer group at y = 0 sits at the ground)
+- Blade tip at y = -bladeLength (each dagger sets its own blade constant, used by `DaggerConfig.bladeLength`). The lower part is embedded below ground, so silhouette details belong in the upper ~55–65% of the blade
+- Guard at y = 0; an inner group lifts the dagger by `bladeLength * landing.exposedRatio` so that share of the blade shows above ground (outer group sits at the landing point on the ground)
+- The landing (`DAGGER_LANDINGS` in `BladeField.constants.ts`) also tilts the dagger; it straightens up when lifted into its section
 - Grip and pommel heights vary per dagger (see each `*Dagger.constants.ts`); keep the top of the pommel at or below y = 1 (`DAGGER_LIFT.hiltTopY`, `HIT_SHAPE.hiltHeight`)
 - Blades and flat ornaments face the camera: shapes in the xy plane, extruded along z and centred on z = 0
 
