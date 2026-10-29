@@ -46,7 +46,7 @@ export const PULSE = {
      * Phases are fractions of the period.
      */
     signalWave: {
-        periodSeconds: 3.3,
+        periodSeconds: 4.3,
         contractEnd: 0.27,
         innerRing: { start: 0.33, end: 0.5 },
         outerRing: { start: 0.42, end: 0.62 },

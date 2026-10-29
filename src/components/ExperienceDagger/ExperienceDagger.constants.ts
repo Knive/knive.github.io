@@ -44,7 +44,7 @@ export const EXPERIENCE_BLADE_PAINT = { seed: 11 } as const;
 
 /** Tooth glyphs in a column along the spine, in shape units */
 export const SPINE_RUNES = {
-    x: 0.045,
+    x: -0.01,
     startY: -0.1,
     endY: -1.15,
     count: 9,
