@@ -1,6 +1,6 @@
-import { CanvasTexture, SRGBColorSpace } from 'three';
+import { CanvasTexture, MathUtils, PlaneGeometry, SRGBColorSpace } from 'three';
 
-import { CRACKS, FLOOR, PUDDLES, STONE } from '@/components/Floor/Floor.constants';
+import { CRACKS, DIRT, FLOOR, MOUNDS } from '@/components/Floor/Floor.constants';
 import { createSeededRandom, randomBetween } from '@/utils/seededRandom';
 
 type Random = () => number;
@@ -11,7 +11,6 @@ export type CrackOrigin = { daggerId: string; positionX: number };
 export type CrackLayout = {
     /** Cracks radiating from each dagger, keyed by dagger id */
     byDagger: Record<string, CrackPath[]>;
-    scattered: CrackPath[];
 };
 
 const createCanvas = () => {
@@ -65,7 +64,7 @@ const walkCrack = (
 };
 
 /**
- * Cracks radiating from each dagger, plus scattered ones across the floor.
+ * Cracks radiating from each dagger.
  * Pure and seeded: the floor and the crack glow get the exact same paths.
  */
 export const createCrackLayout = (origins: readonly CrackOrigin[]): CrackLayout => {
@@ -82,20 +81,7 @@ export const createCrackLayout = (origins: readonly CrackOrigin[]): CrackLayout 
         byDagger[daggerId] = daggerCracks;
     }
 
-    const scattered: CrackPath[] = [];
-    for (let crack = 0; crack < CRACKS.randomCount; crack++) {
-        const start = { x: random() * FLOOR.textureSize, y: random() * FLOOR.textureSize };
-        walkCrack(
-            random,
-            start,
-            random() * Math.PI * 2,
-            CRACKS.startWidth * CRACKS.scatteredWidthRatio,
-            1,
-            scattered
-        );
-    }
-
-    return { byDagger, scattered };
+    return { byDagger };
 };
 
 /** Strokes one crack segment by segment, tapering its width */
@@ -110,39 +96,49 @@ export const drawCrack = (context: CanvasRenderingContext2D, { points, startWidt
     }
 };
 
-/** Irregular polygon patch, for flagstone variation */
-const drawStonePatch = (context: CanvasRenderingContext2D, random: Random) => {
-    const centerX = random() * FLOOR.textureSize;
-    const centerY = random() * FLOOR.textureSize;
-    const radius = randomBetween(random, STONE.patchMinRadius, STONE.patchMaxRadius);
+/** Soft-edged blob of slightly different earth */
+const drawDirtPatch = (context: CanvasRenderingContext2D, random: Random) => {
+    const x = random() * FLOOR.textureSize;
+    const y = random() * FLOOR.textureSize;
+    const radius = randomBetween(random, DIRT.patchMinRadius, DIRT.patchMaxRadius);
+    const color = DIRT.patchColors[Math.floor(random() * DIRT.patchColors.length)];
+    const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
+    gradient.addColorStop(0, color);
+    gradient.addColorStop(1, `${color}00`);
+    context.fillStyle = gradient;
+    context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
+};
 
-    context.fillStyle = STONE.patchColors[Math.floor(random() * STONE.patchColors.length)];
+const drawPebble = (context: CanvasRenderingContext2D, random: Random) => {
+    context.fillStyle = DIRT.pebbleColors[Math.floor(random() * DIRT.pebbleColors.length)];
     context.beginPath();
-    for (let corner = 0; corner < STONE.patchCorners; corner++) {
-        const angle = (corner / STONE.patchCorners) * Math.PI * 2;
-        const cornerRadius =
-            radius * randomBetween(random, STONE.cornerMinScale, STONE.cornerMaxScale);
-        const x = centerX + Math.cos(angle) * cornerRadius;
-        const y = centerY + Math.sin(angle) * cornerRadius;
-        if (corner === 0) context.moveTo(x, y);
-        else context.lineTo(x, y);
-    }
-    context.closePath();
+    context.arc(
+        random() * FLOOR.textureSize,
+        random() * FLOOR.textureSize,
+        randomBetween(random, DIRT.pebbleMinRadius, DIRT.pebbleMaxRadius),
+        0,
+        Math.PI * 2
+    );
     context.fill();
 };
 
-const createColorMap = (random: Random, cracks: CrackPath[]) => {
+/** Dirt, pebbles and the impact cracks, identical on every load */
+export const createFloorTexture = ({ byDagger }: CrackLayout) => {
+    const random = createSeededRandom(FLOOR.surfaceSeed);
     const canvas = createCanvas();
     const context = canvas.getContext('2d');
 
     if (context) {
-        context.fillStyle = STONE.baseColor;
+        context.fillStyle = DIRT.baseColor;
         context.fillRect(0, 0, canvas.width, canvas.height);
-        for (let patch = 0; patch < STONE.patchCount; patch++) drawStonePatch(context, random);
+        for (let patch = 0; patch < DIRT.patchCount; patch++) drawDirtPatch(context, random);
+        for (let pebble = 0; pebble < DIRT.pebbleCount; pebble++) drawPebble(context, random);
 
         context.strokeStyle = CRACKS.color;
         context.lineCap = 'round';
-        cracks.forEach((crack) => drawCrack(context, crack));
+        Object.values(byDagger)
+            .flat()
+            .forEach((crack) => drawCrack(context, crack));
     }
 
     const texture = new CanvasTexture(canvas);
@@ -150,37 +146,45 @@ const createColorMap = (random: Random, cracks: CrackPath[]) => {
     return texture;
 };
 
-/** Soft-edged smooth blobs: the wet patches catch the coloured lights as highlights */
-const createRoughnessMap = (random: Random) => {
-    const canvas = createCanvas();
-    const context = canvas.getContext('2d');
+const MOUND_LIST = (() => {
+    const random = createSeededRandom(MOUNDS.seed);
+    const halfSize = FLOOR.size / 2;
+    return Array.from({ length: MOUNDS.count }, () => ({
+        x: randomBetween(random, -halfSize, halfSize),
+        z: randomBetween(random, -halfSize, halfSize),
+        height: randomBetween(random, MOUNDS.minHeight, MOUNDS.maxHeight),
+        radius: randomBetween(random, MOUNDS.minRadius, MOUNDS.maxRadius)
+    }));
+})();
 
-    if (context) {
-        context.fillStyle = PUDDLES.dryRoughnessColor;
-        context.fillRect(0, 0, canvas.width, canvas.height);
-
-        for (let puddle = 0; puddle < PUDDLES.count; puddle++) {
-            const x = random() * canvas.width;
-            const y = random() * canvas.height;
-            const radius = randomBetween(random, PUDDLES.minRadius, PUDDLES.maxRadius);
-            const gradient = context.createRadialGradient(x, y, 0, x, y, radius);
-            gradient.addColorStop(0, PUDDLES.wetRoughnessColor);
-            gradient.addColorStop(1, PUDDLES.wetRoughnessTransparent);
-            context.fillStyle = gradient;
-            context.fillRect(x - radius, y - radius, radius * 2, radius * 2);
-        }
-    }
-
-    return new CanvasTexture(canvas);
+/** 0 on and near the dagger row, rising to 1 away from it */
+const getMoundStrength = (x: number, z: number) => {
+    const distanceToRow = Math.hypot(Math.max(Math.abs(x) - MOUNDS.rowHalfWidth, 0), z);
+    return MathUtils.smoothstep(distanceToRow, MOUNDS.flatRadius, MOUNDS.fullRadius);
 };
 
-/** Colour (stone + cracks) and roughness (wet patches) maps, identical on every load */
-export const createFloorTextures = ({ byDagger, scattered }: CrackLayout) => {
-    const random = createSeededRandom(FLOOR.surfaceSeed);
-    const cracks = [...Object.values(byDagger).flat(), ...scattered];
+/** Ground height at a world point; anything standing on the floor uses it */
+export const getGroundHeight = (x: number, z: number) => {
+    const strength = getMoundStrength(x, z);
+    if (strength === 0) return 0;
 
-    return {
-        colorMap: createColorMap(random, cracks),
-        roughnessMap: createRoughnessMap(random)
-    };
+    let height = 0;
+    for (const mound of MOUND_LIST) {
+        const squaredDistance = (x - mound.x) ** 2 + (z - mound.z) ** 2;
+        height += mound.height * Math.exp(-squaredDistance / mound.radius ** 2);
+    }
+    return height * strength;
+};
+
+/** Flat-lying grid displaced by the mounds; UVs match worldToCanvas (canvas top is the far side) */
+export const createGroundGeometry = () => {
+    const geometry = new PlaneGeometry(FLOOR.size, FLOOR.size, FLOOR.segments, FLOOR.segments);
+    geometry.rotateX(-Math.PI / 2);
+
+    const positions = geometry.attributes.position;
+    for (let index = 0; index < positions.count; index++) {
+        positions.setY(index, getGroundHeight(positions.getX(index), positions.getZ(index)));
+    }
+    geometry.computeVertexNormals();
+    return geometry;
 };

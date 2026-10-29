@@ -34,8 +34,8 @@ export const STARS = {
 
 /** Azimuth 0 is straight ahead (-z), positive to the right */
 export const MOON = {
-    elevation: 12,
-    azimuth: 25,
+    elevation: 24,
+    azimuth: 22,
     distance: 75,
     /** World size of the sprite, halo included */
     size: 9,

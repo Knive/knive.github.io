@@ -19,6 +19,7 @@ import { Rocks } from '@/components/Rocks/Rocks';
 import { useQualityTier } from '@/components/Scene/useQualityTier';
 import { Sky } from '@/components/Sky/Sky';
 import { TreeLine } from '@/components/TreeLine/TreeLine';
+import { Vegetation } from '@/components/Vegetation/Vegetation';
 
 const handleCreated = ({ camera }: RootState) => {
     camera.lookAt(...CAMERA.lookAt);
@@ -71,7 +72,8 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
 
             <TreeLine />
             <Rocks />
-            <Floor isReflective={settings.isFloorReflective} crackLayout={CRACK_LAYOUT} />
+            <Vegetation />
+            <Floor crackLayout={CRACK_LAYOUT} />
 
             {settings.hasBloom && (
                 <EffectComposer>

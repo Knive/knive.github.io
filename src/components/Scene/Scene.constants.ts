@@ -19,8 +19,6 @@ export type QualityTier = 'low' | 'medium' | 'high';
 type QualitySettings = {
     /** Device pixel ratio cap */
     dpr: number;
-    /** Real reflections on the wet floor (extra render pass) */
-    isFloorReflective: boolean;
     hasBloom: boolean;
 };
 
@@ -28,18 +26,19 @@ type QualitySettings = {
 export const QUALITY_TIER_ORDER: readonly QualityTier[] = ['low', 'medium', 'high'];
 
 export const QUALITY_TIERS: Record<QualityTier, QualitySettings> = {
-    low: { dpr: 1, isFloorReflective: false, hasBloom: false },
-    medium: { dpr: 1.5, isFloorReflective: false, hasBloom: true },
-    high: { dpr: 2, isFloorReflective: true, hasBloom: true }
+    low: { dpr: 1, hasBloom: false },
+    medium: { dpr: 1.5, hasBloom: true },
+    high: { dpr: 2, hasBloom: true }
 };
 
 /** Tier changes allowed before PerformanceMonitor gives up and falls back to low */
 export const PERFORMANCE_MONITOR_FLIPFLOPS = 3;
 
 export const CAMERA: { position: Vector3Tuple; fov: number; lookAt: Vector3Tuple } = {
-    position: [0, 0.8, 5],
+    // Low and looking up, so the sky fills most of the frame and the daggers tower
+    position: [0, 0.5, 5],
     fov: 50,
-    lookAt: [0, 0.2, 0]
+    lookAt: [0, 1.4, 0]
 };
 
 /** Linear fog in world units from the camera: daggers stay clear, the floor edge and far trees fade out */
