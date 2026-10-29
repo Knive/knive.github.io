@@ -31,8 +31,6 @@ import {
 } from '@/components/Dagger/Dagger.helpers';
 import { cn } from '@/utils/cn';
 
-import styles from '@/components/Dagger/Dagger.module.css';
-
 export type DaggerPartsProps = {
     config: DaggerConfig;
     /** Pass to every material that glows (runes, crystal...); they pulse together */
@@ -213,8 +211,8 @@ export const DaggerLabel = ({ text, isHighlighted }: DaggerLabelProps) => {
             zIndexRange={[1, 1]}
             portal={portal}
             className={cn(
-                styles['dagger-label'],
-                isHighlighted && styles['dagger-label-highlighted']
+                'pointer-events-none font-display text-[0.68rem] tracking-[0.14em] whitespace-nowrap text-[#6a7a8a] transition-[color] duration-400 ease-[ease] select-none',
+                isHighlighted && 'text-moonlight'
             )}
         >
             {text}
