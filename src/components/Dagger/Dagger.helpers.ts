@@ -258,7 +258,9 @@ type BladePaint = {
 /** Painted metal: gradient, worn band inside the outline, light scratches */
 export const createBladePaintTexture = (
     { shape, bounds }: { shape: Shape; bounds: Box2 },
-    { baseColor, tipColor, edgeColor, seed }: BladePaint
+    { baseColor, tipColor, edgeColor, seed }: BladePaint,
+    /** Extra painted details (fuller, edge band...), in shape units and clipped to the blade */
+    drawExtras?: (context: CanvasRenderingContext2D) => void
 ) =>
     createShapeCanvasTexture(bounds, (context) => {
         const gradient = context.createLinearGradient(0, bounds.max.y, 0, bounds.min.y);
@@ -279,6 +281,7 @@ export const createBladePaintTexture = (
         context.lineWidth = BLADE_PAINT.edgeWidth * 2;
         context.lineJoin = 'round';
         context.stroke();
+        drawExtras?.(context);
 
         const random = createSeededRandom(seed);
         context.strokeStyle = BLADE_PAINT.scratchColor;

@@ -1,54 +1,66 @@
-import { CylinderGeometry, Shape } from 'three';
+import { OctahedronGeometry, TorusGeometry } from 'three';
 
-import { createEmissiveMaskTexture, extrudeBevelled } from '@/components/Dagger/Dagger.helpers';
+import { STEEL_PAINT } from '@/components/Dagger/Dagger.constants';
 import {
+    createBladePaintTexture,
+    createOutlinedPart,
+    createRuneMaskTexture
+} from '@/components/Dagger/Dagger.helpers';
+import {
+    FULLER,
+    FULLER_RUNES,
+    GUARD_CRYSTAL,
+    GUARD_RING,
     RUNE_STROKES,
     SKILLS_BLADE,
-    SKILLS_POMMEL,
-    SKILLS_RUNES
+    SKILLS_BLADE_OUTLINE,
+    SKILLS_BLADE_PAINT
 } from '@/components/SkillsDagger/SkillsDagger.constants';
 
-/** Symmetric double edge: slight narrowing, then a long taper to the tip */
-export const createBladeGeometry = () => {
-    const { length, halfWidth, taperStartY, taperHalfWidth } = SKILLS_BLADE;
-    const shape = new Shape()
-        .moveTo(-halfWidth, 0)
-        .lineTo(halfWidth, 0)
-        .lineTo(taperHalfWidth, taperStartY)
-        .lineTo(0, -length)
-        .lineTo(-taperHalfWidth, taperStartY)
-        .closePath();
-
-    return extrudeBevelled(shape, SKILLS_BLADE);
+const drawFuller = (context: CanvasRenderingContext2D) => {
+    const { x, halfWidth, startY, endY, color } = FULLER;
+    context.fillStyle = color;
+    context.beginPath();
+    context.roundRect(x - halfWidth, endY, halfWidth * 2, startY - endY, halfWidth);
+    context.fill();
 };
 
-/** Disc facing the camera (cylinder axis turned to z) */
-export const createPommelGeometry = () => {
-    const { radius, thickness, radialSegments } = SKILLS_POMMEL;
-    return new CylinderGeometry(radius, radius, thickness, radialSegments).rotateX(Math.PI / 2);
-};
-
-const drawRunes = (context: CanvasRenderingContext2D, width: number, height: number) => {
-    const { glyphCount, glyphAreaEnd, lineWidth, glyphRadiusRatio } = SKILLS_RUNES;
+/** Angular runes evenly spaced down the fuller */
+const drawFullerRunes = (context: CanvasRenderingContext2D) => {
+    const { count, radius, lineWidth } = FULLER_RUNES;
+    const spacing = (FULLER.endY - FULLER.startY) / count;
     context.lineWidth = lineWidth;
 
-    const glyphSpacing = (height * glyphAreaEnd) / glyphCount;
-    const glyphRadius = width * glyphRadiusRatio;
-    for (let glyph = 0; glyph < glyphCount; glyph++) {
-        const centerX = width / 2;
-        const centerY = (glyph + 0.5) * glyphSpacing;
+    for (let rune = 0; rune < count; rune++) {
+        const centerY = FULLER.startY + (rune + 0.5) * spacing;
         context.beginPath();
-        for (const [x1, y1, x2, y2] of RUNE_STROKES[glyph % RUNE_STROKES.length]) {
-            context.moveTo(centerX + x1 * glyphRadius, centerY + y1 * glyphRadius);
-            context.lineTo(centerX + x2 * glyphRadius, centerY + y2 * glyphRadius);
+        for (const [x1, y1, x2, y2] of RUNE_STROKES[rune % RUNE_STROKES.length]) {
+            // Strokes span a unit square; squeeze them into the fuller's width
+            context.moveTo(FULLER.x + x1 * FULLER.halfWidth, centerY + y1 * radius);
+            context.lineTo(FULLER.x + x2 * FULLER.halfWidth, centerY + y2 * radius);
         }
         context.stroke();
     }
 };
 
-export const createRuneTexture = () =>
-    createEmissiveMaskTexture({
-        halfWidth: SKILLS_BLADE.halfWidth,
-        bladeLength: SKILLS_BLADE.length,
-        drawGlyphs: drawRunes
-    });
+export const createBlade = () => {
+    const blade = createOutlinedPart(SKILLS_BLADE_OUTLINE, SKILLS_BLADE);
+    return {
+        geometry: blade.geometry,
+        paintMap: createBladePaintTexture(
+            blade,
+            { ...STEEL_PAINT, ...SKILLS_BLADE_PAINT },
+            drawFuller
+        ),
+        runeMap: createRuneMaskTexture(blade.bounds, drawFullerRunes)
+    };
+};
+
+/** Torus lies in the xy plane, so the ring faces the camera */
+export const createRingGeometry = () => {
+    const { radius, tube, radialSegments, tubularSegments } = GUARD_RING;
+    return new TorusGeometry(radius, tube, radialSegments, tubularSegments);
+};
+
+export const createCrystalGeometry = () =>
+    new OctahedronGeometry(GUARD_CRYSTAL.radius).scale(...GUARD_CRYSTAL.scale);

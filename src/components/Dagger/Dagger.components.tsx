@@ -3,6 +3,7 @@ import { Html, Outlines } from '@react-three/drei';
 import { useThree, type ThreeElements } from '@react-three/fiber';
 import {
     Color,
+    CylinderGeometry,
     DataTexture,
     NearestFilter,
     RedFormat,
@@ -22,7 +23,12 @@ import {
     OUTLINE,
     TOON_RIM
 } from '@/components/Dagger/Dagger.constants';
-import { createContactShadowTexture } from '@/components/Dagger/Dagger.helpers';
+import {
+    createContactShadowTexture,
+    createLeatherTexture,
+    createLeatherWrapGeometry,
+    type LeatherWrapSpec
+} from '@/components/Dagger/Dagger.helpers';
 import { cn } from '@/utils/cn';
 
 import styles from '@/components/Dagger/Dagger.module.css';
@@ -117,6 +123,54 @@ export const DaggerPart = ({ geometry, position, ...materialProps }: DaggerPartP
         <DaggerOutline />
     </mesh>
 );
+
+export type LeatherGripSpec = LeatherWrapSpec & {
+    /** Bottom of the grip, above the guard */
+    startY: number;
+    radialSegments: number;
+};
+
+type LeatherGripProps = {
+    spec: LeatherGripSpec;
+    color: ColorRepresentation;
+    rimColor: ColorRepresentation;
+    /** Two straps winding opposite ways, for a criss-cross binding */
+    isCrossed?: boolean;
+};
+
+/** Grip core with a leather strap wound around it */
+export const LeatherGrip = ({ spec, color, rimColor, isCrossed = false }: LeatherGripProps) => {
+    const { coreGeometry, wrapGeometries, leatherMap } = useMemo(
+        () => ({
+            coreGeometry: new CylinderGeometry(
+                spec.coreRadius,
+                spec.coreRadius,
+                spec.length,
+                spec.radialSegments
+            ).translate(0, spec.length / 2, 0),
+            wrapGeometries: (isCrossed ? [spec.turns, -spec.turns] : [spec.turns]).map((turns) =>
+                createLeatherWrapGeometry({ ...spec, turns })
+            ),
+            leatherMap: createLeatherTexture(spec.turns)
+        }),
+        [spec, isCrossed]
+    );
+
+    return (
+        <group position={[0, spec.startY, 0]}>
+            <DaggerPart geometry={coreGeometry} color={color} rimColor={rimColor} />
+            {wrapGeometries.map((geometry) => (
+                <DaggerPart
+                    key={geometry.uuid}
+                    geometry={geometry}
+                    color={color}
+                    map={leatherMap}
+                    rimColor={rimColor}
+                />
+            ))}
+        </group>
+    );
+};
 
 /** Invisible pointer target; render it at ground level. Only this mesh has handlers, so only it is raycast */
 export const DaggerHitShape = ({ height, ...handlers }: DaggerHitShapeProps) => (
