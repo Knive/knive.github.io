@@ -1,4 +1,9 @@
-import { FOG } from '@/components/Scene/Scene.constants';
+import { useRef, type ReactNode } from 'react';
+import { useFrame } from '@react-three/fiber';
+import { MathUtils, type Group } from 'three';
+
+import { FOG, GROUND_SLIDE } from '@/components/Scene/Scene.constants';
+import { getScrolledViewports } from '@/utils/getScrolledViewports';
 
 /** Warm sunset light from left, cool moonlight fill from right */
 export const Lights = () => {
@@ -18,3 +23,19 @@ export const Atmosphere = () => (
         <fog attach="fog" args={[FOG.color, FOG.near, FOG.far]} />
     </>
 );
+
+/**
+ * Sinks its children (the ground and what stands on it) out of frame during the first screen of scroll,
+ * so the sections read over the sky. Follows the scroll directly, so it also runs under reduced motion.
+ */
+export const GroundSlide = ({ children }: { children: ReactNode }) => {
+    const groupRef = useRef<Group>(null);
+
+    useFrame(() => {
+        if (!groupRef.current) return;
+        const slide = MathUtils.clamp(getScrolledViewports(), 0, 1);
+        groupRef.current.position.y = -GROUND_SLIDE.depth * slide;
+    });
+
+    return <group ref={groupRef}>{children}</group>;
+};

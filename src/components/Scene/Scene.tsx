@@ -9,8 +9,9 @@ import { Floor } from '@/components/Floor/Floor';
 import { GlowLight } from '@/components/Glow/Glow';
 import { IntroCamera } from '@/components/IntroCamera/IntroCamera';
 import { IntroFx } from '@/components/IntroFx/IntroFx';
+import { Mist } from '@/components/Mist/Mist';
 import { SpeedLines } from '@/components/Intro/SpeedLines';
-import { Atmosphere, Lights } from '@/components/Scene/Scene.components';
+import { Atmosphere, GroundSlide, Lights } from '@/components/Scene/Scene.components';
 import {
     BLOOM,
     CAMERA,
@@ -64,20 +65,23 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
                 </>
             )}
 
-            {DAGGERS.map((config) => (
-                <Dagger
-                    key={config.sectionId}
-                    config={config}
-                    cracks={CRACK_LAYOUT.byDagger[config.sectionId]}
-                    isIntroPlaying={isIntroPlaying}
-                />
-            ))}
+            <GroundSlide>
+                {DAGGERS.map((config) => (
+                    <Dagger
+                        key={config.sectionId}
+                        config={config}
+                        cracks={CRACK_LAYOUT.byDagger[config.sectionId]}
+                        isIntroPlaying={isIntroPlaying}
+                    />
+                ))}
 
-            <TreeLine />
-            <Rocks />
-            <BladeField />
-            <Vegetation />
-            <Floor crackLayout={CRACK_LAYOUT} />
+                <TreeLine />
+                <Rocks />
+                <BladeField />
+                <Vegetation />
+                <Floor crackLayout={CRACK_LAYOUT} />
+            </GroundSlide>
+            <Mist />
 
             {settings.hasBloom && (
                 <EffectComposer enabled={settings.hasBloom}>

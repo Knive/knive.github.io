@@ -129,3 +129,9 @@ export const DAGGERS: DaggerConfig[] = [
 export const CRACK_LAYOUT = createCrackLayout(
     DAGGERS.map(({ sectionId, landing }) => ({ daggerId: sectionId, x: landing.x, z: landing.z }))
 );
+
+/** The ground and everything standing on it sink out of frame over the first screen of scroll */
+export const GROUND_SLIDE = {
+    /** World units the ground has dropped once the page has scrolled one viewport */
+    depth: 5.5
+} as const;

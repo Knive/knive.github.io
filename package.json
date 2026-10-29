@@ -10,6 +10,7 @@
         "lint": "eslint .",
         "typecheck": "tsc -b",
         "intro:review": "sh scripts/intro-review/run.sh",
+        "scroll:review": "sh scripts/scroll-review/run.sh",
         "prepare": "husky"
     },
     "dependencies": {

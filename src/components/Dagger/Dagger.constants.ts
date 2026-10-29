@@ -43,9 +43,34 @@ export const DAGGER_LIFT = {
     scale: 0.55,
     /** Top of the tallest pommel above the guard, to centre the whole dagger, buried tip included */
     hiltTopY: 1,
-    /** Slow idle turn around the blade axis while lifted */
-    swayAngle: 0.35,
-    swaySpeed: 0.6
+    /**
+     * Flight from the floor slot: a quadratic curve whose control point sits this share of the way
+     * sideways and this far above the anchor, so the dagger rises out of the ground first,
+     * then swings out to its margin and settles onto the anchor from slightly above
+     */
+    sideShare: 0.15,
+    arcHeight: 0.4
+} as const;
+
+/**
+ * Levitation once the dagger has nearly reached its anchor; angles in radians, speeds in radians per second.
+ * Each motion sums two sines at unrelated speeds, so it never visibly loops.
+ */
+export const DAGGER_FLOAT = {
+    /** Share of the lift from which the levitation fades in, so it never wobbles the flight */
+    fadeInFrom: 0.85,
+    bobHeight: 0.06,
+    bobSpeed: 1.1,
+    rollAngle: 0.06,
+    rollSpeed: 0.7,
+    /** Slow turn around the blade axis */
+    yawAngle: 0.3,
+    yawSpeed: 0.4,
+    /** Scale breathing, as a share of the lifted scale */
+    breathe: 0.02,
+    breatheSpeed: 0.9,
+    /** Per-dagger phase, from its landing x, so the five never move in sync */
+    phasePerUnit: 1.7
 } as const;
 
 /** Canvases drawn in shape units (blade paint, rune mask): the longest side gets this many pixels */
