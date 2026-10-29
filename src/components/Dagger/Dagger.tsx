@@ -41,8 +41,8 @@ type DaggerProps = {
     config: DaggerConfig;
     /** This dagger's floor cracks, lit by its bursts */
     cracks: CrackPath[];
-    /** Position in the intro landing sequence; 0 is the lead dagger */
-    landingOrder: number;
+    /** This dagger's strand of the intro braid */
+    flightStrand: number;
     isIntroPlaying: boolean;
 };
 
@@ -50,11 +50,16 @@ const scrollToSection = (sectionId: string) => {
     document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
 };
 
-export const Dagger = ({ config, cracks, landingOrder, isIntroPlaying }: DaggerProps) => {
+export const Dagger = ({ config, cracks, flightStrand, isIntroPlaying }: DaggerProps) => {
     const { sectionId, bladeLength, pulse } = config;
     const [isHovered, setIsHovered] = useState(false);
     const glowMaterialRef = useDaggerGlow({ daggerId: sectionId, isHovered, pulse });
-    const flightRef = useDaggerFlight({ daggerId: sectionId, landingOrder, isIntroPlaying });
+    const flightRef = useDaggerFlight({
+        daggerId: sectionId,
+        strand: flightStrand,
+        landing: config.landing,
+        isIntroPlaying
+    });
     const liftRef = useDaggerLift({
         sectionId,
         landing: config.landing,

@@ -53,20 +53,14 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             <Sky />
             <Lights />
             <GlowLight daggers={DAGGERS} />
-            {isIntroPlaying && (
-                <IntroCamera
-                    leadDagger={DAGGERS[0]}
-                    daggerCount={DAGGERS.length}
-                    onIntroEnd={onIntroEnd}
-                />
-            )}
+            {isIntroPlaying && <IntroCamera daggers={DAGGERS} onIntroEnd={onIntroEnd} />}
 
             {DAGGERS.map((config, index) => (
                 <Dagger
                     key={config.sectionId}
                     config={config}
                     cracks={CRACK_LAYOUT.byDagger[config.sectionId]}
-                    landingOrder={index}
+                    flightStrand={index}
                     isIntroPlaying={isIntroPlaying}
                 />
             ))}
