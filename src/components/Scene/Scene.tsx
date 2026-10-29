@@ -38,6 +38,7 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
 
     return (
         <Canvas
+            flat
             camera={{ position: CAMERA.position, fov: CAMERA.fov }}
             onCreated={handleCreated}
             dpr={settings.dpr}
@@ -79,7 +80,7 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             <Floor crackLayout={CRACK_LAYOUT} />
 
             {settings.hasBloom && (
-                <EffectComposer>
+                <EffectComposer enabled={settings.hasBloom}>
                     <Bloom
                         mipmapBlur
                         luminanceThreshold={BLOOM.luminanceThreshold}

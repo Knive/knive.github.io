@@ -6,7 +6,7 @@
  * (dev scrubbing). Everything in the intro is a function of t, so any frame can be rendered alone.
  */
 
-import { INTRO_SEED } from '@/components/Intro/Intro.constants';
+import { INTRO_SEED, LANDING } from '@/components/Intro/Intro.constants';
 import { isIntroReviewRequested } from '@/components/Intro/Intro.helpers';
 import { PATH_NOISE } from '@/components/IntroPaths/IntroPaths.constants';
 import { createIntroPaths } from '@/components/IntroPaths/IntroPaths.helpers';
@@ -61,4 +61,14 @@ export const getIntroPaths = () => {
         : (Math.random() * 2 - 1) * PATH_NOISE.phaseJitter;
     paths ??= createIntroPaths(DAGGERS, seed, phaseOffset);
     return paths;
+};
+
+/** The intro ends once the last dagger has landed and the settle has played */
+export const getIntroEndSeconds = () =>
+    Math.max(...getIntroPaths().map(({ impactSeconds }) => impactSeconds)) + LANDING.settleSeconds;
+
+/** True until this dagger's impact; false once landed or when no intro plays */
+export const isDaggerFlying = (daggerId: string, isIntroPlaying: boolean) => {
+    const path = getIntroPaths().find(({ sectionId }) => sectionId === daggerId);
+    return isIntroPlaying && path !== undefined && getIntroTime() < path.impactSeconds;
 };

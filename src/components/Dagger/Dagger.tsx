@@ -53,7 +53,12 @@ const scrollToSection = (sectionId: string) => {
 export const Dagger = ({ config, cracks, isIntroPlaying }: DaggerProps) => {
     const { sectionId, bladeLength, pulse } = config;
     const [isHovered, setIsHovered] = useState(false);
-    const glowMaterialRef = useDaggerGlow({ daggerId: sectionId, isHovered, pulse });
+    const glowMaterialRef = useDaggerGlow({
+        daggerId: sectionId,
+        isHovered,
+        isIntroPlaying,
+        pulse
+    });
     const flightRef = useDaggerFlight({ daggerId: sectionId, isIntroPlaying });
     const liftRef = useDaggerLift({
         sectionId,

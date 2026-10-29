@@ -1,5 +1,5 @@
 #!/bin/sh
-# Intro review: frame dump at 30 fps (t = 0 to 4.0), numeric checks, contact sheets.
+# Intro review: frame dump at 30 fps (t = 0 to 5.1), numeric checks, contact sheets.
 # Needs the dev server running (pnpm run dev) and the global playwright-cli.
 # Usage: pnpm run intro:review [base URL, default http://localhost:5173/]
 set -eu

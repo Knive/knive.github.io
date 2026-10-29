@@ -6,10 +6,12 @@ import {
     HEAD_CAM,
     HEAD_CAM_SHOTS,
     IGNITION_SHOT,
+    IMPACT_SHAKE,
     WIDE_BEHIND_SHOT
 } from '@/components/IntroCamera/IntroCamera.constants';
 import { FLIGHT } from '@/components/IntroPaths/IntroPaths.constants';
 import {
+    getPathBodyCentre,
     getPathHead,
     getPathVelocity,
     type DaggerPath
@@ -35,7 +37,7 @@ const WORLD_UP = new Vector3(0, 1, 0);
 const FALLBACK_RIGHT = new Vector3(1, 0, 0);
 const CONVERGENCE = new Vector3(...FLIGHT.convergence);
 const FIRST_HEAD_CAM_DAGGER = BEATS.find(({ daggerId }) => daggerId)?.daggerId ?? '';
-const [head, velocity, forward, right, up, offset, sample] = Array.from(
+const [subject, velocity, forward, right, up, offset, sample] = Array.from(
     { length: 7 },
     () => new Vector3()
 );
@@ -62,10 +64,10 @@ const sway = (seconds: number, phase: number) =>
 const findPath = (paths: DaggerPath[], daggerId: string) =>
     paths.find(({ sectionId }) => sectionId === daggerId) ?? paths[0];
 
-/** Behind and beside the head, off-centre, looking a little ahead of it; computed from this beat only */
+/** Behind and beside the dagger, off-centre, looking a little ahead of it; computed from this beat only */
 const applyHeadCam = (beat: Beat, path: DaggerPath, seconds: number, shot: Shot) => {
     const archetype = HEAD_CAM_SHOTS[beat.shot as keyof typeof HEAD_CAM_SHOTS];
-    getPathHead(path, seconds, head);
+    getPathBodyCentre(path, seconds, subject);
     getSmoothedVelocity(path, seconds, velocity);
     const speed = velocity.length();
     forward.copy(velocity).normalize();
@@ -80,7 +82,7 @@ const applyHeadCam = (beat: Beat, path: DaggerPath, seconds: number, shot: Shot)
         .addScaledVector(right, archetype.side)
         .addScaledVector(up, archetype.height);
 
-    // Reveal: orbit around the head at the end of the beat, so the blade crosses the frame side-on
+    // Reveal: orbit around the dagger at the end of the beat, so the blade crosses the frame side-on
     const { reveal } = HEAD_CAM;
     const revealProgress = MathUtils.smoothstep(
         seconds,
@@ -94,10 +96,10 @@ const applyHeadCam = (beat: Beat, path: DaggerPath, seconds: number, shot: Shot)
 
     const phase = beat.startSeconds * 7.31;
     shot.position
-        .copy(head)
+        .copy(subject)
         .add(offset)
         .addScaledVector(up, sway(seconds, phase) * HEAD_CAM.handheld.positionMetres);
-    shot.lookAt.copy(head).addScaledVector(forward, HEAD_CAM.leadMetres);
+    shot.lookAt.copy(subject).addScaledVector(forward, HEAD_CAM.leadMetres);
 
     const rollDegrees =
         archetype.rollDegrees +
@@ -136,8 +138,20 @@ const applyWideBehind = (paths: DaggerPath[], shot: Shot) => {
     shot.fov = WIDE_BEHIND_SHOT.fov;
 };
 
-const applyHeroWide = (shot: Shot) => {
+/** Sum of every impact's decaying jolt so far; each axis rings with its own phase */
+const getImpactShake = (paths: DaggerPath[], seconds: number, phase: number) =>
+    paths.reduce((sum, { impactSeconds }) => {
+        const sinceImpact = seconds - impactSeconds;
+        if (sinceImpact < 0) return sum;
+        const ring = Math.sin(2 * Math.PI * IMPACT_SHAKE.frequencyHz * sinceImpact + phase);
+        return sum + IMPACT_SHAKE.metres * Math.exp(-IMPACT_SHAKE.decayRate * sinceImpact) * ring;
+    }, 0);
+
+const applyHeroWide = (paths: DaggerPath[], seconds: number, shot: Shot) => {
     shot.position.set(...CAMERA.position);
+    // Shaken without moving the aim, so the jolt reads as the ground shaking
+    shot.position.x += getImpactShake(paths, seconds, 0);
+    shot.position.y += getImpactShake(paths, seconds, Math.PI / 2);
     shot.lookAt.set(...CAMERA.lookAt);
     shot.roll = 0;
     shot.fov = CAMERA.fov;
@@ -156,7 +170,7 @@ export const getShot = (paths: DaggerPath[], seconds: number, shot: Shot) => {
     } else if (beat.shot === 'wideBehind') {
         applyWideBehind(paths, shot);
     } else {
-        applyHeroWide(shot);
+        applyHeroWide(paths, seconds, shot);
     }
     return shot;
 };

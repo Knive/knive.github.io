@@ -7,8 +7,12 @@ import type { Vector3Tuple } from 'three';
 export const FLIGHT = {
     /** Where all five heads meet at CONVERGENCE_SECONDS, above and in front of the field */
     convergence: [0, 9, -6] as Vector3Tuple,
-    /** End of the fan: this far above each landing point, along the dagger's own axis */
-    fanHeight: 6,
+    /**
+     * Free fall from the fan's end into the ground (m/s and m/s², exaggerated gravity). Each dagger
+     * starts it as high as its impact time needs, so later ones fall from higher, out of frame
+     */
+    fallStartSpeed: 4,
+    fallGravity: 40,
     /** Step for velocities by central difference, in seconds */
     velocityStepSeconds: 1 / 240
 } as const;
@@ -45,8 +49,8 @@ export const SPEED_BURSTS = {
     minWidth: 0.2,
     maxWidth: 0.32,
     /** Bursts are centred between these times */
-    earliestSeconds: 0.25,
-    latestSeconds: 2.5,
+    earliestSeconds: 0.55,
+    latestSeconds: 2.8,
     tableSize: 512
 } as const;
 

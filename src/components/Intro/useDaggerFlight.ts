@@ -4,7 +4,6 @@ import type { Group } from 'three';
 
 import { GLOW_INTENSITY } from '@/components/Glow/Glow.constants';
 import { playGlow } from '@/components/Glow/glowStore';
-import { FAN_END_SECONDS } from '@/components/Intro/Intro.constants';
 import { getIntroPaths, getIntroTime } from '@/components/Intro/introStore';
 import { applyPathPose } from '@/components/IntroPaths/IntroPaths.helpers';
 
@@ -38,7 +37,7 @@ export const useDaggerFlight = ({ daggerId, isIntroPlaying }: DaggerFlightOption
         applyPathPose(path, seconds, flight);
 
         // Side effect only (the crack decal); a seek back before the landing re-arms it
-        const isLanded = seconds >= FAN_END_SECONDS;
+        const isLanded = seconds >= path.impactSeconds;
         if (isLanded && !hasLandedRef.current) playGlow(daggerId, GLOW_INTENSITY.landing);
         hasLandedRef.current = isLanded;
     });

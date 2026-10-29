@@ -8,10 +8,22 @@ export const IGNITION_FLOOD = {
     clearRadius: 0.06
 } as const;
 
-/** Placeholder heads until the painted flipbooks: a glowing dot at each blade tip */
-export const HEAD_GLOW = {
-    sizeMetres: 1.2,
-    /** Colour multiplier, above 1 so the heads bloom */
-    brightness: 4,
-    textureSize: 64
+/**
+ * Flare on the first dagger's head during the ignition: hot core, 4-point cross, long horizontal
+ * anamorphic streak. Sizes in view heights; it grows as the head comes at the lens
+ */
+export const IGNITION_FLARE = {
+    coreRadius: 0.018,
+    crossLength: 0.16,
+    crossWidth: 0.004,
+    streakLength: 0.75,
+    streakWidth: 0.005,
+    /** Colour multiplier at full size, above 1 so it blooms */
+    peakIntensity: 3,
+    /** Size at the first frame, as a share of the full size */
+    startScale: 0.25,
+    /** Share of the ignition it takes to light up */
+    fadeInShare: 0.25,
+    /** Above the colour flood */
+    renderOrder: 1001
 } as const;

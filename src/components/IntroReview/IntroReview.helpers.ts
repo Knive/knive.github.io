@@ -4,19 +4,19 @@ import {
     BEATS,
     CONVERGENCE_SECONDS,
     FAN_END_SECONDS,
-    INTRO_DURATION_SECONDS,
+    LANDING,
     WHITEOUT
 } from '@/components/Intro/Intro.constants';
 import {
     getBeatAt,
-    getSlowMotionWindow,
     getStoryTime,
-    getTimeScale
+    getTimeScale,
+    SLOW_MOTION_WINDOW
 } from '@/components/Intro/Intro.helpers';
 import { getIntroPaths, getIntroSeed } from '@/components/Intro/introStore';
 import { HEAD_CAM } from '@/components/IntroCamera/IntroCamera.constants';
 import { createShot, getShot } from '@/components/IntroCamera/IntroCamera.helpers';
-import { getPathHead } from '@/components/IntroPaths/IntroPaths.helpers';
+import { getPathBodyCentre } from '@/components/IntroPaths/IntroPaths.helpers';
 import { REVIEW } from '@/components/IntroReview/IntroReview.constants';
 
 /** What the checks need to know about an intro, all as pure functions of intro time t */
@@ -33,7 +33,7 @@ export type IntroModel = {
     /** Camera archetype of each beat, in order */
     beatArchetypes: string[];
     getDaggerWorldPoint: (daggerIndex: number, seconds: number, target: Vector3) => Vector3;
-    /** The glowing head (blade tip) the camera frames; the screen checks follow it */
+    /** The point of the dagger the camera frames (its middle); the screen checks follow it */
     getDaggerHeadPoint: (daggerIndex: number, seconds: number, target: Vector3) => Vector3;
     /** Index of the dagger the camera follows at time t, or null for wide shots */
     getShotSubject: (seconds: number) => number | null;
@@ -55,12 +55,9 @@ const isInWindows = (seconds: number, windows: DesignedWindow[]) =>
 const checkDuration = ({ firstFlareSeconds, impactSeconds }: IntroModel): CheckResult => {
     const lastImpact = Math.max(...impactSeconds);
     const duration = lastImpact - firstFlareSeconds;
-    const passed =
-        Math.abs(duration - INTRO_DURATION_SECONDS) <= FRAME_SECONDS &&
-        lastImpact <= INTRO_DURATION_SECONDS + Number.EPSILON;
     return {
-        name: 'duration 4.0 s, last impact at t <= 4.0',
-        passed,
+        name: `last impact at t <= ${LANDING.latestImpactSeconds}`,
+        passed: lastImpact <= LANDING.latestImpactSeconds,
         detail: `first flare ${firstFlareSeconds.toFixed(3)} s, last impact ${lastImpact.toFixed(3)} s, duration ${duration.toFixed(3)} s`
     };
 };
@@ -250,22 +247,15 @@ const checkScreenSpeed = (model: IntroModel): CheckResult[] => {
 };
 
 /** The closed-form story time must match a numeric integral of the time scale */
-const checkStoryTime = (model: IntroModel): CheckResult => {
-    const impacts = {
-        firstImpactSeconds: Math.min(...model.impactSeconds),
-        lastImpactSeconds: Math.max(...model.impactSeconds)
-    };
+const checkStoryTime = (): CheckResult => {
     const step = 1e-4;
     let integral = 0;
     let worstError = 0;
     // Through the whole slow-motion window, ramps included
-    const endSeconds = getSlowMotionWindow(impacts).end + 0.5;
+    const endSeconds = SLOW_MOTION_WINDOW.end + 0.5;
     for (let seconds = 0; seconds <= endSeconds; seconds += step) {
-        integral += getTimeScale(seconds + step / 2, impacts) * step;
-        worstError = Math.max(
-            worstError,
-            Math.abs(integral - getStoryTime(seconds + step, impacts))
-        );
+        integral += getTimeScale(seconds + step / 2) * step;
+        worstError = Math.max(worstError, Math.abs(integral - getStoryTime(seconds + step)));
     }
     return {
         name: 'story time matches the integral of the time scale',
@@ -274,10 +264,21 @@ const checkStoryTime = (model: IntroModel): CheckResult => {
     };
 };
 
+/** Wall-clock time at which story time reaches the given value (story time only ever grows) */
+const toWallTime = (storySeconds: number) => {
+    let [low, high] = [0, storySeconds * 10];
+    for (let iteration = 0; iteration < 40; iteration++) {
+        const middle = (low + high) / 2;
+        if (getStoryTime(middle) < storySeconds) low = middle;
+        else high = middle;
+    }
+    return high;
+};
+
 export const runIntroChecks = (model: IntroModel) => {
     const results = [
         checkDuration(model),
-        checkStoryTime(model),
+        checkStoryTime(),
         checkArchetypes(model),
         checkCrossings(model),
         checkWorldSpeed(model),
@@ -286,13 +287,17 @@ export const runIntroChecks = (model: IntroModel) => {
     return { intro: model.label, passed: results.every(({ passed }) => passed), results };
 };
 
-/**
- * The Phase E v2 intro, described for the checks: seeded paths, pure shot director.
- * Until the landing handover, every dagger "lands" (snaps to rest) at FAN_END_SECONDS under the whiteout.
- */
+/** The Phase E v2 intro, described for the checks: seeded paths, pure shot director, seeded landings */
 export const createIntroModel = (): IntroModel => {
     const paths = getIntroPaths();
     const shot = createShot();
+    const impactSeconds = paths.map((path) => path.impactSeconds);
+    // Each dagger falls freely from the fan's end: a designed, steady speed-up from a slow start
+    const fallWindows = paths.map(({ impactSeconds: impact }): DesignedWindow => ({
+        label: 'free fall',
+        start: toWallTime(FAN_END_SECONDS),
+        end: impact
+    }));
     const revealWindows = BEATS.filter(({ daggerId }) => daggerId).map(
         ({ endSeconds }): DesignedWindow => ({
             label: 'reveal orbit',
@@ -303,14 +308,26 @@ export const createIntroModel = (): IntroModel => {
     return {
         label: `Phase E v2 intro, seed ${getIntroSeed()}`,
         firstFlareSeconds: 0,
-        impactSeconds: paths.map(() => FAN_END_SECONDS),
+        impactSeconds,
         convergenceSeconds: CONVERGENCE_SECONDS,
         designedWindows: [
+            // The group bursts apart towards each dagger's fall start, the later ones much higher
             {
-                label: 'whiteout (placeholder landing)',
+                label: 'convergence burst',
+                start: CONVERGENCE_SECONDS,
+                end: WHITEOUT.riseStartSeconds
+            },
+            {
+                label: 'whiteout',
                 start: WHITEOUT.riseStartSeconds,
                 end: WHITEOUT.fadeStartSeconds + WHITEOUT.fadeSeconds
             },
+            {
+                label: 'slow motion',
+                start: SLOW_MOTION_WINDOW.rampDownStart,
+                end: SLOW_MOTION_WINDOW.end
+            },
+            ...fallWindows,
             ...revealWindows
         ],
         cutSeconds: BEATS.slice(1).map(({ startSeconds }) => startSeconds),
@@ -318,7 +335,7 @@ export const createIntroModel = (): IntroModel => {
         getDaggerWorldPoint: (daggerIndex, seconds, target) =>
             paths[daggerIndex].getPosition(seconds, target),
         getDaggerHeadPoint: (daggerIndex, seconds, target) =>
-            getPathHead(paths[daggerIndex], seconds, target),
+            getPathBodyCentre(paths[daggerIndex], seconds, target),
         getShotSubject: (seconds) => {
             const { daggerId } = getBeatAt(seconds);
             const index = paths.findIndex(({ sectionId }) => sectionId === daggerId);

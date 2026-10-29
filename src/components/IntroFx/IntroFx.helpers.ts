@@ -1,8 +1,11 @@
 import { BEATS, FLOOD, WHITEOUT, type Beat } from '@/components/Intro/Intro.constants';
 import { getBeatAt } from '@/components/Intro/Intro.helpers';
+import { MathUtils } from 'three';
+
 import {
     CONVERGENCE_COLOR,
     IGNITION_COLOR,
+    IGNITION_FLARE,
     IGNITION_FLOOD
 } from '@/components/IntroFx/IntroFx.constants';
 
@@ -75,5 +78,18 @@ export const getFlood = (seconds: number, glowColors: Record<string, string>): F
         flashAlpha,
         sustainAlpha: beat.daggerId ? FLOOD.sustainAlpha : 0,
         clearRadius: FLOOD.sustainClearRadius
+    };
+};
+
+const IGNITION_BEAT = BEATS[0];
+
+/** Ignition flare at intro time t: lights up, then grows until the cut to the first head-cam */
+export const getIgnitionFlare = (seconds: number) => {
+    if (seconds >= IGNITION_BEAT.endSeconds) return { intensity: 0, scale: 0 };
+    const progress = seconds / IGNITION_BEAT.endSeconds;
+    const { peakIntensity, startScale, fadeInShare } = IGNITION_FLARE;
+    return {
+        intensity: peakIntensity * MathUtils.smoothstep(progress, 0, fadeInShare),
+        scale: MathUtils.lerp(startScale, 1, progress * progress)
     };
 };

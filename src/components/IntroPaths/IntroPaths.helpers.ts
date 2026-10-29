@@ -2,7 +2,9 @@ import { CatmullRomCurve3, Euler, MathUtils, Quaternion, Vector3, type Object3D 
 
 import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import { toRestRotation } from '@/components/BladeField/BladeField.helpers';
-import { CONVERGENCE_SECONDS, FAN_END_SECONDS } from '@/components/Intro/Intro.constants';
+import { DAGGER_LIFT } from '@/components/Dagger/Dagger.constants';
+import { CONVERGENCE_SECONDS, FAN_END_SECONDS, LANDING } from '@/components/Intro/Intro.constants';
+import { getStoryTime } from '@/components/Intro/Intro.helpers';
 import {
     CROSSING_NODES,
     FLIGHT,
@@ -17,6 +19,9 @@ type Random = () => number;
 
 const CONVERGENCE = new Vector3(...FLIGHT.convergence);
 const BLADE_TIP_DIRECTION = new Vector3(0, -1, 0);
+const REST_ORIENTATION = new Quaternion();
+/** Blades face the camera in their local xy plane: rocking around z shows */
+const QUIVER_AXIS = new Vector3(0, 0, 1);
 
 /** Symmetric random value in [-range, range) */
 const jitter = (random: Random, range: number) => randomBetween(random, -range, range);
@@ -196,6 +201,31 @@ const hermite = (
         .addScaledVector(toTangent, p3 - p2);
 };
 
+/**
+ * Wall-clock impact time of each dagger: a seeded order, and the uneven gaps shuffled with a
+ * little jitter, so the landings never fall on a regular beat
+ */
+const createImpactSchedule = (daggerCount: number, random: Random) => {
+    const order = shuffle(
+        Array.from({ length: daggerCount }, (_, index) => index),
+        random
+    );
+    const gaps = shuffle([...LANDING.gapsSeconds], random);
+    const impactSeconds: number[] = [];
+    let seconds = LANDING.firstImpactSeconds;
+    order.forEach((daggerIndex, step) => {
+        if (step > 0) seconds += gaps[step - 1] + jitter(random, LANDING.gapJitterSeconds);
+        impactSeconds[daggerIndex] = seconds;
+    });
+    return impactSeconds;
+};
+
+/** Critically damped spring from 0 towards 1, after x seconds */
+const springProgress = (seconds: number) => {
+    const decay = LANDING.orientationSpringRate * seconds;
+    return 1 - (1 + decay) * Math.exp(-decay);
+};
+
 type DaggerFlightInput = {
     sectionId: string;
     landing: LandingTransform;
@@ -209,13 +239,13 @@ const createDaggerPath = (
     archetype: PathArchetype,
     controlPoints: Vector3[],
     curlNoise: (point: Vector3, target: Vector3) => Vector3,
-    getProgress: (seconds: number) => number
+    getProgress: (seconds: number) => number,
+    impactSeconds: number
 ) => {
     const curve = new CatmullRomCurve3([...controlPoints, CONVERGENCE.clone()]);
     const landingPoint = new Vector3(landing.x, 0, landing.z);
     const restQuaternion = new Quaternion().setFromEuler(new Euler(...toRestRotation(landing)));
     const axis = new Vector3(0, 1, 0).applyQuaternion(restQuaternion);
-    const fanEnd = landingPoint.clone().addScaledVector(axis, FLIGHT.fanHeight);
     const displacement = new Vector3();
 
     const getFlightPoint = (seconds: number, target: Vector3) => {
@@ -230,16 +260,43 @@ const createDaggerPath = (
         .sub(arrival)
         .divideScalar(FLIGHT.velocityStepSeconds);
     const fanStartTangent = arrivalVelocity.clone().multiplyScalar(fanSeconds);
-    const fanEndTangent = axis.clone().multiplyScalar(-arrivalVelocity.length() * fanSeconds);
+    const fanEndTangent = axis.clone().multiplyScalar(-FLIGHT.fallStartSpeed * fanSeconds);
 
-    /** Flight-group origin (where the blade will enter the ground) at intro time t, in world space */
+    // Then it falls freely along its own axis, still accelerating when it hits the ground at its
+    // impact time, where the ground stops it dead. The fan ends as high as that fall needs
+    const impactStorySeconds = getStoryTime(impactSeconds);
+    const getFallDistance = (storySeconds: number) => {
+        const fallSeconds = storySeconds - FAN_END_SECONDS;
+        return (
+            FLIGHT.fallStartSpeed * fallSeconds +
+            0.5 * FLIGHT.fallGravity * fallSeconds * fallSeconds
+        );
+    };
+    const fanEnd = landingPoint.clone().addScaledVector(axis, getFallDistance(impactStorySeconds));
+
+    /**
+     * Flight-group origin (where the blade will enter the ground) at intro time t, in world space.
+     * The path runs on story time, so the global slow motion slows every dagger alike.
+     */
     const getPosition = (seconds: number, target: Vector3) => {
-        if (seconds <= CONVERGENCE_SECONDS) return getFlightPoint(seconds, target);
-        if (seconds < FAN_END_SECONDS) {
-            const progress = (seconds - CONVERGENCE_SECONDS) / fanSeconds;
+        const storySeconds = getStoryTime(seconds);
+        if (storySeconds <= CONVERGENCE_SECONDS) return getFlightPoint(storySeconds, target);
+        if (storySeconds < FAN_END_SECONDS) {
+            const progress = (storySeconds - CONVERGENCE_SECONDS) / fanSeconds;
             return hermite(CONVERGENCE, fanStartTangent, fanEnd, fanEndTangent, progress, target);
         }
+        if (storySeconds < impactStorySeconds) {
+            return target.copy(fanEnd).addScaledVector(axis, -getFallDistance(storySeconds));
+        }
         return target.copy(landingPoint);
+    };
+
+    /** 0 while flying, rising to exactly 1 at the impact: how far the dagger has turned into its rest pose */
+    const getRestBlend = (seconds: number) => {
+        const settleSeconds = LANDING.orientationSettleSeconds;
+        const elapsed = settleSeconds - (impactStorySeconds - getStoryTime(seconds));
+        if (elapsed <= 0) return 0;
+        return Math.min(springProgress(elapsed) / springProgress(settleSeconds), 1);
     };
 
     return {
@@ -250,7 +307,12 @@ const createDaggerPath = (
         inverseRestQuaternion: restQuaternion.clone().invert(),
         /** From the flight-group origin to the blade tip, along the blade */
         tipOffset: bladeLength * (1 - landing.exposedRatio),
-        getPosition
+        /** From the flight-group origin to the middle of the whole dagger, buried tip to pommel */
+        bodyCentreOffset:
+            (bladeLength - DAGGER_LIFT.hiltTopY) / 2 - bladeLength * landing.exposedRatio,
+        impactSeconds,
+        getPosition,
+        getRestBlend
     };
 };
 
@@ -282,13 +344,16 @@ export const createIntroPaths = (
     }
 
     const curlNoise = createCurlNoise(random, phaseOffset);
+    const progressTables = daggers.map(() => createProgressTable(random));
+    const impactSeconds = createImpactSchedule(daggers.length, random);
     return daggers.map((dagger, index) =>
         createDaggerPath(
             dagger,
             archetypes[index],
             controlPoints[index],
             curlNoise,
-            createProgressTable(random)
+            progressTables[index],
+            impactSeconds[index]
         )
     );
 };
@@ -307,25 +372,44 @@ export const getPathVelocity = (path: DaggerPath, seconds: number, target: Vecto
         .divideScalar(2 * step);
 };
 
-/** Blade tip (the glowing head) at intro time t */
-export const getPathHead = (path: DaggerPath, seconds: number, target: Vector3) => {
+/** Point this far along the flying blade (tip first along the velocity) at intro time t */
+const getPathPointAlongBlade = (
+    path: DaggerPath,
+    seconds: number,
+    offset: number,
+    target: Vector3
+) => {
     path.getPosition(seconds, target);
     const velocity = getPathVelocity(path, seconds, after);
     if (velocity.lengthSq() === 0) return target;
-    return target.addScaledVector(velocity.normalize(), path.tipOffset);
+    return target.addScaledVector(velocity.normalize(), offset);
 };
+
+/** Blade tip (the leading point) at intro time t */
+export const getPathHead = (path: DaggerPath, seconds: number, target: Vector3) =>
+    getPathPointAlongBlade(path, seconds, path.tipOffset, target);
+
+/** Middle of the whole dagger at intro time t: what the head-cams frame */
+export const getPathBodyCentre = (path: DaggerPath, seconds: number, target: Vector3) =>
+    getPathPointAlongBlade(path, seconds, path.bodyCentreOffset, target);
 
 const velocity = new Vector3();
 const orientation = new Quaternion();
 
 /**
  * Places the dagger's flight group (inside its tilted ground group) at intro time t:
- * tip first along its velocity, or at rest once landed.
+ * tip first along its velocity, turning into its rest pose just before the impact, at rest once landed.
  */
 export const applyPathPose = (path: DaggerPath, seconds: number, target: Object3D) => {
-    if (seconds >= FAN_END_SECONDS) {
+    if (seconds >= path.impactSeconds) {
+        const { amplitudeRadians, frequencyHz, decayRate } = LANDING.quiver;
+        const sinceImpact = seconds - path.impactSeconds;
+        const angle =
+            amplitudeRadians *
+            Math.exp(-decayRate * sinceImpact) *
+            Math.sin(2 * Math.PI * frequencyHz * sinceImpact);
         target.position.set(0, 0, 0);
-        target.quaternion.identity();
+        target.quaternion.setFromAxisAngle(QUIVER_AXIS, angle);
         return;
     }
     path.getPosition(seconds, target.position);
@@ -335,4 +419,5 @@ export const applyPathPose = (path: DaggerPath, seconds: number, target: Object3
     if (velocity.lengthSq() === 0) return;
     orientation.setFromUnitVectors(BLADE_TIP_DIRECTION, velocity.normalize());
     target.quaternion.copy(path.inverseRestQuaternion).multiply(orientation);
+    target.quaternion.slerp(REST_ORIENTATION, path.getRestBlend(seconds));
 };

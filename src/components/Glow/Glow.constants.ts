@@ -8,6 +8,8 @@ export const GLOW_INTENSITY = {
 export const GLOW_LEVEL = {
     idle: 0.5,
     hover: 2.5,
+    /** While flying in the intro: bright enough that each dagger's runes and crystal bloom in its colour */
+    flight: 5,
     /** Higher values reach the target level faster */
     smoothing: 5
 } as const;

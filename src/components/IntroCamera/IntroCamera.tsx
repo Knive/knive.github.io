@@ -2,8 +2,8 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { PerspectiveCamera } from 'three';
 
-import { INTRO_DURATION_SECONDS } from '@/components/Intro/Intro.constants';
 import {
+    getIntroEndSeconds,
     getIntroPaths,
     getIntroTime,
     isIntroSeeking,
@@ -44,7 +44,7 @@ export const IntroCamera = ({ onIntroEnd }: IntroCameraProps) => {
         startIntroClock();
 
         const seconds = getIntroTime();
-        if (seconds >= INTRO_DURATION_SECONDS && !isIntroSeeking()) {
+        if (seconds >= getIntroEndSeconds() && !isIntroSeeking()) {
             hasEndedRef.current = true;
             onIntroEnd();
             return;

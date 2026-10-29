@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
-import { ColourFlood, HeadGlows } from '@/components/IntroFx/IntroFx.components';
+import { ColourFlood, IgnitionFlare } from '@/components/IntroFx/IntroFx.components';
 
 type IntroFxProps = {
     daggers: Pick<DaggerConfig, 'sectionId' | 'glowColor'>[];
@@ -15,8 +15,8 @@ export const IntroFx = ({ daggers }: IntroFxProps) => {
     );
     return (
         <>
-            <HeadGlows glowColors={glowColors} />
             <ColourFlood glowColors={glowColors} />
+            <IgnitionFlare glowColors={glowColors} />
         </>
     );
 };

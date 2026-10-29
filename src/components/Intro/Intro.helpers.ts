@@ -35,20 +35,18 @@ export const getBeatAt = (seconds: number): Beat =>
 const smootherstep = (u: number) => u * u * u * (u * (u * 6 - 15) + 10);
 const integrateSmootherstep = (u: number) => u ** 6 - 3 * u ** 5 + 2.5 * u ** 4;
 
-type ImpactWindow = { firstImpactSeconds: number; lastImpactSeconds: number };
-
 /** Start and end of the slowed stretch, from the start of the ramp down to the end of the ramp up */
-export const getSlowMotionWindow = ({ firstImpactSeconds, lastImpactSeconds }: ImpactWindow) => {
-    const rampDownStart = firstImpactSeconds - TIME_SCALE.leadInSeconds;
-    // The ramp up never starts before the ramp down has finished
-    const rampUpStart = Math.max(lastImpactSeconds, rampDownStart + TIME_SCALE.rampDownSeconds);
-    return { rampDownStart, rampUpStart, end: rampUpStart + TIME_SCALE.rampUpSeconds };
-};
+const rampUpStart = TIME_SCALE.startSeconds + TIME_SCALE.rampDownSeconds + TIME_SCALE.holdSeconds;
+export const SLOW_MOTION_WINDOW = {
+    rampDownStart: TIME_SCALE.startSeconds,
+    rampUpStart,
+    end: rampUpStart + TIME_SCALE.rampUpSeconds
+} as const;
 
 /** Speed of story time relative to wall-clock time at intro time t: 1, down to slowRate, back to 1 */
-export const getTimeScale = (seconds: number, impacts: ImpactWindow) => {
+export const getTimeScale = (seconds: number) => {
     const { slowRate, rampDownSeconds, rampUpSeconds } = TIME_SCALE;
-    const { rampDownStart, rampUpStart } = getSlowMotionWindow(impacts);
+    const { rampDownStart } = SLOW_MOTION_WINDOW;
     const slowdown = 1 - slowRate;
 
     if (seconds <= rampDownStart) return 1;
@@ -63,9 +61,9 @@ export const getTimeScale = (seconds: number, impacts: ImpactWindow) => {
 };
 
 /** Story time s(t): the integral of the time scale from 0 to t, in closed form */
-export const getStoryTime = (seconds: number, impacts: ImpactWindow) => {
+export const getStoryTime = (seconds: number) => {
     const { slowRate, rampDownSeconds, rampUpSeconds } = TIME_SCALE;
-    const { rampDownStart, rampUpStart } = getSlowMotionWindow(impacts);
+    const { rampDownStart } = SLOW_MOTION_WINDOW;
     const slowdown = 1 - slowRate;
 
     if (seconds <= rampDownStart) return seconds;

@@ -6,7 +6,8 @@ async (page) => {
     const OUT_DIR = '__OUT_DIR__';
     const BASE_URL = '__BASE_URL__';
     const FRAMES_PER_SECOND = 30;
-    const END_SECONDS = 4;
+    // Past the latest allowed impact (LANDING.latestImpactSeconds) and its settle, so the whole landing is dumped
+    const END_SECONDS = 5.1;
     const WARM_UP_MS = 2000;
 
     await page.setViewportSize({ width: 1280, height: 720 });
