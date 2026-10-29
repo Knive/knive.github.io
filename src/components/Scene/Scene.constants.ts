@@ -45,8 +45,8 @@ export const CAMERA: { position: Vector3Tuple; fov: number; lookAt: Vector3Tuple
 /** Linear fog in world units from the camera: daggers stay clear, the floor edge and far trees fade out */
 export const FOG = {
     color: '#3a2a3e',
-    near: 5,
-    far: 15
+    near: 1,
+    far: 13
 } as const;
 
 /** Only HDR emissive (the runes) exceeds 1, so nothing else blooms */
