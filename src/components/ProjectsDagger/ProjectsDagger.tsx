@@ -1,51 +1,77 @@
-import { DaggerPart, type DaggerPartsProps } from '@/components/Dagger/Dagger.components';
-import { createBarGeometry, createWrappedHandleGeometry } from '@/components/Dagger/Dagger.helpers';
+import { CylinderGeometry } from 'three';
+
 import {
-    CRYSTAL,
-    PROJECTS_GUARD,
-    PROJECTS_HANDLE,
-    PROJECTS_POMMEL
+    DaggerPart,
+    LeatherGrip,
+    type DaggerPartsProps
+} from '@/components/Dagger/Dagger.components';
+import {
+    COPPER_BANDS,
+    CRESCENT_RING,
+    GUARD_ORB,
+    PROJECTS_GRIP,
+    STAR_POMMEL
 } from '@/components/ProjectsDagger/ProjectsDagger.constants';
 import {
-    createBladeGeometry,
-    createCrystalGeometry,
-    createPommelGeometry
+    createBlade,
+    createCrescentRingGeometry,
+    createOrbGeometry,
+    createStarPommelGeometry
 } from '@/components/ProjectsDagger/ProjectsDagger.helpers';
 
 // Built once: there is a single Projects dagger
-const BLADE_GEOMETRY = createBladeGeometry();
-const GUARD_GEOMETRY = createBarGeometry(PROJECTS_GUARD);
-const CRYSTAL_GEOMETRY = createCrystalGeometry();
-const HANDLE_GEOMETRY = createWrappedHandleGeometry(PROJECTS_HANDLE);
-const POMMEL_GEOMETRY = createPommelGeometry();
+const BLADE = createBlade();
+const RING_GEOMETRY = createCrescentRingGeometry();
+const ORB_GEOMETRY = createOrbGeometry();
+const BAND_GEOMETRY = new CylinderGeometry(
+    COPPER_BANDS.radius,
+    COPPER_BANDS.radius,
+    COPPER_BANDS.height,
+    COPPER_BANDS.radialSegments
+);
+const POMMEL_GEOMETRY = createStarPommelGeometry();
 
 export const ProjectsDaggerParts = ({ config, glowMaterialRef }: DaggerPartsProps) => (
     <>
         <DaggerPart
-            geometry={BLADE_GEOMETRY}
+            geometry={BLADE.geometry}
+            ref={glowMaterialRef}
             color={config.bladeColor}
+            map={BLADE.paintMap}
             rimColor={config.glowColor}
+            emissive={config.glowColor}
+            emissiveMap={BLADE.runeMap}
         />
+
         <DaggerPart
-            geometry={GUARD_GEOMETRY}
+            geometry={RING_GEOMETRY}
+            position={[0, CRESCENT_RING.centerY, 0]}
             color={config.guardColor}
             rimColor={config.glowColor}
         />
         <DaggerPart
-            geometry={CRYSTAL_GEOMETRY}
+            geometry={ORB_GEOMETRY}
+            position={[0, CRESCENT_RING.centerY, 0]}
             ref={glowMaterialRef}
-            color={CRYSTAL.color}
+            color={GUARD_ORB.color}
             rimColor={config.glowColor}
             emissive={config.glowColor}
         />
-        <DaggerPart
-            geometry={HANDLE_GEOMETRY}
-            color={config.handleColor}
-            rimColor={config.glowColor}
-        />
+
+        <LeatherGrip spec={PROJECTS_GRIP} color={config.handleColor} rimColor={config.glowColor} />
+        {COPPER_BANDS.positionsY.map((positionY) => (
+            <DaggerPart
+                key={positionY}
+                geometry={BAND_GEOMETRY}
+                position={[0, positionY, 0]}
+                color={COPPER_BANDS.color}
+                rimColor={config.glowColor}
+            />
+        ))}
+
         <DaggerPart
             geometry={POMMEL_GEOMETRY}
-            position={[0, PROJECTS_POMMEL.positionY, 0]}
+            position={[0, STAR_POMMEL.positionY, 0]}
             color={config.pommelColor}
             rimColor={config.glowColor}
         />
