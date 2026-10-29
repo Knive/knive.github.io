@@ -58,3 +58,30 @@ export const DAGGER_LIFT = {
     swayAngle: 0.35,
     swaySpeed: 0.6
 } as const;
+
+/** Canvases drawn in shape units (blade paint, rune mask): the longest side gets this many pixels */
+export const SHAPE_TEXTURE_SIZE = 1024;
+
+/** Painted blade metal (ref: Arcane props): worn lighter edges and light scratches */
+export const BLADE_PAINT = {
+    /** Worn band along the outline, in shape units */
+    edgeWidth: 0.022,
+    scratchCount: 70,
+    scratchMinLength: 0.02,
+    scratchMaxLength: 0.09,
+    scratchWidth: 0.003,
+    scratchColor: 'rgba(255, 255, 255, 0.18)'
+} as const;
+
+/** Helical leather strap around a grip core; lengths in world units */
+export const LEATHER_WRAP = {
+    segmentsPerTurn: 16,
+    radialSegments: 5,
+    /** Grayscale, tinted by the material colour */
+    textureWidth: 128,
+    textureHeight: 32,
+    baseColor: '#d6d0c8',
+    edgeColor: '#7a746c',
+    stitchColor: '#8d877f',
+    stitchesPerTurn: 3
+} as const;

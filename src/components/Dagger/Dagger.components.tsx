@@ -29,7 +29,7 @@ import styles from '@/components/Dagger/Dagger.module.css';
 
 export type DaggerPartsProps = {
     config: DaggerConfig;
-    /** Material of the part that glows on hover (runes, crystal...) */
+    /** Pass to every material that glows (runes, crystal...); they pulse together */
     glowMaterialRef: Ref<MeshToonMaterial>;
 };
 
@@ -42,6 +42,7 @@ type ToonMaterialProps = {
     ref?: Ref<MeshToonMaterial>;
     color: ColorRepresentation;
     rimColor: ColorRepresentation;
+    map?: Texture;
     emissive?: ColorRepresentation;
     emissiveMap?: Texture;
 };
@@ -90,12 +91,14 @@ export const ToonMaterial = ({
     ref,
     color,
     rimColor,
+    map,
     emissive,
     emissiveMap
 }: ToonMaterialProps) => (
     <meshToonMaterial
         ref={ref}
         color={color}
+        map={map}
         gradientMap={TOON_GRADIENT_MAP}
         emissive={emissive}
         emissiveMap={emissiveMap}
