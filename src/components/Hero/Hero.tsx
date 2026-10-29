@@ -7,10 +7,6 @@ import { IntroReview } from '@/components/IntroReview/IntroReview';
 import { Scene } from '@/components/Scene/Scene';
 import { PROFILE_NAME } from '@/components/Sections/Sections.constants';
 import { useI18n } from '@/i18n/i18n.context';
-import { cn } from '@/utils/cn';
-
-import styles from '@/components/Hero/Hero.module.css';
-import { heroVariants } from '@/components/Hero/Hero.styles';
 
 export const Hero: React.FC = () => {
     const { isIntroPlaying, endIntro } = useIntro();
@@ -19,20 +15,29 @@ export const Hero: React.FC = () => {
     useHeroScroll(titleRef);
 
     return (
-        <section id="hero" className={cn(styles.hero, heroVariants({ intent: 'primary' }))}>
-            <div ref={titleRef} className={styles['hero-title']} data-review-hidden>
-                <h1 className={styles['hero-name']}>{PROFILE_NAME}</h1>
-                <p className={styles['hero-job']}>{t.profile.jobTitle}</p>
+        <section id="hero" className="relative h-[80vh] min-h-150 w-screen overflow-clip">
+            {/* Sticky just below the header while the hero scrolls, so its scroll fade and rise stay visible */}
+            <div
+                ref={titleRef}
+                className="pointer-events-none sticky top-24 z-10 px-6 pt-[2vh] text-center"
+                data-review-hidden
+            >
+                <h1 className="text-[length:clamp(2.25rem,5vw,3.75rem)] text-moonlight">
+                    {PROFILE_NAME}
+                </h1>
+                <p className="mt-3 text-[length:clamp(1.15rem,2vw,1.5rem)] text-steel italic">
+                    {t.profile.jobTitle}
+                </p>
             </div>
             {/* Fixed behind the whole page; decorative, the header nav is its accessible equivalent */}
-            <div className={styles['hero-scene']} aria-hidden="true">
+            <div className="fixed inset-0 z-0" aria-hidden="true">
                 <Scene isIntroPlaying={isIntroPlaying} onIntroEnd={endIntro} />
             </div>
             {isIntroReviewRequested() && <IntroReview />}
             {isIntroPlaying && (
                 <button
                     type="button"
-                    className={styles['hero-skip']}
+                    className="absolute right-10 bottom-8 z-10 cursor-pointer border border-copper bg-transparent px-4 py-2 font-display text-[0.8rem] text-steel transition-[color,border-color] duration-200 ease-[ease] hover:border-ember hover:text-ember focus-visible:border-ember focus-visible:text-ember focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-ember"
                     onClick={endIntro}
                     data-review-hidden
                 >
