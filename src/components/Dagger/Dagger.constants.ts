@@ -5,13 +5,8 @@ export const TOON_RIM = {
     intensity: 0.45
 } as const;
 
-export const LABEL_POSITION_Y = 1.35;
-
-/**
- * How much of each blade stays above ground, like a short sword
- * planted in the earth. The rest of the blade is buried.
- */
-export const EXPOSED_BLADE_RATIO = 0.6;
+/** Just above the tallest pommel (y = 1), clear of the hero title */
+export const LABEL_POSITION_Y = 1.1;
 
 export const DEFAULT_BEVEL_SEGMENTS = 2;
 

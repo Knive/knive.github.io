@@ -3,7 +3,6 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { MathUtils, Vector3 } from 'three';
 
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
-import { EXPOSED_BLADE_RATIO } from '@/components/Dagger/Dagger.constants';
 import { CAMERA_FOLLOW, INTRO } from '@/components/Intro/Intro.constants';
 import {
     createFlightCurve,
@@ -14,7 +13,7 @@ import {
 import { CAMERA } from '@/components/Scene/Scene.constants';
 
 type IntroCameraProps = {
-    leadDagger: Pick<DaggerConfig, 'positionX' | 'bladeLength'>;
+    leadDagger: Pick<DaggerConfig, 'landing' | 'bladeLength'>;
     daggerCount: number;
     onIntroEnd: () => void;
 };
@@ -59,8 +58,9 @@ export const IntroCamera = ({ leadDagger, daggerCount, onIntroEnd }: IntroCamera
         // Look at the lead's guard: its flight point raised by the same offset as its meshes
         const leadProgress = getFlightProgress(INTRO.firstLandingSeconds, flightSeconds);
         leadCurve.getPointAt(leadProgress, target);
-        target.x += leadDagger.positionX;
-        target.y += leadDagger.bladeLength * EXPOSED_BLADE_RATIO;
+        target.x += leadDagger.landing.x;
+        target.y += leadDagger.bladeLength * leadDagger.landing.exposedRatio;
+        target.z += leadDagger.landing.z;
         position.copy(target).add(FOLLOW_OFFSET);
 
         const settleProgress = MathUtils.smoothstep(

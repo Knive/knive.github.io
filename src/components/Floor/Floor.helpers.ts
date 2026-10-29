@@ -7,7 +7,7 @@ type Random = () => number;
 type CanvasPoint = { x: number; y: number };
 /** One crack: a polyline in floor-canvas pixels, drawn thinner towards its end */
 export type CrackPath = { points: CanvasPoint[]; startWidth: number };
-export type CrackOrigin = { daggerId: string; positionX: number };
+export type CrackOrigin = { daggerId: string; x: number; z: number };
 export type CrackLayout = {
     /** Cracks radiating from each dagger, keyed by dagger id */
     byDagger: Record<string, CrackPath[]>;
@@ -71,8 +71,8 @@ export const createCrackLayout = (origins: readonly CrackOrigin[]): CrackLayout 
     const random = createSeededRandom(FLOOR.crackSeed);
     const byDagger: Record<string, CrackPath[]> = {};
 
-    for (const { daggerId, positionX } of origins) {
-        const origin = worldToCanvas(positionX, 0);
+    for (const { daggerId, x, z } of origins) {
+        const origin = worldToCanvas(x, z);
         const daggerCracks: CrackPath[] = [];
         for (let crack = 0; crack < CRACKS.perDagger; crack++) {
             const angle = (crack / CRACKS.perDagger) * Math.PI * 2 + random();

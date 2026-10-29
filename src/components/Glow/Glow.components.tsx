@@ -10,6 +10,7 @@ import {
     type PointsMaterial
 } from 'three';
 
+import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import type { CrackPath } from '@/components/Floor/Floor.helpers';
 import { CRACK_GLOW, SHOCKWAVE_RING, SPARKS } from '@/components/Glow/Glow.constants';
 import {
@@ -26,16 +27,16 @@ export type GlowEffectProps = {
 };
 
 type CrackGlowProps = GlowEffectProps & {
-    /** World x of the dagger, to line the glow up with the floor cracks */
-    positionX: number;
+    /** Where the dagger is planted, to line the glow up with the floor cracks */
+    landing: LandingTransform;
     cracks: CrackPath[];
 };
 
 /** The dagger's floor cracks lighting up in its colour with each burst; render at ground level */
-export const CrackGlow = ({ daggerId, glowColor, positionX, cracks }: CrackGlowProps) => {
+export const CrackGlow = ({ daggerId, glowColor, landing, cracks }: CrackGlowProps) => {
     const meshRef = useRef<Mesh>(null);
     const materialRef = useRef<MeshBasicMaterial>(null);
-    const texture = useMemo(() => createCrackGlowTexture(cracks, positionX), [cracks, positionX]);
+    const texture = useMemo(() => createCrackGlowTexture(cracks, landing), [cracks, landing]);
     const baseColor = useMemo(() => new Color(glowColor), [glowColor]);
 
     useFrame(() => {

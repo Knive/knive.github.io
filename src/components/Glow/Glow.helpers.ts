@@ -1,5 +1,6 @@
 import { CanvasTexture } from 'three';
 
+import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import { FLOOR } from '@/components/Floor/Floor.constants';
 import { drawCrack, worldToCanvas, type CrackPath } from '@/components/Floor/Floor.helpers';
 import {
@@ -78,7 +79,10 @@ export const GLOW_PULSES = {
  * Mask for one dagger's crack glow: its floor cracks in white, fading out from the dagger,
  * on a transparent canvas centred on the dagger (same orientation as the floor texture).
  */
-export const createCrackGlowTexture = (cracks: CrackPath[], positionX: number) => {
+export const createCrackGlowTexture = (
+    cracks: CrackPath[],
+    { x, z }: Pick<LandingTransform, 'x' | 'z'>
+) => {
     const { size, textureSize } = CRACK_GLOW;
     const canvas = document.createElement('canvas');
     canvas.width = textureSize;
@@ -89,7 +93,7 @@ export const createCrackGlowTexture = (cracks: CrackPath[], positionX: number) =
         const center = textureSize / 2;
         // Floor-canvas pixels to decal pixels: same world point, different resolution and origin
         const floorPixelsToDecal = textureSize / size / (FLOOR.textureSize / FLOOR.size);
-        const origin = worldToCanvas(positionX, 0);
+        const origin = worldToCanvas(x, z);
 
         context.save();
         context.translate(center, center);

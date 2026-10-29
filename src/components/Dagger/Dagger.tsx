@@ -1,12 +1,14 @@
 import { useState, type ComponentType } from 'react';
 
+import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
+import { toRestRotation } from '@/components/BladeField/BladeField.helpers';
 import {
     ContactShadow,
     DaggerHitShape,
     DaggerLabel,
     type DaggerPartsProps
 } from '@/components/Dagger/Dagger.components';
-import { EXPOSED_BLADE_RATIO, HIT_SHAPE } from '@/components/Dagger/Dagger.constants';
+import { HIT_SHAPE } from '@/components/Dagger/Dagger.constants';
 import { useDaggerGlow } from '@/components/Dagger/useDaggerGlow';
 import { useDaggerLift } from '@/components/Dagger/useDaggerLift';
 import type { CrackPath } from '@/components/Floor/Floor.helpers';
@@ -20,7 +22,8 @@ export interface DaggerConfig {
     /** Id of the CV section this dagger scrolls to */
     sectionId: string;
     label: string;
-    positionX: number;
+    /** Where and how the dagger is planted, from BladeField.constants */
+    landing: LandingTransform;
     bladeColor: string;
     guardColor: string;
     handleColor: string;
@@ -54,11 +57,11 @@ export const Dagger = ({ config, cracks, landingOrder, isIntroPlaying }: DaggerP
     const flightRef = useDaggerFlight({ daggerId: sectionId, landingOrder, isIntroPlaying });
     const liftRef = useDaggerLift({
         sectionId,
-        positionX: config.positionX,
+        landing: config.landing,
         bladeLength,
         isIntroPlaying
     });
-    const exposedBladeLength = bladeLength * EXPOSED_BLADE_RATIO;
+    const exposedBladeLength = bladeLength * config.landing.exposedRatio;
 
     const handlePointerOver = () => {
         setIsHovered(true);
@@ -80,20 +83,22 @@ export const Dagger = ({ config, cracks, landingOrder, isIntroPlaying }: DaggerP
     };
 
     return (
-        <group position={[config.positionX, 0, 0]}>
+        <group position={[config.landing.x, 0, config.landing.z]}>
             <ContactShadow />
             <DaggerGlowEffects
                 daggerId={sectionId}
                 glowColor={config.glowColor}
-                positionX={config.positionX}
+                landing={config.landing}
                 cracks={cracks}
             />
-            <DaggerHitShape
-                height={exposedBladeLength + HIT_SHAPE.hiltHeight}
-                onClick={handleClick}
-                onPointerOver={handlePointerOver}
-                onPointerOut={handlePointerOut}
-            />
+            <group rotation={toRestRotation(config.landing)}>
+                <DaggerHitShape
+                    height={exposedBladeLength + HIT_SHAPE.hiltHeight}
+                    onClick={handleClick}
+                    onPointerOver={handlePointerOver}
+                    onPointerOut={handlePointerOut}
+                />
+            </group>
 
             {/* Only the meshes fly in and lift out; shadow, effects and hit shape stay on the floor */}
             <group ref={liftRef}>

@@ -2,7 +2,8 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { MathUtils, Vector3, type Group } from 'three';
 
-import { DAGGER_LIFT, EXPOSED_BLADE_RATIO } from '@/components/Dagger/Dagger.constants';
+import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
+import { DAGGER_LIFT } from '@/components/Dagger/Dagger.constants';
 import { getDaggerAnchorId } from '@/components/Sections/Sections.helpers';
 import { getSectionLift } from '@/components/Sections/scrollStore';
 import { prefersReducedMotion } from '@/utils/prefersReducedMotion';
@@ -10,15 +11,16 @@ import { screenToWorld } from '@/utils/screenToWorld';
 
 type DaggerLiftOptions = {
     sectionId: string;
-    /** World x of the dagger's ground group */
-    positionX: number;
+    /** Ground position and rest tilt; the dagger straightens up as it lifts */
+    landing: LandingTransform;
     bladeLength: number;
     isIntroPlaying: boolean;
 };
 
-const resetLift = (group: Group) => {
+/** Resting in the floor: at its landing, with its tilt */
+const resetLift = (group: Group, { tiltX, yaw, tiltZ }: LandingTransform) => {
     group.position.set(0, 0, 0);
-    group.rotation.set(0, 0, 0);
+    group.rotation.set(tiltX, yaw, tiltZ);
     group.scale.setScalar(1);
 };
 
@@ -28,7 +30,7 @@ const resetLift = (group: Group) => {
  */
 export const useDaggerLift = ({
     sectionId,
-    positionX,
+    landing,
     bladeLength,
     isIntroPlaying
 }: DaggerLiftOptions) => {
@@ -38,7 +40,7 @@ export const useDaggerLift = ({
     const isReducedMotion = useMemo(prefersReducedMotion, []);
     // Middle of the whole dagger, from buried tip to pommel, in the ground group's space
     const daggerCentreY =
-        bladeLength * EXPOSED_BLADE_RATIO + (DAGGER_LIFT.hiltTopY - bladeLength) / 2;
+        bladeLength * landing.exposedRatio + (DAGGER_LIFT.hiltTopY - bladeLength) / 2;
 
     useFrame(({ camera, size, clock }) => {
         const group = liftRef.current;
@@ -49,7 +51,7 @@ export const useDaggerLift = ({
         const anchorRect = anchorRef.current?.getBoundingClientRect();
         // Hidden anchor (narrow screens): the dagger stays in the floor
         if (lift === 0 || !anchorRect?.width) {
-            resetLift(group);
+            resetLift(group, landing);
             return;
         }
 
@@ -63,15 +65,22 @@ export const useDaggerLift = ({
         );
         const scale = MathUtils.lerp(1, DAGGER_LIFT.scale, lift);
         // Ground group space, offset so the scaled dagger's centre lands on the anchor
-        anchorPosition.x -= positionX;
+        anchorPosition.x -= landing.x;
+        anchorPosition.z -= landing.z;
         anchorPosition.y -= daggerCentreY * scale;
 
         // From the rest position (origin) towards the anchor
         group.position.copy(anchorPosition).multiplyScalar(lift);
         group.scale.setScalar(scale);
-        group.rotation.y = isReducedMotion
+        const sway = isReducedMotion
             ? 0
-            : Math.sin(clock.elapsedTime * DAGGER_LIFT.swaySpeed) * DAGGER_LIFT.swayAngle * lift;
+            : Math.sin(clock.elapsedTime * DAGGER_LIFT.swaySpeed) * DAGGER_LIFT.swayAngle;
+        // From the rest tilt to upright (plus the idle sway) as it lifts
+        group.rotation.set(
+            landing.tiltX * (1 - lift),
+            MathUtils.lerp(landing.yaw, sway, lift),
+            landing.tiltZ * (1 - lift)
+        );
     });
 
     return liftRef;

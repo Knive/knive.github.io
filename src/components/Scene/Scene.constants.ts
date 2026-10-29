@@ -1,5 +1,6 @@
 import type { Vector3Tuple } from 'three';
 
+import { DAGGER_LANDINGS } from '@/components/BladeField/BladeField.constants';
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import { createCrackLayout } from '@/components/Floor/Floor.helpers';
 import { GLOW_PULSES } from '@/components/Glow/Glow.helpers';
@@ -58,7 +59,7 @@ export const DAGGERS: DaggerConfig[] = [
     {
         sectionId: 'experience',
         label: 'Experience',
-        positionX: -2.6,
+        landing: DAGGER_LANDINGS.experience,
         bladeColor: '#B0B8A4',
         guardColor: '#B08D57',
         handleColor: '#4A3020',
@@ -71,7 +72,7 @@ export const DAGGERS: DaggerConfig[] = [
     {
         sectionId: 'skills',
         label: 'Skills',
-        positionX: -1.3,
+        landing: DAGGER_LANDINGS.skills,
         bladeColor: '#9AAAB8',
         guardColor: '#252E3C',
         handleColor: '#161E2A',
@@ -84,7 +85,7 @@ export const DAGGERS: DaggerConfig[] = [
     {
         sectionId: 'projects',
         label: 'Projects',
-        positionX: 0,
+        landing: DAGGER_LANDINGS.projects,
         bladeColor: '#C4CED6',
         guardColor: '#4A4438',
         handleColor: '#2A2420',
@@ -97,7 +98,7 @@ export const DAGGERS: DaggerConfig[] = [
     {
         sectionId: 'education',
         label: 'Education',
-        positionX: 1.3,
+        landing: DAGGER_LANDINGS.education,
         bladeColor: '#A8A898',
         guardColor: '#3A3828',
         // Bone-white leather
@@ -111,7 +112,7 @@ export const DAGGERS: DaggerConfig[] = [
     {
         sectionId: 'contact',
         label: 'Contact',
-        positionX: 2.6,
+        landing: DAGGER_LANDINGS.contact,
         bladeColor: '#8090A0',
         guardColor: '#28283A',
         // Red-brown leather
@@ -126,5 +127,5 @@ export const DAGGERS: DaggerConfig[] = [
 
 /** Cracks in the floor radiate from where each dagger is embedded; built once, shared by floor and glow */
 export const CRACK_LAYOUT = createCrackLayout(
-    DAGGERS.map(({ sectionId, positionX }) => ({ daggerId: sectionId, positionX }))
+    DAGGERS.map(({ sectionId, landing }) => ({ daggerId: sectionId, x: landing.x, z: landing.z }))
 );

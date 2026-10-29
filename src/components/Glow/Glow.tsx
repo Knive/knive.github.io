@@ -2,6 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Color, MathUtils, type PointLight } from 'three';
 
+import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import type { DaggerConfig } from '@/components/Dagger/Dagger';
 import type { CrackPath } from '@/components/Floor/Floor.helpers';
 import {
@@ -18,12 +19,12 @@ import {
 } from '@/components/Glow/glowStore';
 
 type DaggerGlowEffectsProps = GlowEffectProps & {
-    positionX: number;
+    landing: LandingTransform;
     cracks: CrackPath[];
 };
 
 type GlowLightProps = {
-    daggers: Pick<DaggerConfig, 'sectionId' | 'positionX' | 'glowColor'>[];
+    daggers: Pick<DaggerConfig, 'sectionId' | 'landing' | 'glowColor'>[];
 };
 
 /**
@@ -57,7 +58,8 @@ export const GlowLight = ({ daggers }: GlowLightProps) => {
             getBurstStrength(activeDagger.sectionId) * GLOW_LIGHT.burstPeak;
 
         light.intensity = ease(light.intensity, targetIntensity);
-        light.position.x = ease(light.position.x, activeDagger.positionX);
+        light.position.x = ease(light.position.x, activeDagger.landing.x);
+        light.position.z = ease(light.position.z, activeDagger.landing.z + GLOW_LIGHT.offsetZ);
         light.color.lerp(
             glowColors.get(activeDagger.sectionId) ?? light.color,
             1 - Math.exp(-GLOW_LIGHT.smoothing * deltaSeconds)
@@ -82,16 +84,11 @@ export const GlowLight = ({ daggers }: GlowLightProps) => {
 export const DaggerGlowEffects = ({
     daggerId,
     glowColor,
-    positionX,
+    landing,
     cracks
 }: DaggerGlowEffectsProps) => (
     <>
-        <CrackGlow
-            daggerId={daggerId}
-            glowColor={glowColor}
-            positionX={positionX}
-            cracks={cracks}
-        />
+        <CrackGlow daggerId={daggerId} glowColor={glowColor} landing={landing} cracks={cracks} />
         <ShockwaveRing daggerId={daggerId} glowColor={glowColor} />
         <Sparks daggerId={daggerId} glowColor={glowColor} />
     </>
