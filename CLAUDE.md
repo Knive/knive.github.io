@@ -19,13 +19,15 @@ Art direction: painted, stylized, inspired by Arcane (Riot/Fortiche): high-contr
 
 ## Sections and daggers
 
-| Section    | Silhouette                                        | Glow           |
-| ---------- | ------------------------------------------------- | -------------- |
-| Experience | Long straight blade, brass guard with gear motifs | Amber/gold     |
-| Skills     | Double-edged blade, runes in the fuller           | Cyan/teal      |
-| Projects   | Wavy kris-like blade, crystal in the guard        | Magenta/violet |
-| Education  | Short stiletto, slim and symmetrical              | Green          |
-| Contact    | Throwing dagger with ring pommel                  | Orange/red     |
+All five are chunky and asymmetric, with a wrapped leather grip, a crystal or ornament in the guard, worn edges and runes in an emissive mask.
+
+| Section    | Design            | Silhouette                                                                           | Glow           |
+| ---------- | ----------------- | ------------------------------------------------------------------------------------ | -------------- |
+| Experience | Foreman's Cleaver | Broad blade, notched spine, gear guard with amber crystal, square hook, hex pommel   | Amber/gold     |
+| Skills     | Rune Fang         | Long blade, scalloped edge, runes in the fuller, forward crescent guard, hook pommel | Cyan/teal      |
+| Projects   | Crescent Wave     | Wavy blade with spine hook, open crescent ring around a violet orb, star pommel      | Magenta/violet |
+| Education  | Scribe's Quill    | Short thick quill-nib blade, open-book guard with green drop, bone-white grip        | Green          |
+| Contact    | Ember Hook        | Saw-backed hooked blade, red worn edge, single hooking quillon, ring pommel          | Orange/red     |
 
 Each dagger has its own glow colour AND its own pulse/flicker behaviour, so colour-blind visitors can tell them apart.
 
@@ -39,7 +41,8 @@ Each dagger has its own glow colour AND its own pulse/flicker behaviour, so colo
 
 ## Modelling
 
-- Procedural geometry (ExtrudeGeometry with bevel for blades, lathe or extrude for guard, handle, pommel). Runes and wear go in an emissive map and a painted-style texture. Textures can be replaced later by hand-painted ones.
+- Procedural geometry: blades and flat ornaments are bevelled extrusions of `Outline`s (UVs map to the shape's bounds, so painted wear and runes line up), grips are a core plus a helical leather strap (`LeatherGrip`). Runes go in an emissive mask, wear in a painted blade texture. Textures can be replaced later by hand-painted ones.
+- Every glowing part (blade runes, guard crystal) registers with `glowMaterialRef`, so they pulse together.
 - Toon-style stepped shading with light outlines. Only runes and effects feed the bloom (luminance threshold).
 
 ## Performance budget

@@ -20,12 +20,6 @@ export const OUTLINE = {
     color: '#07090D'
 } as const;
 
-/** Emissive mask canvas: tall and narrow like a blade; top is the guard, bottom the tip */
-export const EMISSIVE_MASK = {
-    width: 64,
-    height: 1024
-} as const;
-
 /**
  * Invisible box that catches the pointer, wider than the thin blades so they are easy to hover.
  * It stands on the ground and reaches above the pommel.
