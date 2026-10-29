@@ -41,23 +41,23 @@ export type DecorBlade = LandingTransform & {
  */
 export const DECOR_BLADES: DecorBlade[] = [
     {
-        x: -2.4,
-        z: 1.6,
+        x: -7.2,
+        z: -4,
         tiltX: 0,
         tiltZ: 0.28,
         yaw: 0.2,
-        exposedRatio: 0.7,
+        exposedRatio: 0.34,
         variant: 0,
         bladeLength: 4.5
     },
     {
-        x: 2.35,
-        z: 1.6,
+        x: 7.1,
+        z: -4.2,
         tiltX: 0,
         tiltZ: -0.26,
         yaw: -0.2,
-        exposedRatio: 0.7,
-        variant: 1,
+        exposedRatio: 0.45,
+        variant: 0,
         bladeLength: 4.2
     },
     {
@@ -66,7 +66,7 @@ export const DECOR_BLADES: DecorBlade[] = [
         tiltX: -0.04,
         tiltZ: -0.08,
         yaw: 0.1,
-        exposedRatio: 0.6,
+        exposedRatio: 0.4,
         variant: 0,
         bladeLength: 3.2
     },
@@ -76,7 +76,7 @@ export const DECOR_BLADES: DecorBlade[] = [
         tiltX: 0.05,
         tiltZ: 0.1,
         yaw: -0.15,
-        exposedRatio: 0.6,
+        exposedRatio: 0.3,
         variant: 2,
         bladeLength: 3.6
     },
@@ -96,7 +96,7 @@ export const DECOR_BLADES: DecorBlade[] = [
         tiltX: -0.03,
         tiltZ: 0.06,
         yaw: -0.1,
-        exposedRatio: 0.6,
+        exposedRatio: 0.5,
         variant: 0,
         bladeLength: 4
     },
@@ -106,7 +106,7 @@ export const DECOR_BLADES: DecorBlade[] = [
         tiltX: 0.04,
         tiltZ: 0.1,
         yaw: 0.15,
-        exposedRatio: 0.6,
+        exposedRatio: 0.45,
         variant: 2,
         bladeLength: 4.2
     },
