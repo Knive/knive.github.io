@@ -136,10 +136,18 @@ type LeatherGripProps = {
     rimColor: ColorRepresentation;
     /** Two straps winding opposite ways, for a criss-cross binding */
     isCrossed?: boolean;
+    /** Shows between loose turns, like a bare tang; defaults to the leather colour */
+    coreColor?: ColorRepresentation;
 };
 
 /** Grip core with a leather strap wound around it */
-export const LeatherGrip = ({ spec, color, rimColor, isCrossed = false }: LeatherGripProps) => {
+export const LeatherGrip = ({
+    spec,
+    color,
+    rimColor,
+    isCrossed = false,
+    coreColor = color
+}: LeatherGripProps) => {
     const { coreGeometry, wrapGeometries, leatherMap } = useMemo(
         () => ({
             coreGeometry: new CylinderGeometry(
@@ -158,7 +166,7 @@ export const LeatherGrip = ({ spec, color, rimColor, isCrossed = false }: Leathe
 
     return (
         <group position={[0, spec.startY, 0]}>
-            <DaggerPart geometry={coreGeometry} color={color} rimColor={rimColor} />
+            <DaggerPart geometry={coreGeometry} color={coreColor} rimColor={rimColor} />
             {wrapGeometries.map((geometry) => (
                 <DaggerPart
                     key={geometry.uuid}

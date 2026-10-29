@@ -114,7 +114,8 @@ export const DAGGERS: DaggerConfig[] = [
         positionX: 2.6,
         bladeColor: '#8090A0',
         guardColor: '#28283A',
-        handleColor: '#1A1828',
+        // Red-brown leather
+        handleColor: '#6B2A1C',
         pommelColor: '#383858',
         glowColor: '#D9502E',
         bladeLength: CONTACT_BLADE.length,
