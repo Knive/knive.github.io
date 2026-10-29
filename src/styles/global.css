@@ -54,43 +54,46 @@
     --background: #fff;
 }
 
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+/* Layered, so Tailwind utilities override these base styles */
+@layer base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
 
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    background: var(--color-void);
-    color: var(--color-steel);
-    font-family: var(--font-body);
-    font-size: clamp(1.05rem, 1.5vw, 1.2rem);
-    line-height: 1.75;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-h1,
-h2,
-h3 {
-    font-family: var(--font-display);
-    color: var(--color-moonlight);
-    font-weight: 400;
-    line-height: 1.2;
-    letter-spacing: 0.06em;
-}
-
-/* Reduced motion */
-
-@media (prefers-reduced-motion: reduce) {
     html {
-        scroll-behavior: auto;
+        scroll-behavior: smooth;
+    }
+
+    body {
+        background: var(--color-void);
+        color: var(--color-steel);
+        font-family: var(--font-body);
+        font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+        line-height: 1.75;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    h1,
+    h2,
+    h3 {
+        font-family: var(--font-display);
+        color: var(--color-moonlight);
+        font-weight: 400;
+        line-height: 1.2;
+        letter-spacing: 0.06em;
+    }
+
+    /* Reduced motion */
+
+    @media (prefers-reduced-motion: reduce) {
+        html {
+            scroll-behavior: auto;
+        }
     }
 }
 
