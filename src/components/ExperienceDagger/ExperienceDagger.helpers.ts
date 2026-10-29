@@ -1,13 +1,20 @@
-import { Path, Shape } from 'three';
+import { CylinderGeometry, OctahedronGeometry, Path, Shape } from 'three';
 
+import { STEEL_PAINT } from '@/components/Dagger/Dagger.constants';
 import {
-    createEmissiveMaskTexture,
+    createBladePaintTexture,
+    createOutlinedPart,
+    createRuneMaskTexture,
     extrudeBevelled,
     type BevelSpec
 } from '@/components/Dagger/Dagger.helpers';
 import {
     EXPERIENCE_BLADE,
-    RUNE_TEXTURE,
+    EXPERIENCE_BLADE_OUTLINE,
+    EXPERIENCE_BLADE_PAINT,
+    GUARD_CRYSTAL,
+    HEX_POMMEL,
+    SPINE_RUNES,
     TOOTH_STEPS
 } from '@/components/ExperienceDagger/ExperienceDagger.constants';
 
@@ -46,72 +53,43 @@ export const createGearGeometry = ({
     return extrudeBevelled(shape, bevel);
 };
 
-/** Flat blade: parallel edges from the guard, then a short taper to the tip */
-export const createBladeGeometry = () => {
-    const { length, halfWidth, taperStartY } = EXPERIENCE_BLADE;
-    const shape = new Shape()
-        .moveTo(-halfWidth, 0)
-        .lineTo(halfWidth, 0)
-        .lineTo(halfWidth, taperStartY)
-        .lineTo(0, -length)
-        .lineTo(-halfWidth, taperStartY)
-        .closePath();
-
-    return extrudeBevelled(shape, EXPERIENCE_BLADE);
-};
-
-const drawGear = (
-    context: CanvasRenderingContext2D,
-    centerX: number,
-    centerY: number,
-    radius: number
-) => {
-    const tickCount = 8;
-    context.beginPath();
-    context.arc(centerX, centerY, radius * 0.6, 0, Math.PI * 2);
-    for (let tick = 0; tick < tickCount; tick++) {
-        const angle = (tick / tickCount) * Math.PI * 2;
-        context.moveTo(
-            centerX + Math.cos(angle) * radius * 0.6,
-            centerY + Math.sin(angle) * radius * 0.6
-        );
-        context.lineTo(centerX + Math.cos(angle) * radius, centerY + Math.sin(angle) * radius);
-    }
-    context.stroke();
-};
-
-const drawRune = (
-    context: CanvasRenderingContext2D,
-    centerX: number,
-    centerY: number,
-    radius: number
-) => {
-    context.beginPath();
-    context.moveTo(centerX, centerY - radius);
-    context.lineTo(centerX, centerY + radius);
-    context.moveTo(centerX - radius * 0.6, centerY - radius * 0.4);
-    context.lineTo(centerX, centerY);
-    context.lineTo(centerX + radius * 0.6, centerY - radius * 0.4);
-    context.stroke();
-};
-
-/** Gears and runes alternating down the exposed part of the blade */
-const drawRunes = (context: CanvasRenderingContext2D, width: number, height: number) => {
-    const { glyphCount, glyphAreaEnd, lineWidth, glyphRadiusRatio } = RUNE_TEXTURE;
+/** Square gear-tooth glyphs, alternating open side, with a dot inside */
+const drawSpineRunes = (context: CanvasRenderingContext2D) => {
+    const { x, startY, endY, count, halfSize, lineWidth } = SPINE_RUNES;
+    const spacing = (endY - startY) / (count - 1);
     context.lineWidth = lineWidth;
 
-    const glyphSpacing = (height * glyphAreaEnd) / glyphCount;
-    const glyphRadius = width * glyphRadiusRatio;
-    for (let glyph = 0; glyph < glyphCount; glyph++) {
-        const centerY = (glyph + 0.5) * glyphSpacing;
-        const drawGlyph = glyph % 2 === 0 ? drawGear : drawRune;
-        drawGlyph(context, width / 2, centerY, glyphRadius);
+    for (let rune = 0; rune < count; rune++) {
+        const y = startY + rune * spacing;
+        const openSide = rune % 2 === 0 ? 1 : -1;
+        context.beginPath();
+        context.moveTo(x - halfSize, y - halfSize * openSide);
+        context.lineTo(x - halfSize, y + halfSize * openSide);
+        context.lineTo(x + halfSize, y + halfSize * openSide);
+        context.lineTo(x + halfSize, y - halfSize * openSide);
+        context.stroke();
+        context.beginPath();
+        context.arc(x, y, lineWidth, 0, Math.PI * 2);
+        context.fill();
     }
 };
 
-export const createRuneTexture = () =>
-    createEmissiveMaskTexture({
-        halfWidth: EXPERIENCE_BLADE.halfWidth,
-        bladeLength: EXPERIENCE_BLADE.length,
-        drawGlyphs: drawRunes
-    });
+export const createBlade = () => {
+    const blade = createOutlinedPart(EXPERIENCE_BLADE_OUTLINE, EXPERIENCE_BLADE);
+    return {
+        geometry: blade.geometry,
+        paintMap: createBladePaintTexture(blade, { ...STEEL_PAINT, ...EXPERIENCE_BLADE_PAINT }),
+        runeMap: createRuneMaskTexture(blade.bounds, drawSpineRunes)
+    };
+};
+
+export const createCrystalGeometry = () =>
+    new OctahedronGeometry(GUARD_CRYSTAL.radius).scale(...GUARD_CRYSTAL.scale);
+
+/** Hexagonal prism turned to face the camera, flat sides up and down */
+export const createHexPommelGeometry = () => {
+    const { radius, thickness, sides } = HEX_POMMEL;
+    return new CylinderGeometry(radius, radius, thickness, sides)
+        .rotateY(Math.PI / sides)
+        .rotateX(Math.PI / 2);
+};

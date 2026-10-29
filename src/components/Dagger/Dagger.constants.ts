@@ -85,3 +85,10 @@ export const LEATHER_WRAP = {
     stitchColor: '#8d877f',
     stitchesPerTurn: 3
 } as const;
+
+/** Grayscale blade paint, tinted by the dagger's bladeColor: darker towards the tip, bright worn edge */
+export const STEEL_PAINT = {
+    baseColor: '#bdbdbd',
+    tipColor: '#858585',
+    edgeColor: '#ffffff'
+} as const;
