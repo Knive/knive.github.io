@@ -7,6 +7,10 @@
  */
 
 import { INTRO_SEED } from '@/components/Intro/Intro.constants';
+import { isIntroReviewRequested } from '@/components/Intro/Intro.helpers';
+import { PATH_NOISE } from '@/components/IntroPaths/IntroPaths.constants';
+import { createIntroPaths } from '@/components/IntroPaths/IntroPaths.helpers';
+import { DAGGERS } from '@/components/Scene/Scene.constants';
 import { getDevUrlNumber } from '@/utils/getDevUrlNumber';
 import { REVIEW_PARAMS } from '@/components/IntroReview/IntroReview.constants';
 
@@ -44,3 +48,17 @@ export const playIntro = () => {
 export const pauseIntro = () => seekIntro(getIntroTime());
 
 export const isIntroSeeking = () => seekSeconds !== null;
+
+let paths: ReturnType<typeof createIntroPaths> | null = null;
+
+/**
+ * The daggers' flight paths, built once from the seed. The only per-visit randomness is a tiny
+ * noise phase, and none in dev review, so reviewed frames are reproducible.
+ */
+export const getIntroPaths = () => {
+    const phaseOffset = isIntroReviewRequested()
+        ? 0
+        : (Math.random() * 2 - 1) * PATH_NOISE.phaseJitter;
+    paths ??= createIntroPaths(DAGGERS, seed, phaseOffset);
+    return paths;
+};

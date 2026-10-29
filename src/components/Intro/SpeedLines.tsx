@@ -2,8 +2,7 @@ import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { AdditiveBlending, MathUtils, type ShaderMaterial } from 'three';
 
-import { INTRO, SPEED_LINES } from '@/components/Intro/Intro.constants';
-import { toFlightSeconds } from '@/components/Intro/Intro.helpers';
+import { CONVERGENCE_SECONDS, SPEED_LINES } from '@/components/Intro/Intro.constants';
 import { getIntroTime } from '@/components/Intro/introStore';
 
 // The quad's corners are already in clip space: it covers the view whatever the camera does
@@ -51,7 +50,7 @@ const FRAGMENT_SHADER = `
     }
 `;
 
-/** Speed lines over the view while the daggers braid; they vanish before the dive */
+/** Speed lines over the view during the flight; they vanish at the convergence */
 export const SpeedLines = () => {
     const materialRef = useRef<ShaderMaterial>(null);
     // Initial values only: the material keeps its own copy, updated through the ref
@@ -73,22 +72,22 @@ export const SpeedLines = () => {
     useFrame(({ size }) => {
         const uniforms = materialRef.current?.uniforms;
         if (!uniforms) return;
-        const flightSeconds = toFlightSeconds(getIntroTime());
+        const seconds = getIntroTime();
         const fadeIn = MathUtils.smoothstep(
-            flightSeconds,
+            seconds,
             SPEED_LINES.startSeconds,
             SPEED_LINES.startSeconds + SPEED_LINES.fadeSeconds
         );
         const fadeOut =
             1 -
             MathUtils.smoothstep(
-                flightSeconds,
-                INTRO.splitSeconds - SPEED_LINES.fadeSeconds,
-                INTRO.splitSeconds
+                seconds,
+                CONVERGENCE_SECONDS - SPEED_LINES.fadeSeconds,
+                CONVERGENCE_SECONDS
             );
 
         uniforms.aspect.value = size.width / size.height;
-        uniforms.time.value = flightSeconds;
+        uniforms.time.value = seconds;
         uniforms.strength.value = SPEED_LINES.strength * fadeIn * fadeOut;
     });
 

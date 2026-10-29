@@ -9,10 +9,7 @@ import {
     seekIntro
 } from '@/components/Intro/introStore';
 import { REVIEW_BODY_CLASS } from '@/components/IntroReview/IntroReview.constants';
-import {
-    createBraidIntroModel,
-    runIntroChecks
-} from '@/components/IntroReview/IntroReview.helpers';
+import { createIntroModel, runIntroChecks } from '@/components/IntroReview/IntroReview.helpers';
 import { isIntroReviewRequested } from '@/components/Intro/Intro.helpers';
 
 type IntroDevApi = {
@@ -44,7 +41,7 @@ export const useIntroDevTools = () => {
                 isSeeking: isIntroSeeking(),
                 seed: getIntroSeed()
             }),
-            check: () => runIntroChecks(createBraidIntroModel())
+            check: () => runIntroChecks(createIntroModel())
         };
         const isReview = isIntroReviewRequested();
         if (isReview) document.body.classList.add(REVIEW_BODY_CLASS);

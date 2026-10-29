@@ -7,8 +7,8 @@ import { BladeField } from '@/components/BladeField/BladeField';
 import { Dagger } from '@/components/Dagger/Dagger';
 import { Floor } from '@/components/Floor/Floor';
 import { GlowLight } from '@/components/Glow/Glow';
-import { IntroCamera } from '@/components/Intro/IntroCamera';
-import { ScreenFlash } from '@/components/Intro/ScreenFlash';
+import { IntroCamera } from '@/components/IntroCamera/IntroCamera';
+import { IntroFx } from '@/components/IntroFx/IntroFx';
 import { SpeedLines } from '@/components/Intro/SpeedLines';
 import { Atmosphere, Lights } from '@/components/Scene/Scene.components';
 import {
@@ -57,18 +57,17 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             <GlowLight daggers={DAGGERS} />
             {isIntroPlaying && (
                 <>
-                    <IntroCamera daggers={DAGGERS} onIntroEnd={onIntroEnd} />
+                    <IntroCamera onIntroEnd={onIntroEnd} />
                     <SpeedLines />
-                    <ScreenFlash daggers={DAGGERS} />
+                    <IntroFx daggers={DAGGERS} />
                 </>
             )}
 
-            {DAGGERS.map((config, index) => (
+            {DAGGERS.map((config) => (
                 <Dagger
                     key={config.sectionId}
                     config={config}
                     cracks={CRACK_LAYOUT.byDagger[config.sectionId]}
-                    flightStrand={index}
                     isIntroPlaying={isIntroPlaying}
                 />
             ))}

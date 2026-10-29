@@ -1,41 +1,25 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 
-import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import { GLOW_INTENSITY } from '@/components/Glow/Glow.constants';
 import { playGlow } from '@/components/Glow/glowStore';
-import {
-    applyFlightPose,
-    createFlightPlan,
-    toFlightSeconds
-} from '@/components/Intro/Intro.helpers';
-import { getIntroTime } from '@/components/Intro/introStore';
+import { FAN_END_SECONDS } from '@/components/Intro/Intro.constants';
+import { getIntroPaths, getIntroTime } from '@/components/Intro/introStore';
+import { applyPathPose } from '@/components/IntroPaths/IntroPaths.helpers';
 
 type DaggerFlightOptions = {
     daggerId: string;
-    /** This dagger's strand of the braid */
-    strand: number;
-    landing: LandingTransform;
     isIntroPlaying: boolean;
 };
 
 /**
- * Flies the dagger along its strand of the braid, then dives it into its landing,
- * and plays its landing glow on impact. Attach the returned ref to the group holding the dagger's meshes.
+ * Poses the dagger on its seeded flight path for the current intro time (a pure function of t),
+ * and plays its landing glow once it rests. Attach the returned ref to the group holding the dagger's meshes.
  */
-export const useDaggerFlight = ({
-    daggerId,
-    strand,
-    landing,
-    isIntroPlaying
-}: DaggerFlightOptions) => {
+export const useDaggerFlight = ({ daggerId, isIntroPlaying }: DaggerFlightOptions) => {
     const flightRef = useRef<Group>(null);
     const hasLandedRef = useRef(false);
-    const plan = useMemo(
-        () => createFlightPlan(strand, daggerId, landing),
-        [strand, daggerId, landing]
-    );
 
     // Ended or skipped: back to the rest pose
     useEffect(() => {
@@ -47,21 +31,16 @@ export const useDaggerFlight = ({
 
     useFrame(() => {
         const flight = flightRef.current;
-        if (!isIntroPlaying || !flight) return;
+        const path = getIntroPaths().find(({ sectionId }) => sectionId === daggerId);
+        if (!isIntroPlaying || !flight || !path) return;
 
-        const flightSeconds = toFlightSeconds(getIntroTime());
-        if (flightSeconds < plan.landingSeconds) {
-            // A seek back to before the landing flies the dagger again
-            hasLandedRef.current = false;
-            applyFlightPose(plan, flightSeconds, flight);
-            return;
-        }
-        if (hasLandedRef.current) return;
+        const seconds = getIntroTime();
+        applyPathPose(path, seconds, flight);
 
-        hasLandedRef.current = true;
-        flight.position.set(0, 0, 0);
-        flight.quaternion.identity();
-        playGlow(daggerId, GLOW_INTENSITY.landing);
+        // Side effect only (the crack decal); a seek back before the landing re-arms it
+        const isLanded = seconds >= FAN_END_SECONDS;
+        if (isLanded && !hasLandedRef.current) playGlow(daggerId, GLOW_INTENSITY.landing);
+        hasLandedRef.current = isLanded;
     });
 
     return flightRef;
