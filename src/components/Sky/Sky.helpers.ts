@@ -8,7 +8,7 @@ import {
     type Vector3Tuple
 } from 'three';
 
-import { MOON, SKY_GRADIENT, STARS } from '@/components/Sky/Sky.constants';
+import { SKY_GRADIENT, STARS } from '@/components/Sky/Sky.constants';
 import { createSeededRandom, randomBetween } from '@/utils/seededRandom';
 
 /** Point on a sphere around the origin; azimuth 0 is straight ahead (-z), positive to the right */
@@ -134,30 +134,3 @@ export const createStarMaterial = () =>
             }
         `
     });
-
-/** Solid moon disc in a soft halo, on a transparent canvas */
-export const createMoonTexture = () => {
-    const size = MOON.textureSize;
-    const canvas = document.createElement('canvas');
-    canvas.width = size;
-    canvas.height = size;
-    const context = canvas.getContext('2d');
-
-    if (context) {
-        const radius = size / 2;
-        const halo = context.createRadialGradient(radius, radius, 0, radius, radius, radius);
-        halo.addColorStop(MOON.discRatio, MOON.haloColor);
-        halo.addColorStop(1, 'transparent');
-        context.fillStyle = halo;
-        context.fillRect(0, 0, size, size);
-
-        context.fillStyle = MOON.color;
-        context.beginPath();
-        context.arc(radius, radius, radius * MOON.discRatio, 0, Math.PI * 2);
-        context.fill();
-    }
-
-    const texture = new CanvasTexture(canvas);
-    texture.colorSpace = SRGBColorSpace;
-    return texture;
-};

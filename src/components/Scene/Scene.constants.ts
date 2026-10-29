@@ -21,15 +21,19 @@ type QualitySettings = {
     /** Device pixel ratio cap */
     dpr: number;
     hasBloom: boolean;
+    /** Multiplier of the moon halo's opacity */
+    moonHaloOpacity: number;
+    /** Cloud streaks drawn over the moon */
+    moonStreakCount: number;
 };
 
 /** From cheapest to most expensive; PerformanceMonitor steps through this order */
 export const QUALITY_TIER_ORDER: readonly QualityTier[] = ['low', 'medium', 'high'];
 
 export const QUALITY_TIERS: Record<QualityTier, QualitySettings> = {
-    low: { dpr: 1, hasBloom: false },
-    medium: { dpr: 1.5, hasBloom: true },
-    high: { dpr: 2, hasBloom: true }
+    low: { dpr: 1, hasBloom: false, moonHaloOpacity: 0.5, moonStreakCount: 1 },
+    medium: { dpr: 1.5, hasBloom: true, moonHaloOpacity: 1, moonStreakCount: 3 },
+    high: { dpr: 2, hasBloom: true, moonHaloOpacity: 1, moonStreakCount: 3 }
 };
 
 /** Tier changes allowed before PerformanceMonitor gives up and falls back to low */

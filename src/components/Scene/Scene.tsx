@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { PerformanceMonitor } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import type { RootState } from '@react-three/fiber';
@@ -10,6 +11,7 @@ import { GlowLight } from '@/components/Glow/Glow';
 import { IntroCamera } from '@/components/IntroCamera/IntroCamera';
 import { IntroFx } from '@/components/IntroFx/IntroFx';
 import { Mist } from '@/components/Mist/Mist';
+import { Moon } from '@/components/Moon/Moon';
 import { SpeedLines } from '@/components/Intro/SpeedLines';
 import {
     Atmosphere,
@@ -65,6 +67,13 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             {import.meta.env.DEV && <SceneDevTools />}
             <Atmosphere />
             <Sky />
+            {/* Its own boundary: the scene renders while the moon texture loads */}
+            <Suspense fallback={null}>
+                <Moon
+                    haloOpacity={settings.moonHaloOpacity}
+                    streakCount={settings.moonStreakCount}
+                />
+            </Suspense>
             <Lights />
             <GlowLight daggers={DAGGERS} />
             {isIntroPlaying && (

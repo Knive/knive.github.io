@@ -4,13 +4,11 @@ import { BackSide, MathUtils, SphereGeometry, type Points } from 'three';
 
 import { getCameraProgress } from '@/components/ScrollCamera/cameraStore';
 import { STAR_MOTION } from '@/components/ScrollCamera/ScrollCamera.constants';
-import { MOON, SKY_RADIUS, STARS } from '@/components/Sky/Sky.constants';
+import { SKY_RADIUS, STARS } from '@/components/Sky/Sky.constants';
 import {
-    createMoonTexture,
     createSkyTexture,
     createStarGeometry,
-    createStarMaterial,
-    toSkyPosition
+    createStarMaterial
 } from '@/components/Sky/Sky.helpers';
 import { prefersReducedMotion } from '@/utils/prefersReducedMotion';
 
@@ -18,13 +16,11 @@ const SKY_GEOMETRY = new SphereGeometry(SKY_RADIUS, 32, 32);
 const SKY_TEXTURE = createSkyTexture();
 const STAR_GEOMETRY = createStarGeometry();
 const STAR_MATERIAL = createStarMaterial();
-const MOON_TEXTURE = createMoonTexture();
-const MOON_POSITION = toSkyPosition(MOON.elevation, MOON.azimuth, MOON.distance);
 
 /** Visibility that shows exactly the hero stars, each one past its fade */
 const HERO_STAR_VISIBILITY = STARS.heroCount / STARS.count + STAR_MOTION.fadeShare;
 
-/** Sunset gradient dome, stars and moon; painted colours, so no fog and no tone mapping */
+/** Sunset gradient dome and stars; painted colours, so no fog and no tone mapping */
 export const Sky = () => {
     const starsRef = useRef<Points>(null);
     const isReducedMotion = useMemo(prefersReducedMotion, []);
@@ -62,20 +58,6 @@ export const Sky = () => {
                 />
             </mesh>
             <points ref={starsRef} geometry={STAR_GEOMETRY} material={STAR_MATERIAL} />
-            <sprite
-                name="moon-disc"
-                position={MOON_POSITION}
-                scale={MOON.size}
-                userData={{ discDiameter: MOON.size * MOON.discRatio }}
-            >
-                <spriteMaterial
-                    map={MOON_TEXTURE}
-                    transparent
-                    fog={false}
-                    toneMapped={false}
-                    depthWrite={false}
-                />
-            </sprite>
         </>
     );
 };
