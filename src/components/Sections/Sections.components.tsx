@@ -41,10 +41,10 @@ const EducationBody = () => {
 const SkillsBody = () => {
     const { t } = useI18n();
     return (
-        <dl className={styles.list}>
+        <dl className={entryListClassName}>
             {t.skillGroups.map((group) => (
-                <div key={group.name} className={styles.entry} data-reveal>
-                    <dt className={styles['entry-title']}>{group.name}</dt>
+                <div key={group.name} data-reveal>
+                    <dt className={entryTitleClassName}>{group.name}</dt>
                     <dd>{group.skills.join(', ')}</dd>
                 </div>
             ))}
