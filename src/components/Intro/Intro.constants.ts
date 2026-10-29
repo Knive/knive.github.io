@@ -4,8 +4,26 @@ export const INTRO_SESSION_KEY = 'intro-played';
 /** Shipped seed for the intro paths, picked by hand; ?seed= overrides it in dev */
 export const INTRO_SEED = 1;
 
-/** Phase E v2: from the first flare (t = 0) to the last impact, in wall-clock seconds */
+/** Phase E v2 target: from the first flare (t = 0) to the last impact, in wall-clock seconds */
 export const INTRO_DURATION_SECONDS = 4;
+
+/**
+ * Landings, in wall-clock seconds. The impact order is shuffled by the seed, and the gaps between
+ * impacts (an uneven rhythm, not a metronome) are shuffled too, with a little seeded jitter.
+ */
+export const LANDING = {
+    firstImpactSeconds: 3.6,
+    gapsSeconds: [0.09, 0.21, 0.07, 0.3],
+    gapJitterSeconds: 0.02,
+    /** The intro must not run longer than this to its last impact */
+    latestImpactSeconds: 4.6,
+    /** Dust and glow keep playing on the final scene this long after the last impact */
+    settleSeconds: 0.5,
+    /** Story seconds before its impact over which a dagger turns into its rest pose (a damped spring) */
+    orientationSettleSeconds: 0.3,
+    /** Spring rate (1/s): higher settles sooner */
+    orientationSpringRate: 12
+} as const;
 
 /** Camera archetype of a beat; every head-cam beat uses a different one */
 export type ShotArchetype =
@@ -35,14 +53,15 @@ export const BEATS: Beat[] = [
     { daggerId: 'experience', startSeconds: 1.7, endSeconds: 2.2, shot: 'sidePass' },
     { daggerId: 'projects', startSeconds: 2.2, endSeconds: 2.75, shot: 'lensGraze' },
     { daggerId: null, startSeconds: 2.75, endSeconds: 3.1, shot: 'wideBehind' },
-    { daggerId: null, startSeconds: 3.1, endSeconds: INTRO_DURATION_SECONDS, shot: 'heroWide' }
+    // Runs until the intro ends (after the last impact)
+    { daggerId: null, startSeconds: 3.1, endSeconds: Infinity, shot: 'heroWide' }
 ];
 
 /** All five heads meet at the convergence point at this time */
 export const CONVERGENCE_SECONDS = 2.75;
 /**
- * After the convergence the formation opens like a fan until this time.
- * Placeholder until the landing handover: the daggers then rest, hidden by the whiteout.
+ * After the convergence the formation opens like a fan until this (story) time, ending above each
+ * landing point; then each dagger falls along its own axis into the ground.
  */
 export const FAN_END_SECONDS = 3.1;
 
