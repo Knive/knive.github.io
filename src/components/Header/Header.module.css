@@ -10,14 +10,14 @@
     gap: 0.5rem 2rem;
     padding: 1.25rem 2.5rem 2rem;
     /* Only the bottom padding fades, whatever height the wrapped nav gives the header */
-    background: linear-gradient(to bottom, var(--void) calc(100% - 2rem), rgb(7 9 13 / 0));
+    background: linear-gradient(to bottom, var(--color-void) calc(100% - 2rem), rgb(7 9 13 / 0));
 }
 
 .name {
     font-family: var(--font-display);
     font-size: 1.05rem;
     letter-spacing: 0.3em;
-    color: var(--steel);
+    color: var(--color-steel);
     text-decoration: none;
 }
 
@@ -31,7 +31,7 @@
 .nav-link {
     font-family: var(--font-display);
     font-size: 0.85rem;
-    color: var(--steel);
+    color: var(--color-steel);
     text-decoration: none;
     transition: color 0.2s;
 }
@@ -40,7 +40,7 @@
 .name:focus-visible,
 .nav-link:hover,
 .nav-link:focus-visible {
-    color: var(--ember);
+    color: var(--color-ember);
 }
 
 @media (max-width: 767px) {

@@ -1,27 +1,51 @@
 @import 'tailwindcss';
 
 @theme {
-    --color-background: var(--background);
-    --color-foreground: var(--foreground);
-    --color-primary: var(--primary);
-}
+    --color-void: #07090d;
+    --color-stone: #0f1318;
+    --color-stone-mid: #151c24;
+    --color-steel: #a4b0ba;
+    --color-copper: #8c6d3f;
+    --color-moonlight: #d6dce5;
+    --color-ember: #c9813a;
+    --color-sapphire: #3a5f8a;
 
-/* Default dark mode */
-:root {
-    --void: #07090d;
-    --stone: #0f1318;
-    --stone-mid: #151c24;
-    --steel: #a4b0ba;
-    --copper: #8c6d3f;
-    --moonlight: #d6dce5;
-    --ember: #c9813a;
-    --sapphire: #3a5f8a;
+    /* Per-section accents, the glow colour of each section's dagger (Scene.constants.ts) */
+    --color-accent-experience: #c9a24a;
+    --color-accent-skills: #2fb8b0;
+    --color-accent-projects: #b04ac9;
+    --color-accent-education: #4faf5a;
+    --color-accent-contact: #d9502e;
 
     --font-display: 'Cinzel', serif;
     --font-body: 'Cormorant Garamond', serif;
 
-    --measure: 68ch;
-    --space-section: clamp(5rem, 10vw, 9rem);
+    --spacing-section: clamp(5rem, 10vw, 9rem);
+}
+
+/* Inline: resolved where used, so text-accent follows the closest data-section */
+@theme inline {
+    --color-accent: var(--accent);
+}
+
+[data-section='experience'] {
+    --accent: var(--color-accent-experience);
+}
+
+[data-section='skills'] {
+    --accent: var(--color-accent-skills);
+}
+
+[data-section='projects'] {
+    --accent: var(--color-accent-projects);
+}
+
+[data-section='education'] {
+    --accent: var(--color-accent-education);
+}
+
+[data-section='contact'] {
+    --accent: var(--color-accent-contact);
 }
 
 /* Light mode */
@@ -43,8 +67,8 @@ html {
 }
 
 body {
-    background: var(--void);
-    color: var(--steel);
+    background: var(--color-void);
+    color: var(--color-steel);
     font-family: var(--font-body);
     font-size: clamp(1.05rem, 1.5vw, 1.2rem);
     line-height: 1.75;
@@ -56,7 +80,7 @@ h1,
 h2,
 h3 {
     font-family: var(--font-display);
-    color: var(--moonlight);
+    color: var(--color-moonlight);
     font-weight: 400;
     line-height: 1.2;
     letter-spacing: 0.06em;

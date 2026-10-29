@@ -11,7 +11,8 @@
         "typecheck": "tsc -b",
         "intro:review": "sh scripts/intro-review/run.sh",
         "scroll:review": "sh scripts/scroll-review/run.sh",
-        "prepare": "husky"
+        "prepare": "husky",
+        "style:review": "sh scripts/style-review/run.sh"
     },
     "dependencies": {
         "@react-three/drei": "^10.7.9",
