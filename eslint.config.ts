@@ -20,7 +20,23 @@ export default defineConfig([
         settings: { react: { version: '19.2' } },
         rules: {
             'react/react-in-jsx-scope': 'off',
-            'react/no-unknown-property': 'off'
+            'react/no-unknown-property': 'off',
+            'no-restricted-imports': [
+                'error',
+                {
+                    patterns: [
+                        {
+                            group: ['*.css'],
+                            message:
+                                'Only src/main.tsx imports CSS (global.css). Style with Tailwind utilities.'
+                        }
+                    ]
+                }
+            ]
         }
+    },
+    {
+        files: ['src/main.tsx'],
+        rules: { 'no-restricted-imports': 'off' }
     }
 ]);
