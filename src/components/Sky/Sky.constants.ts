@@ -34,11 +34,11 @@ export const STARS = {
 
 /** Azimuth 0 is straight ahead (-z), positive to the right */
 export const MOON = {
-    elevation: 24,
-    azimuth: 22,
+    elevation: 25,
+    azimuth: 20,
     distance: 75,
     /** World size of the sprite, halo included */
-    size: 9,
+    size: 20,
     textureSize: 256,
     /** Disc radius as a share of the sprite radius; the rest is halo */
     discRatio: 0.2,
