@@ -4,7 +4,7 @@
 
 Freelance frontend developer's CV site. One page, French or English content, deployed as a static site at knive.github.io.
 
-Central concept: a WebGL hero scene where five fantasy daggers fly through a night sky and embed in a dark cracked stone floor, each dagger representing a CV section. Clicking a dagger scrolls to that section. Each section must have its corresponding dagger to its left or right.
+Central concept: a WebGL hero scene where five fantasy daggers fly through a sunset sky and embed in a bumpy dry-dirt ground (Unlimited Blade Works-like crest), each dagger representing a CV section. Clicking a dagger scrolls to that section. Each section must have its corresponding dagger to its left or right.
 
 Art direction: painted, stylized, inspired by Arcane (Riot/Fortiche): high-contrast lighting, coloured rim light, dark scene. Inspired by it, not a copy.
 
@@ -44,7 +44,7 @@ Each dagger has its own glow colour AND its own pulse/flicker behaviour, so colo
 
 ## Performance budget
 
-One scene, three quality tiers (high, medium, low), adapted with PerformanceMonitor. Real reflections only on the floor, high tier.
+One scene, three quality tiers (high, medium, low), adapted with PerformanceMonitor. No real-time reflections; tiers change pixel ratio and bloom.
 
 - Low-poly daggers (a few thousand triangles each), textures 1024 px, compressed (KTX2), GLB files Draco-compressed and under 1 MB when used.
 - Few lights; one shared moving light for the active glow. No real-time shadows: use a fake contact shadow.
@@ -87,5 +87,7 @@ The CV website should be inspired from <https://illoca.unseen.co> featuring a 3D
 ## Additional infos
 
 Layout: sticky header, hero about 80 vh, fixed canvas behind, camera never tilts on scroll.
+Camera: low and tilted up, so the sky fills most of the frame and the daggers tower.
+Environment: sunset gradient sky with stars and moon, dirt mounds (flat along the dagger row, short impact cracks only), rocks, grass and bush cards, tree line.
 Glow is a 2D FX (sprites and particles); bloom only supplements it.
 Landing positions come from a hand-placed config, not runtime randomness.
