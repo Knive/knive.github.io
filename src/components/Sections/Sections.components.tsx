@@ -6,7 +6,6 @@ import {
     entryMetaClassName,
     entryTitleClassName
 } from '@/components/Sections/Sections.styles';
-import styles from '@/components/Sections/Sections.module.css';
 
 // Every direct block carries data-reveal: the scroll animation slides them in one by one
 
@@ -70,11 +69,14 @@ const ProjectsBody = () => {
 const ContactBody = () => {
     const { t } = useI18n();
     return (
-        <ul className={styles.list}>
+        <ul className={entryListClassName}>
             {t.contactLinks.map((link) => (
-                <li key={link.label} className={styles.entry} data-reveal>
-                    <span className={styles['entry-meta']}>{link.label}</span>{' '}
-                    <a className={styles.link} href={link.href}>
+                <li key={link.label} data-reveal>
+                    <span className={entryMetaClassName}>{link.label}</span>{' '}
+                    <a
+                        className="text-steel decoration-copper underline-offset-[0.2em] transition-[color] duration-200 ease-[ease] hover:text-ember focus-visible:text-ember"
+                        href={link.href}
+                    >
                         {link.text}
                     </a>
                 </li>
