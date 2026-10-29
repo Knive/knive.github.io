@@ -4,6 +4,7 @@ import { AdditiveBlending, MathUtils, type ShaderMaterial } from 'three';
 
 import { INTRO, SPEED_LINES } from '@/components/Intro/Intro.constants';
 import { toFlightSeconds } from '@/components/Intro/Intro.helpers';
+import { getIntroTime } from '@/components/Intro/introStore';
 
 // The quad's corners are already in clip space: it covers the view whatever the camera does
 const VERTEX_SHADER = `
@@ -69,10 +70,10 @@ export const SpeedLines = () => {
         []
     );
 
-    useFrame(({ clock, size }) => {
+    useFrame(({ size }) => {
         const uniforms = materialRef.current?.uniforms;
         if (!uniforms) return;
-        const flightSeconds = toFlightSeconds(clock.elapsedTime);
+        const flightSeconds = toFlightSeconds(getIntroTime());
         const fadeIn = MathUtils.smoothstep(
             flightSeconds,
             SPEED_LINES.startSeconds,

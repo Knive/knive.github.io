@@ -28,3 +28,6 @@ playground/glob-import/root/follow-symlinks/linked/my-lib
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
 docs/references/
+
+# Intro frame dumps and contact sheets (pnpm run intro:review)
+docs/review/

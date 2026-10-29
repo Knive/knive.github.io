@@ -10,6 +10,7 @@ import {
     getShowcaseIndex,
     toFlightSeconds
 } from '@/components/Intro/Intro.helpers';
+import { getIntroTime, isIntroSeeking, startIntroClock } from '@/components/Intro/introStore';
 import { CAMERA } from '@/components/Scene/Scene.constants';
 
 type IntroCameraProps = {
@@ -59,11 +60,12 @@ export const IntroCamera = ({ daggers, onIntroEnd }: IntroCameraProps) => {
         [camera]
     );
 
-    useFrame(({ clock }, deltaSeconds) => {
+    useFrame((_, deltaSeconds) => {
         if (hasEndedRef.current) return;
+        startIntroClock();
 
-        const flightSeconds = toFlightSeconds(clock.elapsedTime);
-        if (flightSeconds >= INTRO.endSeconds) {
+        const flightSeconds = toFlightSeconds(getIntroTime());
+        if (flightSeconds >= INTRO.endSeconds && !isIntroSeeking()) {
             hasEndedRef.current = true;
             onIntroEnd();
             return;

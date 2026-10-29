@@ -4,7 +4,7 @@ import styles from '@/components/Header/Header.module.css';
 
 /** Sticky page header; its nav is the keyboard equivalent of clicking the daggers */
 export const Header = () => (
-    <header className={styles.header}>
+    <header className={styles.header} data-review-hidden>
         <a className={styles.name} href="#hero">
             {PROFILE.name}
         </a>

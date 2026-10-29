@@ -9,6 +9,7 @@ import {
     getShowcaseIndex,
     toFlightSeconds
 } from '@/components/Intro/Intro.helpers';
+import { getIntroTime } from '@/components/Intro/introStore';
 
 type ScreenFlashProps = {
     daggers: Pick<DaggerConfig, 'sectionId' | 'glowColor'>[];
@@ -56,9 +57,9 @@ export const ScreenFlash = ({ daggers }: ScreenFlashProps) => {
     );
     const finalLandingSeconds = getLandingSeconds(LANDING_SEQUENCE[LANDING_SEQUENCE.length - 1]);
 
-    useFrame(({ clock }) => {
+    useFrame(() => {
         const flashColor = uniforms.flashColor.value.setRGB(0, 0, 0);
-        const flightSeconds = toFlightSeconds(clock.elapsedTime);
+        const flightSeconds = toFlightSeconds(getIntroTime());
 
         const showcaseIndex = getShowcaseIndex(flightSeconds);
         if (showcaseIndex !== null) {

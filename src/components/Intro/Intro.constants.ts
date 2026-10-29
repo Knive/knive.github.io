@@ -121,3 +121,22 @@ export const SPEED_LINES = {
     fadeSeconds: 0.35,
     renderOrder: 999
 } as const;
+
+/** Phase E v2: from the first flare (t = 0) to the last impact, in wall-clock seconds */
+export const INTRO_DURATION_SECONDS = 4;
+
+/**
+ * Global slow motion around the impacts: story time runs at timeScale(t) of wall-clock time.
+ * Smooth ramps (smootherstep), so no speed ever changes in a single frame.
+ */
+export const TIME_SCALE = {
+    slowRate: 0.12,
+    /** The ramp down starts this long before the first impact */
+    leadInSeconds: 0.15,
+    rampDownSeconds: 0.35,
+    /** After the last impact */
+    rampUpSeconds: 0.5
+} as const;
+
+/** Shipped seed for the intro paths, picked by hand; ?seed= overrides it in dev */
+export const INTRO_SEED = 1;

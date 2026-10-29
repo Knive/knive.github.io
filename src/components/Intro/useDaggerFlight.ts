@@ -10,6 +10,7 @@ import {
     createFlightPlan,
     toFlightSeconds
 } from '@/components/Intro/Intro.helpers';
+import { getIntroTime } from '@/components/Intro/introStore';
 
 type DaggerFlightOptions = {
     daggerId: string;
@@ -44,15 +45,18 @@ export const useDaggerFlight = ({
         flight.quaternion.identity();
     }, [isIntroPlaying]);
 
-    useFrame(({ clock }) => {
+    useFrame(() => {
         const flight = flightRef.current;
-        if (!isIntroPlaying || !flight || hasLandedRef.current) return;
+        if (!isIntroPlaying || !flight) return;
 
-        const flightSeconds = toFlightSeconds(clock.elapsedTime);
+        const flightSeconds = toFlightSeconds(getIntroTime());
         if (flightSeconds < plan.landingSeconds) {
+            // A seek back to before the landing flies the dagger again
+            hasLandedRef.current = false;
             applyFlightPose(plan, flightSeconds, flight);
             return;
         }
+        if (hasLandedRef.current) return;
 
         hasLandedRef.current = true;
         flight.position.set(0, 0, 0);

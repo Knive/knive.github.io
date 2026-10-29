@@ -13,7 +13,7 @@ export const Sections = () => {
     useSectionScroll(containerRef);
 
     return (
-        <main ref={containerRef} className={styles.sections}>
+        <main ref={containerRef} className={styles.sections} data-review-hidden>
             {SECTIONS.map(({ id, title }, index) => {
                 const Body = SECTION_BODIES[id];
                 const textSide = index % 2 === 0 ? 'left' : 'right';

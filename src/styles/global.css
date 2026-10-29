@@ -69,3 +69,8 @@ h3 {
         scroll-behavior: auto;
     }
 }
+
+/* Dev intro review (?review): only the canvas and the timestamp, like the reference storyboard */
+.intro-review [data-review-hidden] {
+    visibility: hidden;
+}
