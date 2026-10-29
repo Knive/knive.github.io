@@ -33,7 +33,7 @@ Each dagger has its own glow colour AND its own pulse/flicker behaviour, so colo
 
 ## Behaviour
 
-- Intro: scripted "final punch" flight (not physics), ref `docs/references/mha_flying_daggers_ref.mov`. The daggers braid through the starry sky on crossing paths, each with a light streak trail, under anime speed lines; a chase camera rides a CatmullRomCurve3 rail, showcasing each dagger in turn with a tint of its colour. Then they dive, slow-motion before impact, and hit 0.12 s apart (centre first) with shockwave, sparks, dust, camera shake and a flash in each dagger's colour, ending on a white flash. 6 to 8 seconds, played once per session, with a visible Skip button. Timeline in `Intro.constants.ts`.
+- Intro: 4.0 s from first flare to last impact, a pure function of one intro time t (scrubbable with window.__intro.seek). Five head-cam beats with hard cuts hidden by saturated colour floods, seeded per-dagger paths (fixed shipped seed, ?seed= in dev), 2D FX (orb flipbooks, cross flares, ribbon trails, radial speed lines), convergence burst and whiteout, then a landing with one global timeScale curve (slow motion), staggered impacts, and the Phase D landing transforms. Played once per session, visible Skip button, static final scene for prefers-reduced-motion. Reference storyboard: docs/references/mha-storyboard.png (local only).
 - `playGlow(daggerId, intensity)` is the single function for the landing effect and the hover effect (hover uses lower intensity). Landing: emissive pulse, shockwave ring, glowing floor cracks, sparks.
 - Hover: raycast against an invisible, slightly oversized hit shape. Tap on touch screens triggers glow and navigation.
 - Scroll: one fixed full-screen canvas behind the content. The active section's dagger lifts out of the floor and moves to the left or right margin (alternating), positioned from the section's DOM rectangle.
@@ -67,6 +67,7 @@ One scene, three quality tiers (high, medium, low), adapted with PerformanceMoni
 - Ask before adding a new dependency.
 - Keep components small: one file per dagger, one for the floor, one for the intro camera, one for the glow system.
 - Commit messages follow commitlint.config.ts (conventional commits). Never bypass hooks with --no-verify
+- For animation work, verify with the frame dump and contact sheet, not by reading code.
 
 ## Architecture
 
