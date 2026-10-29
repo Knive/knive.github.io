@@ -24,7 +24,7 @@ export const DIRT = {
     pebbleMaxRadius: 2.2
 } as const;
 
-/** Gaussian mounds in world units; flattened along the dagger row so blades and crack glow sit at y = 0 */
+/** Gaussian mounds in world units; flattened around each dagger landing so blades and crack glow sit at y = 0 */
 export const MOUNDS = {
     count: 70,
     seed: 9,
@@ -32,9 +32,7 @@ export const MOUNDS = {
     maxHeight: 0.45,
     minRadius: 0.5,
     maxRadius: 2.2,
-    /** Half the width of the dagger row (outermost dagger x in Scene.constants) */
-    rowHalfWidth: 2.6,
-    /** Flat up to this distance from the row (covers the crack glow decals), full mounds from fullRadius */
+    /** Flat up to this distance from a dagger (covers its crack glow decal), full mounds from fullRadius */
     flatRadius: 2,
     fullRadius: 4
 } as const;

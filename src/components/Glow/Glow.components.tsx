@@ -19,7 +19,12 @@ import {
     launchSparks,
     stepSparks
 } from '@/components/Glow/Glow.helpers';
-import { getBurst, getBurstStrength, nowSeconds } from '@/components/Glow/glowStore';
+import {
+    getBurst,
+    getBurstStrength,
+    getHoveredDaggerId,
+    nowSeconds
+} from '@/components/Glow/glowStore';
 
 export type GlowEffectProps = {
     daggerId: string;
@@ -27,13 +32,21 @@ export type GlowEffectProps = {
 };
 
 type CrackGlowProps = GlowEffectProps & {
+    /** Until its landing burst the dagger is still in the air: no cracks yet */
+    isIntroPlaying: boolean;
     /** Where the dagger is planted, to line the glow up with the floor cracks */
     landing: LandingTransform;
     cracks: CrackPath[];
 };
 
-/** The dagger's floor cracks lighting up in its colour with each burst; render at ground level */
-export const CrackGlow = ({ daggerId, glowColor, landing, cracks }: CrackGlowProps) => {
+/** The dagger's floor cracks in its colour: lit softly once landed, brighter on hover and bursts; render at ground level */
+export const CrackGlow = ({
+    daggerId,
+    glowColor,
+    landing,
+    cracks,
+    isIntroPlaying
+}: CrackGlowProps) => {
     const meshRef = useRef<Mesh>(null);
     const materialRef = useRef<MeshBasicMaterial>(null);
     const texture = useMemo(() => createCrackGlowTexture(cracks, landing), [cracks, landing]);
@@ -44,7 +57,13 @@ export const CrackGlow = ({ daggerId, glowColor, landing, cracks }: CrackGlowPro
         const material = materialRef.current;
         if (!mesh || !material) return;
 
-        const strength = getBurstStrength(daggerId);
+        // The landing burst starts at impact; a skipped or already-played intro counts as landed
+        const isLanded = !isIntroPlaying || getBurst(daggerId) !== undefined;
+        const strength = Math.max(
+            isLanded ? CRACK_GLOW.restLevel : 0,
+            getHoveredDaggerId() === daggerId ? CRACK_GLOW.hoverLevel : 0,
+            getBurstStrength(daggerId)
+        );
         mesh.visible = strength > 0;
         material.color.copy(baseColor).multiplyScalar(strength * CRACK_GLOW.peak);
     });

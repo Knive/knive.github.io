@@ -90,6 +90,7 @@ export const Dagger = ({ config, cracks, landingOrder, isIntroPlaying }: DaggerP
                 glowColor={config.glowColor}
                 landing={config.landing}
                 cracks={cracks}
+                isIntroPlaying={isIntroPlaying}
             />
             <group rotation={toRestRotation(config.landing)}>
                 <DaggerHitShape

@@ -6,9 +6,10 @@ export const SCATTER = {
     halfWidth: 11,
     minZ: -11,
     maxZ: 3,
-    /** Keep this far from the dagger row (x -2.6 to 2.6, z = 0) */
-    rowHalfWidth: 2.6,
-    rowClearance: 1,
+    /** Keep this far from every planted blade */
+    bladeClearance: 1,
+    /** Half-width of the strip kept clear in front of each dagger, towards the camera */
+    frontClearance: 0.7,
     /** Placement tries per card before giving up */
     maxAttemptsPerCard: 20
 } as const;

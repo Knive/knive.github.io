@@ -86,7 +86,11 @@ export const CRACK_GLOW = {
     /** Just above the floor and the contact shadow */
     height: 0.003,
     /** Colour multiplier at a full burst; above 1 so the cracks bloom */
-    peak: 4
+    peak: 4,
+    /** Strength kept once landed: rest × peak stays below 1, a soft glow that never blooms */
+    restLevel: 0.2,
+    /** Strength held while hovered, on top of the short hover burst */
+    hoverLevel: 0.45
 } as const;
 
 /** Flat ring racing outwards over the floor; radii in world units */

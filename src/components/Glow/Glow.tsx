@@ -20,6 +20,7 @@ import {
 
 type DaggerGlowEffectsProps = GlowEffectProps & {
     landing: LandingTransform;
+    isIntroPlaying: boolean;
     cracks: CrackPath[];
 };
 
@@ -85,10 +86,17 @@ export const DaggerGlowEffects = ({
     daggerId,
     glowColor,
     landing,
-    cracks
+    cracks,
+    isIntroPlaying
 }: DaggerGlowEffectsProps) => (
     <>
-        <CrackGlow daggerId={daggerId} glowColor={glowColor} landing={landing} cracks={cracks} />
+        <CrackGlow
+            daggerId={daggerId}
+            glowColor={glowColor}
+            landing={landing}
+            cracks={cracks}
+            isIntroPlaying={isIntroPlaying}
+        />
         <ShockwaveRing daggerId={daggerId} glowColor={glowColor} />
         <Sparks daggerId={daggerId} glowColor={glowColor} />
     </>

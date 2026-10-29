@@ -1,5 +1,6 @@
 import { CanvasTexture, MathUtils, PlaneGeometry, SRGBColorSpace } from 'three';
 
+import { DAGGER_LANDINGS } from '@/components/BladeField/BladeField.constants';
 import { CRACKS, DIRT, FLOOR, MOUNDS } from '@/components/Floor/Floor.constants';
 import { createSeededRandom, randomBetween } from '@/utils/seededRandom';
 
@@ -157,10 +158,14 @@ const MOUND_LIST = (() => {
     }));
 })();
 
-/** 0 on and near the dagger row, rising to 1 away from it */
+const DAGGER_POINTS = Object.values(DAGGER_LANDINGS);
+
+/** 0 around every dagger landing, rising to 1 away from them */
 const getMoundStrength = (x: number, z: number) => {
-    const distanceToRow = Math.hypot(Math.max(Math.abs(x) - MOUNDS.rowHalfWidth, 0), z);
-    return MathUtils.smoothstep(distanceToRow, MOUNDS.flatRadius, MOUNDS.fullRadius);
+    const distanceToDagger = Math.min(
+        ...DAGGER_POINTS.map((landing) => Math.hypot(x - landing.x, z - landing.z))
+    );
+    return MathUtils.smoothstep(distanceToDagger, MOUNDS.flatRadius, MOUNDS.fullRadius);
 };
 
 /** Ground height at a world point; anything standing on the floor uses it */
