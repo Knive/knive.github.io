@@ -1,6 +1,6 @@
 import { CanvasTexture, SRGBColorSpace } from 'three';
 
-import { DAGGER_LANDINGS } from '@/components/BladeField/BladeField.constants';
+import { DAGGER_LANDINGS, DECOR_BLADES } from '@/components/BladeField/BladeField.constants';
 import { getGroundHeight } from '@/components/Floor/Floor.helpers';
 import {
     BUSH_LEAVES,
@@ -86,13 +86,17 @@ export const createBushTexture = () =>
         }
     });
 
-/** True near a dagger, or in front of it where cards would hide the blade */
-const isBlockingDaggers = (x: number, z: number) =>
-    Object.values(DAGGER_LANDINGS).some((landing) => {
-        const isNear = Math.hypot(x - landing.x, z - landing.z) < SCATTER.bladeClearance;
-        const isInFront = z > landing.z && Math.abs(x - landing.x) < SCATTER.frontClearance;
-        return isNear || isInFront;
-    });
+const isNearBlade = (x: number, z: number) =>
+    [...Object.values(DAGGER_LANDINGS), ...DECOR_BLADES].some(
+        (landing) => Math.hypot(x - landing.x, z - landing.z) < SCATTER.bladeClearance
+    );
+
+/** True near any planted blade, or in front of a dagger where cards would hide it */
+const isBlockingBlades = (x: number, z: number) =>
+    isNearBlade(x, z) ||
+    Object.values(DAGGER_LANDINGS).some(
+        (landing) => z > landing.z && Math.abs(x - landing.x) < SCATTER.frontClearance
+    );
 
 /** Seeded card positions standing on the bumpy ground, clear of the daggers */
 export const scatterCards = (count: number, seed: number, minHeight: number, maxHeight: number) => {
@@ -103,7 +107,7 @@ export const scatterCards = (count: number, seed: number, minHeight: number, max
     for (let attempt = 0; attempt < maxAttempts && placements.length < count; attempt++) {
         const x = randomBetween(random, -SCATTER.halfWidth, SCATTER.halfWidth);
         const z = randomBetween(random, SCATTER.minZ, SCATTER.maxZ);
-        if (isBlockingDaggers(x, z)) continue;
+        if (isBlockingBlades(x, z)) continue;
 
         placements.push({
             x,

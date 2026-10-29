@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber';
 import type { RootState } from '@react-three/fiber';
 import { Bloom, EffectComposer } from '@react-three/postprocessing';
 
+import { BladeField } from '@/components/BladeField/BladeField';
 import { Dagger } from '@/components/Dagger/Dagger';
 import { Floor } from '@/components/Floor/Floor';
 import { GlowLight } from '@/components/Glow/Glow';
@@ -72,6 +73,7 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
 
             <TreeLine />
             <Rocks />
+            <BladeField />
             <Vegetation />
             <Floor crackLayout={CRACK_LAYOUT} />
 
