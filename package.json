@@ -12,7 +12,8 @@
         "intro:review": "sh scripts/intro-review/run.sh",
         "scroll:review": "sh scripts/scroll-review/run.sh",
         "prepare": "husky",
-        "style:review": "sh scripts/style-review/run.sh"
+        "style:review": "sh scripts/style-review/run.sh",
+        "scene:review": "sh scripts/scene-review/run.sh"
     },
     "dependencies": {
         "@react-three/drei": "^10.7.9",

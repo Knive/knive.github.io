@@ -11,7 +11,13 @@ import { IntroCamera } from '@/components/IntroCamera/IntroCamera';
 import { IntroFx } from '@/components/IntroFx/IntroFx';
 import { Mist } from '@/components/Mist/Mist';
 import { SpeedLines } from '@/components/Intro/SpeedLines';
-import { Atmosphere, GroundSlide, Lights } from '@/components/Scene/Scene.components';
+import {
+    Atmosphere,
+    GroundSlide,
+    Lights,
+    SceneDevTools,
+    Scenery
+} from '@/components/Scene/Scene.components';
 import {
     BLOOM,
     CAMERA,
@@ -21,6 +27,7 @@ import {
 } from '@/components/Scene/Scene.constants';
 import { Rocks } from '@/components/Rocks/Rocks';
 import { useQualityTier } from '@/components/Scene/useQualityTier';
+import { ScrollCamera } from '@/components/ScrollCamera/ScrollCamera';
 import { Sky } from '@/components/Sky/Sky';
 import { TreeLine } from '@/components/TreeLine/TreeLine';
 import { Vegetation } from '@/components/Vegetation/Vegetation';
@@ -53,6 +60,9 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
                 onDecline={handleDecline}
                 onFallback={handleFallback}
             />
+            {/* First, so the daggers anchor to this frame's camera */}
+            <ScrollCamera isIntroPlaying={isIntroPlaying} />
+            {import.meta.env.DEV && <SceneDevTools />}
             <Atmosphere />
             <Sky />
             <Lights />
@@ -75,13 +85,15 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
                     />
                 ))}
 
-                <TreeLine />
-                <Rocks />
-                <BladeField />
-                <Vegetation />
-                <Floor crackLayout={CRACK_LAYOUT} />
+                <Scenery>
+                    <TreeLine />
+                    <Rocks />
+                    <BladeField />
+                    <Vegetation />
+                    <Floor crackLayout={CRACK_LAYOUT} />
+                    <Mist />
+                </Scenery>
             </GroundSlide>
-            <Mist />
 
             {settings.hasBloom && (
                 <EffectComposer enabled={settings.hasBloom}>

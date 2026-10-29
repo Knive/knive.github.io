@@ -116,7 +116,9 @@ export const Dagger = ({ config, cracks, isIntroPlaying }: DaggerProps) => {
                 <group ref={flightRef}>
                     {/* Outer group sits at ground level; this offset keeps part of the blade above it */}
                     <group position={[0, exposedBladeLength, 0]}>
-                        <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
+                        <group name={`dagger-parts-${sectionId}`}>
+                            <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
+                        </group>
                         <FloatFx
                             sectionId={sectionId}
                             glowColor={config.glowColor}

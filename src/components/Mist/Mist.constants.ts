@@ -19,7 +19,7 @@ type MistLayer = {
     height: number;
     color: string;
     opacity: number;
-    /** World units the layer sinks per viewport of scroll; nearer layers move more */
+    /** Extra world units the layer sinks at full tilt; nearer layers move more */
     parallax: number;
     /** Sideways drift in world units per second; off under reduced motion */
     driftSpeed: number;

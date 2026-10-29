@@ -19,9 +19,13 @@ export const SKY_GRADIENT = {
     ]
 } as const;
 
-/** Angles in degrees; the camera only sees up to about 20 degrees, so most stars are spares for the intro */
+/** Angles in degrees; the camera sees up to about 35 degrees in the hero and 60 tilted up */
 export const STARS = {
-    count: 2500,
+    count: 4000,
+    /** The first stars, shown in the hero; the others fade in as the camera tilts up */
+    heroCount: 2500,
+    /** Seed of the per-star twinkle phase, separate so the positions keep their sequence */
+    twinkleSeed: 22,
     distance: 80,
     /** Stars fade in from here, so none sit in the sunset glow */
     minElevation: 6,

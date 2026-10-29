@@ -14,7 +14,7 @@ const UNIT_PLANE = new PlaneGeometry(1, 1);
 
 /** Bare tree cutouts behind the daggers; unlit, faded by the scene fog */
 export const TreeLine = () => (
-    <>
+    <group name="trees">
         {TREES.map(({ x, z, height, variant, isFlipped }) => (
             <mesh
                 key={`${x}:${z}`}
@@ -30,5 +30,5 @@ export const TreeLine = () => (
                 />
             </mesh>
         ))}
-    </>
+    </group>
 );

@@ -3,6 +3,7 @@ import {
     CanvasTexture,
     Float32BufferAttribute,
     MathUtils,
+    ShaderMaterial,
     SRGBColorSpace,
     type Vector3Tuple
 } from 'three';
@@ -49,11 +50,17 @@ export const createSkyTexture = () => {
     return texture;
 };
 
-/** Seeded points spread evenly over the sky above minElevation, dimmer near the horizon */
+/**
+ * Seeded points spread evenly over the sky above minElevation, dimmer near the horizon.
+ * Each star also gets a twinkle phase and a visibility threshold (its rank in the list).
+ */
 export const createStarGeometry = () => {
     const random = createSeededRandom(STARS.seed);
+    const twinkleRandom = createSeededRandom(STARS.twinkleSeed);
     const positions: number[] = [];
     const colors: number[] = [];
+    const phases: number[] = [];
+    const thresholds: number[] = [];
     // Uniform on the sphere cap: sample the sine of the elevation, not the angle
     const minSine = Math.sin(MathUtils.degToRad(STARS.minElevation));
 
@@ -68,13 +75,65 @@ export const createStarGeometry = () => {
         );
         const brightness = randomBetween(random, STARS.minBrightness, 1) * horizonFade;
         colors.push(brightness, brightness, brightness);
+        phases.push(randomBetween(twinkleRandom, 0, Math.PI * 2));
+        thresholds.push(star / STARS.count);
     }
 
     const geometry = new BufferGeometry();
     geometry.setAttribute('position', new Float32BufferAttribute(positions, 3));
     geometry.setAttribute('color', new Float32BufferAttribute(colors, 3));
+    geometry.setAttribute('phase', new Float32BufferAttribute(phases, 1));
+    geometry.setAttribute('threshold', new Float32BufferAttribute(thresholds, 1));
     return geometry;
 };
+
+/**
+ * Square star points of a fixed pixel size, like PointsMaterial without size attenuation.
+ * uVisibility shows every star whose threshold it has passed (fading over uFade); each star
+ * twinkles around its brightness at its own phase and speed.
+ */
+export const createStarMaterial = () =>
+    new ShaderMaterial({
+        vertexColors: true,
+        uniforms: {
+            uTime: { value: 0 },
+            uVisibility: { value: 1 },
+            uFade: { value: 0 },
+            uSize: { value: STARS.size },
+            uTwinkleDepth: { value: 0 },
+            uTwinkleSpeed: { value: 0 }
+        },
+        vertexShader: /* glsl */ `
+            attribute float phase;
+            attribute float threshold;
+            uniform float uTime;
+            uniform float uVisibility;
+            uniform float uFade;
+            uniform float uSize;
+            uniform float uTwinkleDepth;
+            uniform float uTwinkleSpeed;
+            varying vec3 vColor;
+
+            void main() {
+                float visible = smoothstep(threshold, threshold + uFade, uVisibility);
+                // Speed varies per star (0.6x to 1.4x), derived from its phase
+                float speed = uTwinkleSpeed * (0.6 + 0.8 * fract(phase * 0.159));
+                float twinkle = 1.0 + 0.5 * uTwinkleDepth * sin(uTime * speed + phase);
+                vColor = color * twinkle * visible;
+                gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+                // Hidden stars collapse to nothing instead of drawing black squares
+                gl_PointSize = visible > 0.0 ? uSize : 0.0;
+            }
+        `,
+        fragmentShader: /* glsl */ `
+            varying vec3 vColor;
+
+            void main() {
+                gl_FragColor = vec4(vColor, 1.0);
+                #include <colorspace_fragment>
+            }
+        `
+    });
 
 /** Solid moon disc in a soft halo, on a transparent canvas */
 export const createMoonTexture = () => {

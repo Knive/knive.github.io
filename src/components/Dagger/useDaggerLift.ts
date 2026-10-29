@@ -1,6 +1,6 @@
 import { useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { MathUtils, Vector3, type Group } from 'three';
+import { Euler, MathUtils, Quaternion, Vector3, type Group } from 'three';
 
 import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import { DAGGER_FLOAT, DAGGER_LIFT } from '@/components/Dagger/Dagger.constants';
@@ -43,6 +43,14 @@ export const useDaggerLift = ({
     const anchorRef = useRef<HTMLElement | null>(null);
     const anchorPosition = useMemo(() => new Vector3(), []);
     const curveControl = useMemo(() => new Vector3(), []);
+    const centreOffset = useMemo(() => new Vector3(), []);
+    const floatEuler = useMemo(() => new Euler(), []);
+    const floatQuaternion = useMemo(() => new Quaternion(), []);
+    const cameraInParent = useMemo(() => new Quaternion(), []);
+    const restQuaternion = useMemo(
+        () => new Quaternion().setFromEuler(new Euler(landing.tiltX, landing.yaw, landing.tiltZ)),
+        [landing]
+    );
     const isReducedMotion = useMemo(prefersReducedMotion, []);
     // Middle of the whole dagger, from buried tip to pommel, in the ground group's space
     const daggerCentreY =
@@ -74,9 +82,12 @@ export const useDaggerLift = ({
             DAGGER_LIFT.distance,
             anchorPosition
         );
-        // Ground group space (it slides with the scroll), offset so the scaled dagger's centre lands on the anchor
+        // Ground group space (it slides with the scroll), offset along the camera's up axis so the
+        // scaled, screen-upright dagger's centre lands on the anchor whatever the camera pitch
         group.parent.worldToLocal(anchorPosition);
-        anchorPosition.y -= daggerCentreY * DAGGER_LIFT.scale;
+        group.parent.getWorldQuaternion(cameraInParent).invert().multiply(camera.quaternion);
+        centreOffset.set(0, daggerCentreY * DAGGER_LIFT.scale, 0).applyQuaternion(cameraInParent);
+        anchorPosition.sub(centreOffset);
 
         // Quadratic curve from the slot (origin) through the control point to the anchor
         curveControl.set(
@@ -96,17 +107,15 @@ export const useDaggerLift = ({
             MathUtils.lerp(1, DAGGER_LIFT.scale, lift) *
                 (1 + float * DAGGER_FLOAT.breathe * Math.sin(seconds * DAGGER_FLOAT.breatheSpeed))
         );
-        // From the rest tilt to upright as it lifts, then the levitation's slow roll and turn
-        group.rotation.set(
-            landing.tiltX * (1 - lift),
-            MathUtils.lerp(
-                landing.yaw,
-                float * DAGGER_FLOAT.yawAngle * wobble(seconds, DAGGER_FLOAT.yawSpeed),
-                lift
-            ),
-            landing.tiltZ * (1 - lift) +
-                float * DAGGER_FLOAT.rollAngle * wobble(seconds, DAGGER_FLOAT.rollSpeed)
+        // From the rest tilt to upright in view space (facing the screen at any camera pitch) as it
+        // lifts, then the levitation's slow roll and turn
+        floatEuler.set(
+            0,
+            float * DAGGER_FLOAT.yawAngle * wobble(seconds, DAGGER_FLOAT.yawSpeed),
+            float * DAGGER_FLOAT.rollAngle * wobble(seconds, DAGGER_FLOAT.rollSpeed)
         );
+        floatQuaternion.setFromEuler(floatEuler).premultiply(cameraInParent);
+        group.quaternion.slerpQuaternions(restQuaternion, floatQuaternion, lift);
     });
 
     return liftRef;

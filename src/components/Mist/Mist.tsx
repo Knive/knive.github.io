@@ -4,15 +4,15 @@ import { PlaneGeometry, type Mesh } from 'three';
 
 import { MIST_LAYERS } from '@/components/Mist/Mist.constants';
 import { createMistTexture } from '@/components/Mist/Mist.helpers';
-import { getScrolledViewports } from '@/utils/getScrolledViewports';
+import { getCameraProgress } from '@/components/ScrollCamera/cameraStore';
 import { prefersReducedMotion } from '@/utils/prefersReducedMotion';
 
 const MIST_TEXTURE = createMistTexture();
 const UNIT_PLANE = new PlaneGeometry(1, 1);
 
 /**
- * Low cloud bands between the dagger row and the tree line. Each sinks at its own rate as the page
- * scrolls (parallax against the fixed camera) and drifts sideways.
+ * Low cloud bands between the dagger row and the tree line. Inside the sinking ground, each sinks a
+ * little more at its own rate as the camera tilts (parallax) and drifts sideways.
  */
 export const Mist = () => {
     const layerRefs = useRef<(Mesh | null)[]>([]);
@@ -21,11 +21,11 @@ export const Mist = () => {
     const layerTextures = useMemo(() => MIST_LAYERS.map(() => MIST_TEXTURE.clone()), []);
 
     useFrame(({ clock }) => {
-        const scrolledViewports = getScrolledViewports();
+        const { tilt } = getCameraProgress();
         MIST_LAYERS.forEach((layer, index) => {
             const mesh = layerRefs.current[index];
             if (!mesh) return;
-            mesh.position.y = layer.y - scrolledViewports * layer.parallax;
+            mesh.position.y = layer.y - tilt * layer.parallax;
             if (isReducedMotion) return;
             layerTextures[index].offset.x = (clock.elapsedTime * layer.driftSpeed) / layer.width;
         });
