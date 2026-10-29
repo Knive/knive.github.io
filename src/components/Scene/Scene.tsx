@@ -9,6 +9,7 @@ import { Floor } from '@/components/Floor/Floor';
 import { GlowLight } from '@/components/Glow/Glow';
 import { IntroCamera } from '@/components/Intro/IntroCamera';
 import { ScreenFlash } from '@/components/Intro/ScreenFlash';
+import { SpeedLines } from '@/components/Intro/SpeedLines';
 import { Atmosphere, Lights } from '@/components/Scene/Scene.components';
 import {
     BLOOM,
@@ -57,6 +58,7 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             {isIntroPlaying && (
                 <>
                     <IntroCamera daggers={DAGGERS} onIntroEnd={onIntroEnd} />
+                    <SpeedLines />
                     <ScreenFlash daggers={DAGGERS} />
                 </>
             )}

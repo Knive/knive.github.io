@@ -102,3 +102,22 @@ export const SCREEN_FLASH = {
     /** Drawn after everything else */
     renderOrder: 1000
 } as const;
+
+/** Anime speed lines during the braid: thin radial streaks racing out from the centre of the view */
+export const SPEED_LINES = {
+    /** Angular lanes around the centre; only some carry a streak */
+    lanes: 120,
+    density: 0.35,
+    /** Share of a lane the streak covers at the edge of the view; thinner towards the centre */
+    thickness: 0.22,
+    /** Streak travel in view heights per second */
+    speed: 2.4,
+    /** Streak length as a share of its travel cycle */
+    length: 0.35,
+    /** Clear area around the centre, in view heights */
+    innerRadius: 0.16,
+    strength: 0.35,
+    startSeconds: 0.3,
+    fadeSeconds: 0.35,
+    renderOrder: 999
+} as const;

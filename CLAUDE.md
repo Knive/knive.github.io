@@ -33,7 +33,7 @@ Each dagger has its own glow colour AND its own pulse/flicker behaviour, so colo
 
 ## Behaviour
 
-- Intro: scripted keyframed flight (not physics), camera follows the lead dagger along a CatmullRomCurve3, slow-motion before impact, daggers land about 0.4 s apart with a small camera shake. 6 to 8 seconds, played once per session, with a visible Skip button.
+- Intro: scripted "final punch" flight (not physics), ref `docs/references/mha_flying_daggers_ref.mov`. The daggers braid through the starry sky on crossing paths, each with a light streak trail, under anime speed lines; a chase camera rides a CatmullRomCurve3 rail, showcasing each dagger in turn with a tint of its colour. Then they dive, slow-motion before impact, and hit 0.12 s apart (centre first) with shockwave, sparks, dust, camera shake and a flash in each dagger's colour, ending on a white flash. 6 to 8 seconds, played once per session, with a visible Skip button. Timeline in `Intro.constants.ts`.
 - `playGlow(daggerId, intensity)` is the single function for the landing effect and the hover effect (hover uses lower intensity). Landing: emissive pulse, shockwave ring, glowing floor cracks, sparks.
 - Hover: raycast against an invisible, slightly oversized hit shape. Tap on touch screens triggers glow and navigation.
 - Scroll: one fixed full-screen canvas behind the content. The active section's dagger lifts out of the floor and moves to the left or right margin (alternating), positioned from the section's DOM rectangle.
