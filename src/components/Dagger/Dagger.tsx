@@ -1,4 +1,5 @@
-import { useState, type ComponentType } from 'react';
+import { useRef, useState, type ComponentType } from 'react';
+import type { Object3D } from 'three';
 
 import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import { toRestRotation } from '@/components/BladeField/BladeField.helpers';
@@ -16,6 +17,7 @@ import { DaggerGlowEffects } from '@/components/Glow/Glow';
 import { GLOW_INTENSITY } from '@/components/Glow/Glow.constants';
 import type { GlowPulse } from '@/components/Glow/Glow.helpers';
 import { clearHoveredDagger, playGlow, setHoveredDagger } from '@/components/Glow/glowStore';
+import { DaggerTrail } from '@/components/Intro/DaggerTrail';
 import { useDaggerFlight } from '@/components/Intro/useDaggerFlight';
 
 export interface DaggerConfig {
@@ -67,6 +69,7 @@ export const Dagger = ({ config, cracks, flightStrand, isIntroPlaying }: DaggerP
         isIntroPlaying
     });
     const exposedBladeLength = bladeLength * config.landing.exposedRatio;
+    const trailSourceRef = useRef<Object3D>(null);
 
     const handlePointerOver = () => {
         setIsHovered(true);
@@ -97,6 +100,9 @@ export const Dagger = ({ config, cracks, flightStrand, isIntroPlaying }: DaggerP
                 cracks={cracks}
                 isIntroPlaying={isIntroPlaying}
             />
+            {isIntroPlaying && (
+                <DaggerTrail sourceRef={trailSourceRef} glowColor={config.glowColor} />
+            )}
             <group rotation={toRestRotation(config.landing)}>
                 <DaggerHitShape
                     height={exposedBladeLength + HIT_SHAPE.hiltHeight}
@@ -112,6 +118,8 @@ export const Dagger = ({ config, cracks, flightStrand, isIntroPlaying }: DaggerP
                     {/* Outer group sits at ground level; this offset keeps part of the blade above it */}
                     <group position={[0, exposedBladeLength, 0]}>
                         <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
+                        {/* The light streak follows the guard */}
+                        <object3D ref={trailSourceRef} />
                         {/* Html ignores the group's visibility, so hide the label until landed */}
                         {!isIntroPlaying && (
                             <DaggerLabel text={config.label} isHighlighted={isHovered} />

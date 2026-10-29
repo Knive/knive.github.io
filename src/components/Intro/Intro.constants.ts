@@ -80,3 +80,12 @@ export const CAMERA_SHAKE = {
     /** Angular frequency in radians per second */
     frequency: 60
 } as const;
+
+/** Light streak behind each flying dagger (drei Trail) */
+export const TRAIL = {
+    /** Ribbon width; drei scales it by 0.1 into world units */
+    width: 3,
+    /** Points kept, in tens of frames */
+    length: 4,
+    brightness: 3
+} as const;
