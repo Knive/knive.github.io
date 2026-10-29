@@ -92,7 +92,7 @@ export const DAGGERS: DaggerConfig[] = [
         pommelColor: '#5A5048',
         glowColor: '#B04AC9',
         bladeLength: PROJECTS_BLADE.length,
-        pulse: GLOW_PULSES.heartbeat,
+        pulse: GLOW_PULSES.signalWave,
         Parts: ProjectsDaggerParts
     },
     {

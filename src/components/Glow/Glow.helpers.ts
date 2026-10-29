@@ -1,4 +1,4 @@
-import { CanvasTexture } from 'three';
+import { CanvasTexture, MathUtils } from 'three';
 
 import type { LandingTransform } from '@/components/BladeField/BladeField.constants';
 import { FLOOR } from '@/components/Floor/Floor.constants';
@@ -36,10 +36,6 @@ const sumSines = (timeSeconds: number, waves: SineWave[]) =>
 const getPhase = (timeSeconds: number, periodSeconds: number) =>
     (timeSeconds % periodSeconds) / periodSeconds;
 
-/** Bell-shaped bump centred on `center`, 1 at the centre */
-const gaussian = (value: number, center: number, width: number) =>
-    Math.exp(-(((value - center) / width) ** 2));
-
 /**
  * One rhythm per dagger, so they stay distinguishable without relying on colour.
  */
@@ -53,16 +49,16 @@ export const GLOW_PULSES = {
     /** Skills: quick shimmer of the runes */
     runeShimmer: (timeSeconds) =>
         PULSE.runeShimmer.base + sumSines(timeSeconds, PULSE.runeShimmer.waves),
-    /** Projects: double beat of the crystal */
-    heartbeat: (timeSeconds) => {
-        const { periodSeconds, firstBeat, secondBeat, secondBeatStrength, beatWidth, floor } =
-            PULSE.heartbeat;
+    /** Projects: the orb's signal shrinks to its core, then swells back out ring by ring */
+    signalWave: (timeSeconds) => {
+        const { periodSeconds, contractEnd, innerRing, outerRing, innerRingShare, floor } =
+            PULSE.signalWave;
         const phase = getPhase(timeSeconds, periodSeconds);
-        const beat = Math.max(
-            gaussian(phase, firstBeat, beatWidth),
-            secondBeatStrength * gaussian(phase, secondBeat, beatWidth)
-        );
-        return floor + (1 - floor) * beat;
+        const contraction = 1 - MathUtils.smoothstep(phase, 0, contractEnd);
+        const rings =
+            innerRingShare * MathUtils.smoothstep(phase, innerRing.start, innerRing.end) +
+            (1 - innerRingShare) * MathUtils.smoothstep(phase, outerRing.start, outerRing.end);
+        return floor + (1 - floor) * Math.max(contraction, rings);
     },
     /** Education: slow, calm breathing */
     breathing: (timeSeconds) => {

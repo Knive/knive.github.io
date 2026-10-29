@@ -28,10 +28,10 @@ export type SineWave = { frequency: number; amplitude: number; phase: number };
 /** Per-dagger pulse shapes; times in seconds, outputs kept within [0, 1] */
 export const PULSE = {
     clockwork: {
-        tickSeconds: 1,
+        tickSeconds: 2,
         /** Higher gives a sharper tick */
-        decay: 6,
-        floor: 0.2
+        decay: 1.5,
+        floor: 0.4
     },
     runeShimmer: {
         base: 0.7,
@@ -40,15 +40,20 @@ export const PULSE = {
             { frequency: 11.3, amplitude: 0.15, phase: 0.8 }
         ] as SineWave[]
     },
-    heartbeat: {
-        periodSeconds: 1.6,
-        /** Beat centres as fractions of the period: "lub" then "dub" */
-        firstBeat: 0.1,
-        secondBeat: 0.32,
-        secondBeatStrength: 0.7,
-        /** Beat width as a fraction of the period */
-        beatWidth: 0.06,
-        floor: 0.25
+    /**
+     * Sonar-like signal (ref: LottieFiles "wave animation"): the halo rings shrink into the core,
+     * the bare core rests, then the inner and outer rings swell back out one after the other and hold.
+     * Phases are fractions of the period.
+     */
+    signalWave: {
+        periodSeconds: 3.3,
+        contractEnd: 0.27,
+        innerRing: { start: 0.33, end: 0.5 },
+        outerRing: { start: 0.42, end: 0.62 },
+        /** Share of the full glow the inner ring brings back; the outer ring brings the rest */
+        innerRingShare: 0.55,
+        /** Bare core */
+        floor: 0.2
     },
     breathing: {
         periodSeconds: 4,
