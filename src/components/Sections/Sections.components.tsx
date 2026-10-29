@@ -1,6 +1,11 @@
 import { type SectionId, type TimelineEntry } from '@/components/Sections/Sections.constants';
 import { useI18n } from '@/i18n/i18n.context';
 
+import {
+    entryListClassName,
+    entryMetaClassName,
+    entryTitleClassName
+} from '@/components/Sections/Sections.styles';
 import styles from '@/components/Sections/Sections.module.css';
 
 // Every direct block carries data-reveal: the scroll animation slides them in one by one
@@ -10,11 +15,11 @@ type TimelineProps = {
 };
 
 const Timeline = ({ entries }: TimelineProps) => (
-    <ol className={styles.list}>
+    <ol className={entryListClassName}>
         {entries.map((entry) => (
-            <li key={`${entry.title}-${entry.period}`} className={styles.entry} data-reveal>
-                <h3 className={styles['entry-title']}>{entry.title}</h3>
-                <p className={styles['entry-meta']}>
+            <li key={`${entry.title}-${entry.period}`} data-reveal>
+                <h3 className={entryTitleClassName}>{entry.title}</h3>
+                <p className={entryMetaClassName}>
                     {entry.place}, {entry.period}
                 </p>
                 <p>{entry.summary}</p>

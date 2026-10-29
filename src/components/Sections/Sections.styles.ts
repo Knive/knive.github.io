@@ -44,3 +44,8 @@ export const sectionAnchorVariants = cva(
         }
     }
 );
+
+// Shared by every section body
+export const entryListClassName = 'grid list-none gap-7';
+export const entryTitleClassName = 'font-display text-[1.05rem] text-moonlight';
+export const entryMetaClassName = 'text-copper italic';
