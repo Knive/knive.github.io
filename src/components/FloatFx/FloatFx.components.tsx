@@ -11,14 +11,22 @@ import {
     type SpriteMaterial
 } from 'three';
 
-import { EMBERS, HALO, RUNE_ORBIT, WISP } from '@/components/FloatFx/FloatFx.constants';
+import {
+    ARRIVAL_STREAK,
+    EMBERS,
+    HALO,
+    RUNE_ORBIT,
+    WISP
+} from '@/components/FloatFx/FloatFx.constants';
 import {
     createRuneTextures,
+    createStreakTexture,
     createWispSheet,
     getFloatStrength
 } from '@/components/FloatFx/FloatFx.helpers';
 import { createSoftDotTexture } from '@/components/Glow/Glow.helpers';
-import type { GlowPulse } from '@/components/Glow/Glow.helpers';
+import { easeOutCubic, type GlowPulse } from '@/components/Glow/Glow.helpers';
+import { getArrivalAge } from '@/components/Sections/scrollStore';
 import { createSeededRandom, randomBetween } from '@/utils/seededRandom';
 
 export type FloatFxPartProps = {
@@ -40,6 +48,7 @@ const HALO_TEXTURE = createSoftDotTexture(HALO.textureSize);
 const EMBER_TEXTURE = createSoftDotTexture(EMBERS.textureSize);
 const WISP_SHEET = createWispSheet();
 const RUNE_TEXTURES = createRuneTextures();
+const STREAK_TEXTURE = createStreakTexture();
 const WISP_FRAME_COUNT = WISP.columns * WISP.rows;
 
 type HaloProps = FloatFxPartProps & {
@@ -214,5 +223,36 @@ export const RuneOrbit = ({ sectionId, glowColor, isIntroPlaying }: FloatFxPartP
                 </sprite>
             ))}
         </>
+    );
+};
+
+/** Flash of light across the dagger when it reaches its anchor: opens wide, then thins and fades */
+export const ArrivalStreak = ({
+    sectionId,
+    glowColor
+}: Omit<FloatFxPartProps, 'isIntroPlaying'>) => {
+    const spriteRef = useRef<Sprite>(null);
+    const color = useMemo(
+        () => new Color(glowColor).multiplyScalar(ARRIVAL_STREAK.brightness),
+        [glowColor]
+    );
+
+    useFrame(() => {
+        const sprite = spriteRef.current;
+        if (!sprite) return;
+        const ageSeconds = getArrivalAge(sectionId);
+        const progress = ageSeconds === null ? 1 : ageSeconds / ARRIVAL_STREAK.durationSeconds;
+        sprite.visible = progress < 1;
+        if (!sprite.visible) return;
+
+        const opening = MathUtils.lerp(ARRIVAL_STREAK.startWidthShare, 1, easeOutCubic(progress));
+        sprite.scale.set(ARRIVAL_STREAK.width * opening, ARRIVAL_STREAK.height * (1 - progress), 1);
+        (sprite.material as SpriteMaterial).opacity = 1 - progress;
+    });
+
+    return (
+        <sprite ref={spriteRef} visible={false}>
+            <spriteMaterial map={STREAK_TEXTURE} color={color} {...ADDITIVE_MATERIAL} />
+        </sprite>
     );
 };

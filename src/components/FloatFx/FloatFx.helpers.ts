@@ -1,6 +1,6 @@
 import { CanvasTexture, MathUtils } from 'three';
 
-import { FLOAT_FX, RUNE_ORBIT, WISP } from '@/components/FloatFx/FloatFx.constants';
+import { ARRIVAL_STREAK, FLOAT_FX, RUNE_ORBIT, WISP } from '@/components/FloatFx/FloatFx.constants';
 import { getSectionLift } from '@/components/Sections/scrollStore';
 import { createSeededRandom, randomBetween } from '@/utils/seededRandom';
 
@@ -100,4 +100,32 @@ export const createRuneTextures = () => {
 
         return new CanvasTexture(canvas);
     });
+};
+
+/** Thin horizontal line of light: bright core fading to both ends and to the top and bottom */
+export const createStreakTexture = () => {
+    const { textureWidth: width, textureHeight: height } = ARRIVAL_STREAK;
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext('2d');
+
+    if (context) {
+        const alongStreak = context.createLinearGradient(0, 0, width, 0);
+        alongStreak.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        alongStreak.addColorStop(0.5, 'rgba(255, 255, 255, 1)');
+        alongStreak.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        context.fillStyle = alongStreak;
+        context.fillRect(0, 0, width, height);
+        // Keeps only a thin band in the middle
+        context.globalCompositeOperation = 'destination-in';
+        const acrossStreak = context.createLinearGradient(0, 0, 0, height);
+        acrossStreak.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        acrossStreak.addColorStop(0.5, 'rgba(255, 255, 255, 1)');
+        acrossStreak.addColorStop(1, 'rgba(255, 255, 255, 0)');
+        context.fillStyle = acrossStreak;
+        context.fillRect(0, 0, width, height);
+    }
+
+    return new CanvasTexture(canvas);
 };

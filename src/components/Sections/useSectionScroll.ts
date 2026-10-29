@@ -3,7 +3,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { DAGGER_LIFT_SECONDS, SECTION_REVEAL } from '@/components/Sections/Sections.constants';
-import { getSectionLift } from '@/components/Sections/scrollStore';
+import { getSectionLift, markArrival } from '@/components/Sections/scrollStore';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -38,7 +38,11 @@ export const useSectionScroll = (containerRef: RefObject<HTMLElement | null>) =>
                             value: Number(isActive),
                             duration: isReducedMotion ? 0 : DAGGER_LIFT_SECONDS,
                             ease: 'power2.inOut',
-                            overwrite: true
+                            overwrite: true,
+                            // Not called if the tween is overwritten: only a dagger that reaches its anchor flashes
+                            onComplete: () => {
+                                if (isActive && !isReducedMotion) markArrival(section.id);
+                            }
                         });
                     }
                 });

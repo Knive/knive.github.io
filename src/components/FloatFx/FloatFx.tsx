@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 
 import {
+    ArrivalStreak,
     Embers,
     Halo,
     RuneOrbit,
@@ -20,7 +21,8 @@ type FloatFxProps = FloatFxPartProps & {
 };
 
 /**
- * 2D glow of a dagger floating at its section's anchor: halo, rising embers, wisps and orbiting runes.
+ * 2D glow of a dagger floating at its section's anchor: halo, rising embers, wisps, orbiting runes,
+ * and a light streak as it arrives.
  * Render inside the dagger's lift group, so it follows the flight and the levitation.
  * Under reduced motion only the still halo shows.
  */
@@ -42,6 +44,10 @@ export const FloatFx = ({ pulse, centerY, ...partProps }: FloatFxProps) => {
                     <Wisp {...partProps} />
                     <Embers {...partProps} />
                     <RuneOrbit {...partProps} />
+                    <ArrivalStreak
+                        sectionId={partProps.sectionId}
+                        glowColor={partProps.glowColor}
+                    />
                 </>
             )}
         </group>

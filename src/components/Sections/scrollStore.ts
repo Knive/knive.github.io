@@ -1,3 +1,5 @@
+import { nowSeconds } from '@/components/Glow/glowStore';
+
 /**
  * Scroll state written by ScrollTrigger and read every frame by the scene.
  * Plain module state, like the glow store: scrolling never triggers React renders.
@@ -13,4 +15,17 @@ export const getSectionLift = (sectionId: string) => {
         sectionLifts.set(sectionId, lift);
     }
     return lift;
+};
+
+/** When each dagger last reached its anchor, in nowSeconds() time */
+const arrivals = new Map<string, number>();
+
+export const markArrival = (sectionId: string) => {
+    arrivals.set(sectionId, nowSeconds());
+};
+
+/** Seconds since the dagger last reached its anchor; null if it never has */
+export const getArrivalAge = (sectionId: string) => {
+    const arrivedAt = arrivals.get(sectionId);
+    return arrivedAt === undefined ? null : nowSeconds() - arrivedAt;
 };

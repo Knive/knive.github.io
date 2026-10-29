@@ -74,3 +74,16 @@ export const RUNE_ORBIT = {
     size: 0.2,
     opacity: 0.85
 } as const;
+
+/** Anamorphic light streak flashing across the dagger as it reaches its anchor */
+export const ARRIVAL_STREAK = {
+    durationSeconds: 0.45,
+    /** Opens from this share of its width while it thins and fades */
+    startWidthShare: 0.3,
+    width: 3.6,
+    height: 0.35,
+    /** Above 1, so the streak blooms */
+    brightness: 2,
+    textureWidth: 256,
+    textureHeight: 32
+} as const;
