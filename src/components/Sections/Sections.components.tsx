@@ -2,9 +2,10 @@ import { type SectionId, type TimelineEntry } from '@/components/Sections/Sectio
 import { useI18n } from '@/i18n/i18n.context';
 
 import {
-    entryListClassName,
-    entryMetaClassName,
-    entryTitleClassName
+    contactLinkVariants,
+    entryListVariants,
+    entryMetaVariants,
+    entryTitleVariants
 } from '@/components/Sections/Sections.styles';
 
 // Every direct block carries data-reveal: the scroll animation slides them in one by one
@@ -14,11 +15,11 @@ type TimelineProps = {
 };
 
 const Timeline = ({ entries }: TimelineProps) => (
-    <ol className={entryListClassName}>
+    <ol className={entryListVariants()}>
         {entries.map((entry) => (
             <li key={`${entry.title}-${entry.period}`} data-reveal>
-                <h3 className={entryTitleClassName}>{entry.title}</h3>
-                <p className={entryMetaClassName}>
+                <h3 className={entryTitleVariants()}>{entry.title}</h3>
+                <p className={entryMetaVariants()}>
                     {entry.place}, {entry.period}
                 </p>
                 <p>{entry.summary}</p>
@@ -40,10 +41,10 @@ const EducationBody = () => {
 const SkillsBody = () => {
     const { t } = useI18n();
     return (
-        <dl className={entryListClassName}>
+        <dl className={entryListVariants()}>
             {t.skillGroups.map((group) => (
                 <div key={group.name} data-reveal>
-                    <dt className={entryTitleClassName}>{group.name}</dt>
+                    <dt className={entryTitleVariants()}>{group.name}</dt>
                     <dd>{group.skills.join(', ')}</dd>
                 </div>
             ))}
@@ -54,12 +55,12 @@ const SkillsBody = () => {
 const ProjectsBody = () => {
     const { t } = useI18n();
     return (
-        <ul className={entryListClassName}>
+        <ul className={entryListVariants()}>
             {t.projects.map((project, index) => (
                 <li key={`${project.name}-${index}`} data-reveal>
-                    <h3 className={entryTitleClassName}>{project.name}</h3>
+                    <h3 className={entryTitleVariants()}>{project.name}</h3>
                     <p>{project.description}</p>
-                    <p className={entryMetaClassName}>{project.tags.join(', ')}</p>
+                    <p className={entryMetaVariants()}>{project.tags.join(', ')}</p>
                 </li>
             ))}
         </ul>
@@ -69,14 +70,11 @@ const ProjectsBody = () => {
 const ContactBody = () => {
     const { t } = useI18n();
     return (
-        <ul className={entryListClassName}>
+        <ul className={entryListVariants()}>
             {t.contactLinks.map((link) => (
                 <li key={link.label} data-reveal>
-                    <span className={entryMetaClassName}>{link.label}</span>{' '}
-                    <a
-                        className="text-steel decoration-copper underline-offset-[0.2em] transition-[color] duration-200 ease-[ease] hover:text-ember focus-visible:text-ember"
-                        href={link.href}
-                    >
+                    <span className={entryMetaVariants()}>{link.label}</span>{' '}
+                    <a className={contactLinkVariants()} href={link.href}>
                         {link.text}
                     </a>
                 </li>

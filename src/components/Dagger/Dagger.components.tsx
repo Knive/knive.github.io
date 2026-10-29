@@ -29,7 +29,7 @@ import {
     createLeatherWrapGeometry,
     type LeatherWrapSpec
 } from '@/components/Dagger/Dagger.helpers';
-import { cn } from '@/utils/cn';
+import { daggerLabelVariants } from '@/components/Dagger/Dagger.styles';
 
 export type DaggerPartsProps = {
     config: DaggerConfig;
@@ -210,10 +210,7 @@ export const DaggerLabel = ({ text, isHighlighted }: DaggerLabelProps) => {
             center
             zIndexRange={[1, 1]}
             portal={portal}
-            className={cn(
-                'pointer-events-none font-display text-[0.68rem] tracking-[0.14em] whitespace-nowrap text-[#6a7a8a] transition-[color] duration-400 ease-[ease] select-none',
-                isHighlighted && 'text-moonlight'
-            )}
+            className={daggerLabelVariants({ isHighlighted })}
         >
             {text}
         </Html>
