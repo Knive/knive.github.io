@@ -9,9 +9,10 @@ import {
     DaggerLabel,
     type DaggerPartsProps
 } from '@/components/Dagger/Dagger.components';
-import { HIT_SHAPE } from '@/components/Dagger/Dagger.constants';
+import { DAGGER_LIFT, HIT_SHAPE } from '@/components/Dagger/Dagger.constants';
 import { useDaggerGlow } from '@/components/Dagger/useDaggerGlow';
 import { useDaggerLift } from '@/components/Dagger/useDaggerLift';
+import { FloatFx } from '@/components/FloatFx/FloatFx';
 import type { CrackPath } from '@/components/Floor/Floor.helpers';
 import { DaggerGlowEffects } from '@/components/Glow/Glow';
 import { GLOW_INTENSITY } from '@/components/Glow/Glow.constants';
@@ -116,6 +117,13 @@ export const Dagger = ({ config, cracks, isIntroPlaying }: DaggerProps) => {
                     {/* Outer group sits at ground level; this offset keeps part of the blade above it */}
                     <group position={[0, exposedBladeLength, 0]}>
                         <config.Parts config={config} glowMaterialRef={glowMaterialRef} />
+                        <FloatFx
+                            sectionId={sectionId}
+                            glowColor={config.glowColor}
+                            pulse={pulse}
+                            isIntroPlaying={isIntroPlaying}
+                            centerY={(DAGGER_LIFT.hiltTopY - bladeLength) / 2}
+                        />
                         {/* The light streak follows the guard */}
                         <object3D ref={trailSourceRef} />
                         {/* Html ignores the group's visibility, so hide the label until landed */}
