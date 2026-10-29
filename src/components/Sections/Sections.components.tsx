@@ -55,12 +55,12 @@ const SkillsBody = () => {
 const ProjectsBody = () => {
     const { t } = useI18n();
     return (
-        <ul className={styles.list}>
+        <ul className={entryListClassName}>
             {t.projects.map((project, index) => (
-                <li key={`${project.name}-${index}`} className={styles.entry} data-reveal>
-                    <h3 className={styles['entry-title']}>{project.name}</h3>
+                <li key={`${project.name}-${index}`} data-reveal>
+                    <h3 className={entryTitleClassName}>{project.name}</h3>
                     <p>{project.description}</p>
-                    <p className={styles['entry-meta']}>{project.tags.join(', ')}</p>
+                    <p className={entryMetaClassName}>{project.tags.join(', ')}</p>
                 </li>
             ))}
         </ul>
