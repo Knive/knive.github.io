@@ -17,8 +17,8 @@
     --color-accent-education: #4faf5a;
     --color-accent-contact: #d9502e;
 
-    --font-display: 'Cinzel', serif;
-    --font-body: 'Cormorant Garamond', serif;
+    --font-display: 'Bebas Neue', sans-serif;
+    --font-body: 'Inter Tight', sans-serif;
 
     --spacing-section: clamp(5rem, 10vw, 9rem);
 }
@@ -26,6 +26,18 @@
 /* Inline: resolved where used, so text-accent follows the closest data-section */
 @theme inline {
     --color-accent: var(--accent);
+}
+
+/* Registered as a colour so it can be transitioned between sections; Tailwind has no @property */
+@property --accent {
+    syntax: '<color>';
+    inherits: true;
+    initial-value: #c9813a;
+}
+
+/* Hero and header, before any section is active */
+:root {
+    --accent: var(--color-ember);
 }
 
 [data-section='experience'] {
@@ -72,8 +84,9 @@
         background: var(--color-void);
         color: var(--color-steel);
         font-family: var(--font-body);
-        font-size: clamp(1.05rem, 1.5vw, 1.2rem);
-        line-height: 1.75;
+        font-size: clamp(0.9375rem, 1.1vw, 1rem);
+        font-weight: 300;
+        line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
     }

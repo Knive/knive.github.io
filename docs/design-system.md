@@ -14,6 +14,8 @@ Palette sourced from dagger materials (steel blade, aged copper guard, dark ston
 
 Typography:
 
-- Display/headings: Cinzel (Google Fonts, 400/600) — classical Roman letterforms
-- Body: Cormorant Garamond (Google Fonts, 400/500) — archaic editorial
-- No tracked-out ALL CAPS labels, no em-dash label chrome, sentence case everywhere
+- Display: Bebas Neue (Google Fonts, 400) — condensed caps for section titles, numbers, nav and the counter. Antonio is the lighter swap if it reads too heavy
+- Body: Inter Tight (Google Fonts, 300/400, italic 300) — light grotesk
+- Tracked caps only in display roles (titles about 0.2em, nav about 0.2em, ghost lines about 1.3em); body text, taglines and card metadata stay sentence case
+- Section titles share one size, fitted to the longest title ("Compétences"): 15cqi of the title column
+- No em-dash label chrome
