@@ -7,11 +7,11 @@ export const heroTitleVariants = cva(
     'pointer-events-none sticky top-24 z-10 px-6 pt-[2vh] text-center'
 );
 
-export const heroNameVariants = cva('text-[length:clamp(2.25rem,5vw,3.75rem)] text-moonlight');
-
-export const heroJobVariants = cva(
-    'mt-3 text-[length:clamp(1.15rem,2vw,1.5rem)] text-steel italic'
+export const heroNameVariants = cva(
+    'text-[clamp(2.25rem,5vw,3.75rem)] font-extralight tracking-[0.2em] text-moonlight'
 );
+
+export const heroJobVariants = cva('mt-3 text-[clamp(1.15rem,2vw,1.5rem)] text-steel italic');
 
 // Fixed behind the whole page
 export const heroSceneVariants = cva('fixed inset-0 z-0');

@@ -6,6 +6,7 @@ import { useI18n } from '@/i18n/i18n.context';
 import {
     headerNameVariants,
     headerVariants,
+    languageButtonStyle,
     menuButtonVariants,
     navLinkVariants,
     navListVariants
@@ -34,7 +35,7 @@ export const Header = () => {
 
     return (
         <header className={headerVariants()} data-review-hidden>
-            <a className={headerNameVariants()} href="#hero">
+            <a className={headerNameVariants()} href="#">
                 {PROFILE_NAME}
             </a>
             <nav aria-label={t.ui.sectionsNav}>
@@ -56,7 +57,7 @@ export const Header = () => {
                             </a>
                         </li>
                     ))}
-                    <li>
+                    <li className={languageButtonStyle}>
                         <button
                             type="button"
                             className={navLinkVariants()}

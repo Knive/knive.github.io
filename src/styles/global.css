@@ -20,6 +20,7 @@
     --color-accent-contact: #d9502e;
 
     --font-display: 'Bebas Neue', sans-serif;
+    --font-nav: 'Inter', sans-serif;
     --font-body: 'Inter Tight', sans-serif;
 
     --spacing-section: clamp(5rem, 10vw, 9rem);

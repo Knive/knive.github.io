@@ -53,7 +53,9 @@ export const createHaloTexture = () => {
         const radius = size / 2;
         const glow = context.createRadialGradient(radius, radius, 0, radius, radius, radius);
         glow.addColorStop(0, 'rgba(255, 255, 255, 1)');
-        glow.addColorStop(0.35, 'rgba(255, 255, 255, 0.35)');
+        glow.addColorStop(0.15, 'rgba(255, 255, 255, 0.95)');
+        glow.addColorStop(0.25, 'rgba(255, 255, 255, 0.25)');
+        glow.addColorStop(0.6, 'rgba(255, 255, 255, 0.07)');
         glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
         context.fillStyle = glow;
         context.fillRect(0, 0, size, size);

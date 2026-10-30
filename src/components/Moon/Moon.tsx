@@ -60,18 +60,12 @@ const tintTowardAccents = (base: Color, out: Color) => {
     return out;
 };
 
-type MoonProps = {
-    haloOpacity: number;
-    /** Cloud streaks drawn over the disc, from the front of MOON_STREAKS */
-    streakCount: number;
-};
-
 /**
  * Painted moon on the sky dome: disc, thin rim light, additive halo and dark cloud streaks
  * drifting across it. It rises and grows as the camera tilts up, so it stays in frame in every
  * section, and leans toward the active section's accent colour.
  */
-export const Moon = ({ haloOpacity, streakCount }: MoonProps) => {
+export const Moon = () => {
     const discTexture = useLoader(TextureLoader, MOON_TEXTURE_URL);
     discTexture.colorSpace = SRGBColorSpace;
     const groupRef = useRef<Group>(null);
@@ -125,7 +119,7 @@ export const Moon = ({ haloOpacity, streakCount }: MoonProps) => {
             >
                 <spriteMaterial
                     map={HALO_TEXTURE}
-                    opacity={MOON_LAYERS.haloOpacity * haloOpacity}
+                    opacity={MOON_LAYERS.haloOpacity}
                     blending={AdditiveBlending}
                     transparent
                     fog={false}
@@ -151,7 +145,7 @@ export const Moon = ({ haloOpacity, streakCount }: MoonProps) => {
                     depthWrite={false}
                 />
             </sprite>
-            {MOON_STREAKS.slice(0, streakCount).map((streak, index) => (
+            {MOON_STREAKS.map((streak, index) => (
                 <sprite
                     key={streak.offsetY}
                     position={[0, streak.offsetY, 0]}

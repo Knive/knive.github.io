@@ -21,7 +21,7 @@ export type LandingTransform = {
 /** The five CV daggers, keyed by section id; not a straight row, each leans its own way */
 export const DAGGER_LANDINGS: Record<string, LandingTransform> = {
     experience: { x: -2.75, z: 0.35, tiltX: -0.05, tiltZ: 0.13, yaw: 0.25, exposedRatio: 0.62 },
-    skills: { x: -1.3, z: -0.55, tiltX: 0.06, tiltZ: -0.07, yaw: -0.3, exposedRatio: 0.56 },
+    skills: { x: -1.6, z: -0.55, tiltX: 0.06, tiltZ: -0.07, yaw: -0.3, exposedRatio: 0.56 },
     projects: { x: 0.12, z: 0.1, tiltX: -0.08, tiltZ: 0.04, yaw: 0.12, exposedRatio: 0.6 },
     education: { x: 1.45, z: -0.4, tiltX: 0.05, tiltZ: -0.15, yaw: -0.22, exposedRatio: 0.66 },
     contact: { x: 2.7, z: 0.45, tiltX: -0.04, tiltZ: 0.1, yaw: 0.32, exposedRatio: 0.58 }

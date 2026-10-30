@@ -9,7 +9,7 @@ export const MOON_TEXTURE_URL = `${import.meta.env.BASE_URL}textures/moon.webp`;
  */
 export const MOON_PLACEMENT = {
     distance: 75,
-    landscape: { heroElevation: 27, tiltedElevation: 33, heroAzimuth: 20, tiltedAzimuth: 0 },
+    landscape: { heroElevation: 28, tiltedElevation: 33, heroAzimuth: 30, tiltedAzimuth: 0 },
     portrait: { heroElevation: 16, tiltedElevation: 29, heroAzimuth: 0, tiltedAzimuth: 0 },
     /** Extra rise from Experience to Contact */
     driftRise: 2

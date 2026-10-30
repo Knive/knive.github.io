@@ -18,7 +18,7 @@ const hasPlayedThisSession = () => {
 
 export const markIntroPlayed = () => {
     try {
-        // sessionStorage.setItem(INTRO_SESSION_KEY, 'true');
+        sessionStorage.setItem(INTRO_SESSION_KEY, 'true');
     } catch {
         // Not stored: the intro plays again on reload, which is harmless
     }

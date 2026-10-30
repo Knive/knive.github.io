@@ -8,7 +8,7 @@ export const headerVariants = cva([
 ]);
 
 export const headerNameVariants = cva([
-    'font-display text-[1.05rem] tracking-[0.3em] text-steel no-underline',
+    'font-display text-xl tracking-[0.3em] font- text-white no-underline',
     'hover:text-ember focus-visible:text-ember'
 ]);
 
@@ -37,7 +37,10 @@ export const navListVariants = cva(
 
 // Section links and the language toggle share one look
 export const navLinkVariants = cva([
-    'cursor-pointer bg-transparent font-display text-[0.85rem] text-steel no-underline max-md:text-base',
+    'cursor-pointer bg-transparent',
+    'font-nav text-sm uppercase font-medium tracking-widest text-steel no-underline max-md:text-base',
     'transition-[color] duration-200 ease-[ease]',
     'hover:text-ember focus-visible:text-ember'
 ]);
+
+export const languageButtonStyle = 'md:w-5 md:border-l md:border-ember md:pl-6';

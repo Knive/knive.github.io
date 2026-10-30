@@ -5,7 +5,7 @@ export const fr: Translations = {
         jobTitle: 'Senior Fullstack Engineer'
     },
     sections: [
-        { id: 'experience', title: 'Expérience' },
+        { id: 'experience', title: 'Expériences' },
         { id: 'skills', title: 'Compétences' },
         { id: 'projects', title: 'Projets' },
         { id: 'education', title: 'Formation' },

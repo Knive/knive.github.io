@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import { PerformanceMonitor } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import type { RootState } from '@react-three/fiber';
-import { Bloom, EffectComposer } from '@react-three/postprocessing';
+import { Bloom, EffectComposer, ToneMapping } from '@react-three/postprocessing';
 
 import { BladeField } from '@/components/BladeField/BladeField';
 import { Dagger } from '@/components/Dagger/Dagger';
@@ -26,6 +26,7 @@ import {
     CAMERA,
     CRACK_LAYOUT,
     DAGGERS,
+    LINEAR_TONE_MAPPING_MODE,
     PERFORMANCE_MONITOR_FLIPFLOPS
 } from '@/components/Scene/Scene.constants';
 import { Rocks } from '@/components/Rocks/Rocks';
@@ -59,12 +60,15 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             eventSource={document.getElementById('root') ?? undefined}
             eventPrefix="client"
         >
-            <PerformanceMonitor
-                flipflops={PERFORMANCE_MONITOR_FLIPFLOPS}
-                onIncline={handleIncline}
-                onDecline={handleDecline}
-                onFallback={handleFallback}
-            />
+            {/* After the intro: its heavy frames would drop the tier for the whole visit */}
+            {!isIntroPlaying && (
+                <PerformanceMonitor
+                    flipflops={PERFORMANCE_MONITOR_FLIPFLOPS}
+                    onIncline={handleIncline}
+                    onDecline={handleDecline}
+                    onFallback={handleFallback}
+                />
+            )}
             {/* First, so the daggers anchor to this frame's camera */}
             <ScrollCamera isIntroPlaying={isIntroPlaying} />
             {import.meta.env.DEV && <SceneDevTools />}
@@ -72,10 +76,7 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
             <Sky />
             {/* Its own boundary: the scene renders while the moon texture loads */}
             <Suspense fallback={null}>
-                <Moon
-                    haloOpacity={settings.moonHaloOpacity}
-                    streakCount={settings.moonStreakCount}
-                />
+                <Moon />
             </Suspense>
             <Lights />
             <GlowLight daggers={DAGGERS} />
@@ -107,15 +108,19 @@ export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
                 </Scenery>
             </GroundSlide>
 
-            {settings.hasBloom && (
-                <EffectComposer enabled={settings.hasBloom}>
+            {/* On every tier: unmounting it changes how additive sprites blend (the moon halo fades) */}
+            <EffectComposer>
+                {settings.hasBloom ? (
                     <Bloom
                         mipmapBlur
                         luminanceThreshold={BLOOM.luminanceThreshold}
                         intensity={BLOOM.intensity}
                     />
-                </EffectComposer>
-            )}
+                ) : (
+                    // Cheap pass-through: the composer skips its pipeline without an effect
+                    <ToneMapping mode={LINEAR_TONE_MAPPING_MODE} />
+                )}
+            </EffectComposer>
         </Canvas>
     );
 };
