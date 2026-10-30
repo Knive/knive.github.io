@@ -2,7 +2,7 @@ import { cva } from 'class-variance-authority';
 
 /*
  * Three columns from lg (title | dagger | content, mirrored by side), two from md (title over
- * content | dagger), one below md (no dagger column: it stays in the floor). No gaps: the
+ * content | dagger), one below md (no dagger column: the dagger is a small edge accent). No gaps: the
  * hairlines are the column dividers, as in the references.
  */
 export const sectionShellVariants = cva(
@@ -50,11 +50,24 @@ export const titleColumnVariants = cva('@container [grid-area:title] max-lg:px-5
  * Sticky box centred in the viewport, so the dagger stays in view while the section scrolls.
  * The negative margin starts it high enough to be centred when the section activates (top at
  * mid-viewport), otherwise the box sits low and the dagger sinks into the floor.
+ * Below md there is no dagger column: a narrow strip fixed on the outer edge (opposite the
+ * title side) makes the dagger a small accent; its height sets the dagger's size.
  */
-export const daggerAnchorVariants = cva([
-    'sticky top-[30vh] -mt-[calc(var(--spacing-section)+20vh)] self-start max-md:hidden',
-    'h-[40vh] w-[min(100%,16rem)] justify-self-center [grid-area:dagger]'
-]);
+export const daggerAnchorVariants = cva(
+    [
+        'md:sticky md:top-[30vh] md:-mt-[calc(var(--spacing-section)+20vh)] md:self-start',
+        'md:h-[40vh] md:w-[min(100%,16rem)] md:justify-self-center md:[grid-area:dagger]',
+        'pointer-events-none max-md:fixed max-md:top-[40vh] max-md:h-[22vh] max-md:w-12'
+    ],
+    {
+        variants: {
+            side: {
+                left: 'max-md:right-0',
+                right: 'max-md:left-0'
+            }
+        }
+    }
+);
 
 // Dark panel so body text reads over the bright sky and the moon; the title column stays clear
 export const contentColumnVariants = cva(

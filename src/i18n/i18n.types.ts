@@ -21,6 +21,8 @@ export interface Translations {
     contactLinks: ContactLink[];
     ui: {
         skipIntro: string;
+        menu: string;
+        sectionsNav: string;
     };
 }
 

@@ -85,8 +85,12 @@ export const useDaggerLift = ({
         // Ground group space (it slides with the scroll), offset along the camera's up axis so the
         // scaled, screen-upright dagger's centre lands on the anchor whatever the camera pitch
         group.parent.worldToLocal(anchorPosition);
+        // Sized to its anchor box: the same as DAGGER_LIFT.scale in the desktop box, smaller on mobile
+        const liftScale =
+            (DAGGER_LIFT.scale * anchorRect.height) /
+            (size.height * DAGGER_LIFT.referenceHeightShare);
         group.parent.getWorldQuaternion(cameraInParent).invert().multiply(camera.quaternion);
-        centreOffset.set(0, daggerCentreY * DAGGER_LIFT.scale, 0).applyQuaternion(cameraInParent);
+        centreOffset.set(0, daggerCentreY * liftScale, 0).applyQuaternion(cameraInParent);
         anchorPosition.sub(centreOffset);
 
         // Quadratic curve from the slot (origin) through the control point to the anchor
@@ -104,7 +108,7 @@ export const useDaggerLift = ({
         const seconds = clock.elapsedTime + phase;
         group.position.y += float * DAGGER_FLOAT.bobHeight * wobble(seconds, DAGGER_FLOAT.bobSpeed);
         group.scale.setScalar(
-            MathUtils.lerp(1, DAGGER_LIFT.scale, lift) *
+            MathUtils.lerp(1, liftScale, lift) *
                 (1 + float * DAGGER_FLOAT.breathe * Math.sin(seconds * DAGGER_FLOAT.breatheSpeed))
         );
         // From the rest tilt to upright in view space (facing the screen at any camera pitch) as it

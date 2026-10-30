@@ -25,7 +25,7 @@ export const SectionShell = ({ id, side, title, children }: SectionShellProps) =
         <Hairlines />
         <div className={titleColumnVariants()}>{title}</div>
         {/* Empty: the 3D dagger is placed over this box, in the middle column */}
-        <div id={getDaggerAnchorId(id)} className={daggerAnchorVariants()} />
+        <div id={getDaggerAnchorId(id)} className={daggerAnchorVariants({ side })} />
         <div className={contentColumnVariants()}>{children}</div>
     </section>
 );

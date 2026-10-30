@@ -41,6 +41,8 @@ export const DAGGER_LIFT = {
     distance: 5,
     /** Smaller than on the floor, so the whole dagger fits the anchor box */
     scale: 0.55,
+    /** Anchor box height, as a share of the viewport, that gets exactly `scale` (the 40vh desktop box) */
+    referenceHeightShare: 0.4,
     /** Top of the tallest pommel above the guard, to centre the whole dagger, buried tip included */
     hiltTopY: 1,
     /**

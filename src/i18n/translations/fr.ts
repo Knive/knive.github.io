@@ -74,6 +74,8 @@ export const fr: Translations = {
         { label: 'LinkedIn', href: 'https://www.linkedin.com/', text: 'Profil LinkedIn' }
     ],
     ui: {
-        skipIntro: 'Passer l’intro'
+        skipIntro: 'Passer l’intro',
+        menu: 'Menu',
+        sectionsNav: 'Sections'
     }
 };

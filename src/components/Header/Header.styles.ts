@@ -1,11 +1,10 @@
 import { cva } from 'class-variance-authority';
 
-// Solid enough to read over scrolling text, then only the bottom padding fades into the scene
+// Translucent blurred bar: the sky shows through, text scrolling underneath does not
 export const headerVariants = cva([
     'sticky top-0 z-20',
-    'flex flex-wrap items-center justify-between gap-x-8 gap-y-2',
-    'px-10 pt-5 pb-8 max-md:px-6',
-    'bg-[linear-gradient(to_bottom,var(--color-void)_calc(100%-2rem),rgb(7_9_13/0))]'
+    'flex items-center justify-between gap-x-8',
+    'bg-void/70 px-10 py-4 backdrop-blur-md max-md:px-6'
 ]);
 
 export const headerNameVariants = cva([
@@ -13,14 +12,32 @@ export const headerNameVariants = cva([
     'hover:text-ember focus-visible:text-ember'
 ]);
 
-export const navListVariants = cva([
-    'flex list-none flex-wrap',
-    'gap-x-6 gap-y-2 max-md:gap-x-4 max-md:gap-y-1'
+// Below md only: toggles the nav panel
+export const menuButtonVariants = cva([
+    'cursor-pointer bg-transparent font-display text-[0.9rem] tracking-[0.2em] text-steel md:hidden',
+    'hover:text-ember focus-visible:text-ember'
 ]);
+
+// A row from md; below md a dropdown panel under the bar, shown only while the menu is open
+export const navListVariants = cva(
+    [
+        'flex list-none gap-x-6 md:flex-wrap',
+        'max-md:absolute max-md:inset-x-0 max-md:top-full max-md:flex-col max-md:gap-y-4',
+        'max-md:bg-void/90 max-md:px-6 max-md:py-5 max-md:backdrop-blur-md'
+    ],
+    {
+        variants: {
+            isOpen: {
+                true: '',
+                false: 'max-md:hidden'
+            }
+        }
+    }
+);
 
 // Section links and the language toggle share one look
 export const navLinkVariants = cva([
-    'font-display text-[0.85rem] text-steel no-underline max-md:text-[0.75rem]',
+    'cursor-pointer bg-transparent font-display text-[0.85rem] text-steel no-underline max-md:text-base',
     'transition-[color] duration-200 ease-[ease]',
     'hover:text-ember focus-visible:text-ember'
 ]);
