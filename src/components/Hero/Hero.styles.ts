@@ -16,6 +16,11 @@ export const heroJobVariants = cva(
 // Fixed behind the whole page
 export const heroSceneVariants = cva('fixed inset-0 z-0');
 
+// Static sunset sky while the scene chunk loads
+export const heroSceneFallbackVariants = cva(
+    'size-full bg-linear-to-b from-void via-sapphire/40 to-ember/30'
+);
+
 export const heroSkipVariants = cva([
     'absolute right-10 bottom-8 z-10',
     'cursor-pointer border border-copper bg-transparent px-4 py-2',

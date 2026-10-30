@@ -1,4 +1,4 @@
-import { nowSeconds } from '@/components/Glow/glowStore';
+import { nowSeconds } from '@/utils/nowSeconds';
 
 /**
  * Scroll state written by ScrollTrigger and read every frame by the scene.

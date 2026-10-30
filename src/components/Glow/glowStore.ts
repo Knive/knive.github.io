@@ -1,6 +1,7 @@
 import { MathUtils } from 'three';
 
 import { burstEnvelope } from '@/components/Glow/Glow.helpers';
+import { nowSeconds } from '@/utils/nowSeconds';
 import { prefersReducedMotion } from '@/utils/prefersReducedMotion';
 
 type Burst = {
@@ -20,8 +21,6 @@ type Burst = {
 const bursts = new Map<string, Burst>();
 let hoveredDaggerId: string | null = null;
 let lastPlayedDaggerId: string | null = null;
-
-export const nowSeconds = () => performance.now() / 1000;
 
 /** Single entry point for the landing and hover effects; a new call replaces the running burst */
 export const playGlow = (daggerId: string, intensity: number) => {

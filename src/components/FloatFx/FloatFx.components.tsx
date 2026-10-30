@@ -108,7 +108,9 @@ export const Embers = ({ sectionId, glowColor, isIntroPlaying }: FloatFxPartProp
 
     useFrame(({ clock }) => {
         const points = pointsRef.current;
-        if (!points) return;
+        const strength = getFloatStrength(sectionId, isIntroPlaying);
+        // Hidden with its dagger in the floor: skip the buffer rewrite and upload
+        if (!points || strength === 0) return;
         const seconds = clock.elapsedTime;
 
         embers.forEach(({ angle, distance, speed, phase }, index) => {
@@ -128,7 +130,7 @@ export const Embers = ({ sectionId, glowColor, isIntroPlaying }: FloatFxPartProp
 
         points.geometry.attributes.position.needsUpdate = true;
         points.geometry.attributes.color.needsUpdate = true;
-        points.material.opacity = getFloatStrength(sectionId, isIntroPlaying) * EMBERS.opacity;
+        points.material.opacity = strength * EMBERS.opacity;
     });
 
     return (
@@ -159,13 +161,14 @@ export const Wisp = ({ sectionId, glowColor, isIntroPlaying }: FloatFxPartProps)
     }, []);
 
     useFrame(({ clock }) => {
-        if (!materialRef.current) return;
+        const strength = getFloatStrength(sectionId, isIntroPlaying);
+        if (!materialRef.current || strength === 0) return;
         const frame = Math.floor(clock.elapsedTime * WISP.framesPerSecond) % WISP_FRAME_COUNT;
         const column = frame % WISP.columns;
         const row = Math.floor(frame / WISP.columns);
         // Texture v runs bottom to top, the sheet's rows top to bottom
         sheet.offset.set(column / WISP.columns, 1 - (row + 1) / WISP.rows);
-        materialRef.current.opacity = getFloatStrength(sectionId, isIntroPlaying) * WISP.opacity;
+        materialRef.current.opacity = strength * WISP.opacity;
     });
 
     return (
@@ -187,6 +190,7 @@ export const RuneOrbit = ({ sectionId, glowColor, isIntroPlaying }: FloatFxPartP
 
     useFrame(({ clock }) => {
         const strength = getFloatStrength(sectionId, isIntroPlaying);
+        if (strength === 0) return;
 
         spriteRefs.current.forEach((sprite, index) => {
             if (!sprite) return;

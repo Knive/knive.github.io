@@ -22,6 +22,8 @@ export const Mist = () => {
 
     useFrame(({ clock }) => {
         const { tilt } = getCameraProgress();
+        // At full tilt the mist is out of frame and hidden with the scenery
+        if (tilt === 1) return;
         MIST_LAYERS.forEach((layer, index) => {
             const mesh = layerRefs.current[index];
             if (!mesh) return;

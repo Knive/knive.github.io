@@ -10,6 +10,7 @@ import { Floor } from '@/components/Floor/Floor';
 import { GlowLight } from '@/components/Glow/Glow';
 import { IntroCamera } from '@/components/IntroCamera/IntroCamera';
 import { IntroFx } from '@/components/IntroFx/IntroFx';
+import { useIntroDevTools } from '@/components/Intro/useIntroDevTools';
 import { Mist } from '@/components/Mist/Mist';
 import { Moon } from '@/components/Moon/Moon';
 import { SpeedLines } from '@/components/Intro/SpeedLines';
@@ -45,6 +46,8 @@ type SceneProps = {
 
 export const Scene = ({ isIntroPlaying, onIntroEnd }: SceneProps) => {
     const { settings, handleIncline, handleDecline, handleFallback } = useQualityTier();
+    // Here, not in useIntro: it pulls in the intro paths and daggers, which belong in the scene chunk
+    useIntroDevTools();
 
     return (
         <Canvas

@@ -28,12 +28,8 @@ import {
     launchParticles,
     stepParticles
 } from '@/components/Glow/Glow.helpers';
-import {
-    getBurst,
-    getBurstStrength,
-    getHoveredDaggerId,
-    nowSeconds
-} from '@/components/Glow/glowStore';
+import { getBurst, getBurstStrength, getHoveredDaggerId } from '@/components/Glow/glowStore';
+import { nowSeconds } from '@/utils/nowSeconds';
 
 export type GlowEffectProps = {
     daggerId: string;

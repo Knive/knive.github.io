@@ -1,21 +1,31 @@
-import React, { useRef } from 'react';
+import React, { lazy, Suspense, useRef } from 'react';
 
 import { useHeroScroll } from '@/components/Hero/useHeroScroll';
 import { isIntroReviewRequested } from '@/components/Intro/Intro.helpers';
 import { useIntro } from '@/components/Intro/useIntro';
-import { IntroReview } from '@/components/IntroReview/IntroReview';
-import { Scene } from '@/components/Scene/Scene';
 import { PROFILE_NAME } from '@/components/Sections/Sections.constants';
 import { useI18n } from '@/i18n/i18n.context';
 
 import {
     heroJobVariants,
+    heroSceneFallbackVariants,
     heroNameVariants,
     heroSceneVariants,
     heroSkipVariants,
     heroTitleVariants,
     heroVariants
 } from '@/components/Hero/Hero.styles';
+
+// Its own chunk (three.js and the whole scene), so the CV text does not wait for it
+const Scene = lazy(() =>
+    import('@/components/Scene/Scene').then((module) => ({ default: module.Scene }))
+);
+// Dev review overlay: it reads the intro clock, which lives in the scene code
+const IntroReview = lazy(() =>
+    import('@/components/IntroReview/IntroReview').then((module) => ({
+        default: module.IntroReview
+    }))
+);
 
 export const Hero: React.FC = () => {
     const { isIntroPlaying, endIntro } = useIntro();
@@ -31,9 +41,15 @@ export const Hero: React.FC = () => {
             </div>
             {/* Fixed behind the whole page; decorative, the header nav is its accessible equivalent */}
             <div className={heroSceneVariants()} aria-hidden="true">
-                <Scene isIntroPlaying={isIntroPlaying} onIntroEnd={endIntro} />
+                <Suspense fallback={<div className={heroSceneFallbackVariants()} />}>
+                    <Scene isIntroPlaying={isIntroPlaying} onIntroEnd={endIntro} />
+                </Suspense>
             </div>
-            {isIntroReviewRequested() && <IntroReview />}
+            {isIntroReviewRequested() && (
+                <Suspense>
+                    <IntroReview />
+                </Suspense>
+            )}
             {isIntroPlaying && (
                 <button
                     type="button"
