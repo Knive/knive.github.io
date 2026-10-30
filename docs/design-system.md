@@ -7,7 +7,8 @@ Palette sourced from dagger materials (steel blade, aged copper guard, dark ston
 - `--void: #07090D` — page background
 - `--stone: #0F1318` — section backgrounds
 - `--steel: #A4B0BA` — body text, blade color
-- `--copper: #8C6D3F` — accent, worn metal
+- `--copper: #8C6D3F` — accent, worn metal (decorative only: below 4.5:1 as text)
+- `--copper-light: #C49A5C` — meta text (dates, places, contact labels)
 - `--moonlight: #D6DCE5` — headings
 - `--ember: #C9813A` — hover/CTA (firelight)
 - `--sapphire: #3A5F8A` — secondary accent

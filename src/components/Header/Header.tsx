@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { PROFILE_NAME } from '@/components/Sections/Sections.constants';
 import { useI18n } from '@/i18n/i18n.context';
@@ -17,12 +17,16 @@ const NAV_LIST_ID = 'header-nav-list';
 export const Header = () => {
     const { t, lang, setLanguage } = useI18n();
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const menuButtonRef = useRef<HTMLButtonElement>(null);
     const closeMenu = () => setIsMenuOpen(false);
 
     useEffect(() => {
         if (!isMenuOpen) return;
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.key === 'Escape') setIsMenuOpen(false);
+            if (event.key !== 'Escape') return;
+            setIsMenuOpen(false);
+            // The focused link is about to be hidden: hand focus back to the toggle
+            menuButtonRef.current?.focus();
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
@@ -35,6 +39,7 @@ export const Header = () => {
             </a>
             <nav aria-label={t.ui.sectionsNav}>
                 <button
+                    ref={menuButtonRef}
                     type="button"
                     className={menuButtonVariants()}
                     aria-expanded={isMenuOpen}

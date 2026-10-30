@@ -6,6 +6,8 @@
     --color-stone-mid: #151c24;
     --color-steel: #a4b0ba;
     --color-copper: #8c6d3f;
+    /* Copper lightened for text: at least 4.5:1 on the dark content panel, even over the moon */
+    --color-copper-light: #c49a5c;
     --color-moonlight: #d6dce5;
     --color-ember: #c9813a;
     --color-sapphire: #3a5f8a;
@@ -89,6 +91,12 @@
         line-height: 1.6;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* One focus ring for every focusable element, in the active section's colour */
+    :focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 3px;
     }
 
     h1,

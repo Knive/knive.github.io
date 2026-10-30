@@ -71,5 +71,5 @@ export const daggerAnchorVariants = cva(
 
 // Dark panel so body text reads over the bright sky and the moon; the title column stays clear
 export const contentColumnVariants = cva(
-    '[grid-area:content] bg-void/45 p-6 backdrop-blur-sm max-lg:mx-5 lg:self-center'
+    '[grid-area:content] bg-void/80 p-6 backdrop-blur-sm max-lg:mx-5 lg:self-center'
 );

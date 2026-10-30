@@ -13,7 +13,7 @@ export const entryListVariants = cva('grid list-none gap-7');
 
 export const entryTitleVariants = cva('font-display text-[1.05rem] text-moonlight');
 
-export const entryMetaVariants = cva('text-copper italic');
+export const entryMetaVariants = cva('text-copper-light italic');
 
 export const contactLinkVariants = cva([
     'text-steel decoration-copper underline-offset-[0.2em]',
