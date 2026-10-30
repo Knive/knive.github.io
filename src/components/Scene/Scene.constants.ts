@@ -43,7 +43,8 @@ export const CAMERA: { position: Vector3Tuple; fov: number; lookAt: Vector3Tuple
     // Low and looking up, so the sky fills most of the frame and the daggers tower
     position: [0, 0.5, 5],
     fov: 50,
-    lookAt: [0, 1.4, 0]
+    // Camera Tilt
+    lookAt: [0, 1.75, 0]
 };
 
 /** Linear fog in world units from the camera: daggers stay clear, the floor edge and far trees fade out */

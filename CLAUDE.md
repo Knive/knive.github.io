@@ -13,9 +13,16 @@ Art direction: painted, stylized, inspired by Arcane (Riot/Fortiche): high-contr
 - Vite 8 + React 19 + TypeScript 6
 - React Three Fiber v9 + Drei v10 (Three.js v0.186)
 - @react-three/postprocessing (bloom, grain, vignette)
-- TailwindCSS/cva/clsx with cn utility function — CSS custom properties in `src/styles/global.css` or in [Named] component folder.
 - GSAP + ScrollTrigger for scroll-driven animation
 - Deployed to GitHub Pages by a GitHub Actions workflow (Settings → Pages → Source: "GitHub Actions"). The repo is `knive.github.io`, so the site is served from the root and Vite's `base` stays `/`.
+
+## Styling rules (strict)
+
+- All styling is Tailwind utility classes in JSX, composed with `cn()` (clsx + tailwind-merge). Tailwind v4 syntax (check package.json for the version).
+- Every elements' classes go in `[Component].styles.ts`.
+- Design tokens (palette, fonts, spacing, per-section accents) live in the `@theme` block of `src/styles/global.css`. Per-section accent is the CSS variable `--accent`, set from a `data-section` attribute in `global.css`.
+- `src/styles/global.css` is the only CSS file. Do NOT create `*.module.css`, per-component `.css`, or styled-components. If Tailwind truly cannot express something, add an `@utility` or a `@layer components` rule in `global.css` and tell me why.
+- Never pass style property names (for example `fontSize`) into `className`.
 
 ## Sections and daggers
 
@@ -36,7 +43,7 @@ Each dagger has its own glow colour AND its own pulse/flicker behaviour, so colo
 - Intro: 5.2 s from first flare to last impact, a pure function of one intro time t (scrubbable with window.__intro.seek). Five head-cam beats with hard cuts hidden by saturated colour floods, seeded per-dagger paths (fixed shipped seed, ?seed= in dev), 2D FX (orb flipbooks, cross flares, ribbon trails, radial speed lines), convergence burst and whiteout, then a landing with no slow motion, staggered impacts, and the Phase D landing transforms. Played once per session, visible Skip button, static final scene for prefers-reduced-motion. Reference storyboard: docs/references/mha-storyboard.png (local only).
 - `playGlow(daggerId, intensity)` is the single function for the landing effect and the hover effect (hover uses lower intensity). Landing: emissive pulse, shockwave ring, glowing floor cracks, sparks.
 - Hover: raycast against an invisible, slightly oversized hit shape. Tap on touch screens triggers glow and navigation.
-- Scroll: one fixed full-screen canvas behind the content. The active section's dagger lifts out of the floor and moves to the left or right margin (alternating), positioned from the section's DOM rectangle.
+- Scroll: one fixed full-screen canvas behind the content. The camera pitches up on scroll (eased, no roll): the hero keeps the landed scene; from the first section on only sky, stars, clouds and the painted moon are in frame. Ground and trees stop rendering once out of frame. The active section's dagger floats beside it (mirrored layout: title | dagger | content), anchored in camera space from the section's DOM rectangle.
 - After the hero, fade the floor into dark fog or a vignette so text stays readable.
 
 ## Modelling
@@ -73,7 +80,7 @@ One scene, three quality tiers (high, medium, low), adapted with PerformanceMoni
 
 - `src/components/` is where there are the components used in the project
 - `src/components/[Component]` is used when components have more than one file
-- `.styles.ts(x)` suffix is for css styling
+- `.styles.ts` suffix holds cva variant definitions (Tailwind class strings only
 - `.constants.ts(x)` suffix is for constants
 - `.components.ts(x)` suffix is for small blocks composing the named [Component]
 - `.helpers.ts` suffix is for functions that only serve the named [Component] (geometry, texture builders); project-agnostic functions go in `src/utils/`
@@ -86,7 +93,7 @@ One scene, three quality tiers (high, medium, low), adapted with PerformanceMoni
 
 ## Inspiration
 
-The CV website should be inspired from <https://illoca.unseen.co> featuring a 3D Hero which stays in the view when scrolling and with each section with texts coming left and right after some animation in the 3D canvas. The same thing should happen with the daggers representing a section each.
+Section UI: Arcane landing concept references in docs/references/ (local only)
 
 ## Additional infos
 
